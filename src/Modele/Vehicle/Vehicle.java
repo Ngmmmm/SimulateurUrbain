@@ -1,4 +1,4 @@
-package Modele;
+package Modele.Vehicle;
 
 public class Vehicle {
     
