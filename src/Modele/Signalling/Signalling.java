@@ -1,6 +1,6 @@
 package Modele.Signalling;
 
-import javax.swing.text.Position;
+import Modele.Position;
 
 public class Signalling {
 
