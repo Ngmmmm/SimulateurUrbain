@@ -2,6 +2,7 @@ package Modele;
 
 import Modele.Vehicle.Vehicle;
 
+
 public class CityMap {
     private int rows;
     private int cols;
