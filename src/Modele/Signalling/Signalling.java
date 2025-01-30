@@ -12,4 +12,12 @@ public class Signalling {
         
     }
     
+    public Position getPos() {
+        return this.pos;
+    }
+
+    public void setPos(Position pos) {
+        this.pos = pos;
+    }
+
 }
