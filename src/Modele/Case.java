@@ -19,7 +19,7 @@ public class Case {
         this.pos = null;
     }
 
-
+    // Pas fonctionnelle pour l'instant
     public Case(String type){
         this.vehicle = null;
         this.signalling = null;
@@ -29,7 +29,7 @@ public class Case {
             this.road = null;
         }
         else if (type.equals("Road")){
-            this.road = new Road();
+            //this.road = new Road();
             this.building = null;
         }else{
             this.road = null;
@@ -86,5 +86,19 @@ public class Case {
     public void setPos(Position pos) {
         this.pos = pos;
     }
+
+    @Override
+    public String toString() {
+        if (vehicle != null) {
+            return vehicle.toString(); // Si un véhicule est présent, on l'affiche
+        } else if (road != null) {
+            return road.toString(); // Si une route est présente, on l'affiche
+        } else if (building != null) {
+            return building.toString(); // Si un bâtiment est présent, on l'affiche
+        } else {
+            return "Empty"; // Si rien n'est présent, on affiche "Empty"
+        }
+    }
+
 
 }
