@@ -28,9 +28,11 @@ public class CityMap {
     }
 
     // Ajouter une route à la carte
-    public void setRoad(int row, int col) {
+    public void setRoad(Position pos, Direction d, String ligne) {
+        int row = pos.getY();
+        int col = pos.getX();
         if (isValidPosition(row, col)) {
-            grid[row][col].setType("ROAD");
+            grid[row][col].setRoad(new Road(d, ligne));
         }
     }
 
