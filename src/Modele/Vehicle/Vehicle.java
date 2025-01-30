@@ -9,6 +9,7 @@ public abstract class Vehicle {
     protected Position position;
     protected Direction direction;
     protected boolean isMoving;
+    protected float fuel;
 
     public Vehicle(String id, double speed, Position position, Direction direction) {
         this.id = id;
@@ -16,6 +17,7 @@ public abstract class Vehicle {
         this.position = position;
         this.direction = direction;
         this.isMoving = false;
+        this.fuel = 100;
     }
 
     public void start() {
@@ -26,10 +28,9 @@ public abstract class Vehicle {
         isMoving = false;
     }
 
-    public void move() {
-        if (isMoving) {
-            
-        }
+    public void move(Direction d) {
+        changeDirection(d);
+        position = d.move(position);
     }
 
     public void changeDirection(Direction newDirection) {
