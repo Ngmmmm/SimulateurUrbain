@@ -1,8 +1,5 @@
 package Modele;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import Modele.Vehicle.Vehicle;
 
 public class CityMap {

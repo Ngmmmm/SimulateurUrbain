@@ -87,4 +87,18 @@ public class Case {
         this.pos = pos;
     }
 
+    @Override
+    public String toString() {
+        if (vehicle != null) {
+            return "Vehicle: " + vehicle.toString(); // Si un véhicule est présent, on l'affiche
+        } else if (road != null) {
+            return "Road: " + road.toString(); // Si une route est présente, on l'affiche
+        } else if (building != null) {
+            return "Building: " + building.toString(); // Si un bâtiment est présent, on l'affiche
+        } else {
+            return "Empty"; // Si rien n'est présent, on affiche "Empty"
+        }
+    }
+
+
 }
