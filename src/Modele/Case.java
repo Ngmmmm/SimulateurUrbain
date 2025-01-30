@@ -45,7 +45,46 @@ public class Case {
         this.signalling = signalling;
         this.pos = pos;
     }
-    
 
-    //! Faire les set/get
+
+    public Vehicle getVehicle() {
+        return this.vehicle;
+    }
+
+    public void setVehicle(Vehicle vehicle) {
+        this.vehicle = vehicle;
+    }
+
+    public Building getBuilding() {
+        return this.building;
+    }
+
+    public void setBuilding(Building building) {
+        this.building = building;
+    }
+
+    public Road getRoad() {
+        return this.road;
+    }
+
+    public void setRoad(Road road) {
+        this.road = road;
+    }
+
+    public Signalling getSignalling() {
+        return this.signalling;
+    }
+
+    public void setSignalling(Signalling signalling) {
+        this.signalling = signalling;
+    }
+
+    public Position getPos() {
+        return this.pos;
+    }
+
+    public void setPos(Position pos) {
+        this.pos = pos;
+    }
+
 }
