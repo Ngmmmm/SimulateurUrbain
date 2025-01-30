@@ -1,5 +1,7 @@
 # Compiled class files
 *.class
+# Ignorer tous les fichiers .class dans tous les dossiers
+**/*.class
 
 # Log files
 *.log
