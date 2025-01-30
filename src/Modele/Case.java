@@ -90,11 +90,11 @@ public class Case {
     @Override
     public String toString() {
         if (vehicle != null) {
-            return "Vehicle: " + vehicle.toString(); // Si un véhicule est présent, on l'affiche
+            return vehicle.toString(); // Si un véhicule est présent, on l'affiche
         } else if (road != null) {
-            return "Road: " + road.toString(); // Si une route est présente, on l'affiche
+            return road.toString(); // Si une route est présente, on l'affiche
         } else if (building != null) {
-            return "Building: " + building.toString(); // Si un bâtiment est présent, on l'affiche
+            return building.toString(); // Si un bâtiment est présent, on l'affiche
         } else {
             return "Empty"; // Si rien n'est présent, on affiche "Empty"
         }

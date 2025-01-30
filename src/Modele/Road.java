@@ -24,4 +24,9 @@ public class Road {
     public void setLineType(String lineType) {
         this.lineType = lineType;
     }
+
+    @Override
+    public String toString(){
+        return "Route";
+    }
 }

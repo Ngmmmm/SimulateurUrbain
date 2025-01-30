@@ -17,21 +17,16 @@ public class Simulation {
             // Exemple de route horizontale
             cityMap.setRoad(new Position(i, 4), Direction.RIGHT, "full");
         }
-
-        
-        addBuilding(2, 2);
-        addBuilding(4, 5);
-        addBuilding(7, 8);
-    }
-
-    private void addBuilding(int x, int y) {
+        cityMap.setBuilding();
 
     }
+
+
 
     public static void main(String [] args){
         Simulation s = new Simulation();
 
-        s.cityMap.displayMap();
+        AffichageTemp.affiche(s.cityMap.getGrid());
 
 
     }

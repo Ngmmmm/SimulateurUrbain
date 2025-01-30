@@ -43,6 +43,17 @@ public class CityMap {
         return row >= 0 && row < rows && col >= 0 && col < cols;
     }
 
+    public void setBuilding(){
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (grid[i][j].getRoad() == null){
+                    grid[i][j] = new Case("Building");
+                }
+            }
+            
+        }
+    }
+
     // Affichage simple de la carte en console
     public void displayMap() {
         for (int i = 0; i < rows; i++) {
