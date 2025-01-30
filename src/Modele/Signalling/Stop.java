@@ -1,5 +1,12 @@
 package Modele.Signalling;
 
-public class Stop {
+import Modele.Position;
+
+public class Stop extends Signalling{
+
+    public Stop(Position pos){
+        super(pos);
+    }
+    
     
 }
