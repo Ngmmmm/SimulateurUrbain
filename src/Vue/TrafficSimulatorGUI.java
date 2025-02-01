@@ -1,28 +1,31 @@
 package Vue;
 
+import Modele.CityMap;
+import Modele.Direction;
+import Modele.Position;
+import Modele.Case;
+
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+
 
 public class TrafficSimulatorGUI extends JFrame {
 
-    private static final int ROWS = 100;
-    private static final int COLS = 100;
+    private static final int ROWS = 20;
+    private static final int COLS = 20;
     private JPanel mapPanel;
     private JScrollPane scrollPane;
     private int cellSize = 40;
     private double zoomFactor = 1.0;
 
-    private List<Car> cars = new ArrayList<>();
-    private Timer moveCarTimer;
-    private Timer animationTimer;
-    private Point lastDragPoint;
-    private boolean isPaused = false;
+    private CityMap cityMap; // Référence à la carte de la ville
+    private Point lastDragPoint; // Ajoutez cette ligne pour déclarer lastDragPoint
 
-    public TrafficSimulatorGUI() {
+    public TrafficSimulatorGUI(CityMap cityMap) {
+        this.cityMap = cityMap;
+
         setTitle("Simulateur de gestion de trafic urbain");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
@@ -37,9 +40,8 @@ public class TrafficSimulatorGUI extends JFrame {
         scrollPane = new JScrollPane(containerPanel);
         scrollPane.setPreferredSize(new Dimension(800, 600));
 
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
-        
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         add(scrollPane, BorderLayout.CENTER);
 
         JPanel controlPanel = createControlPanel();
@@ -49,44 +51,57 @@ public class TrafficSimulatorGUI extends JFrame {
         mapPanel.addMouseListener(createMouseDragListener());
         mapPanel.addMouseMotionListener(createMouseMotionListener());
 
-        initializeCars(5); // Ajouter 5 voitures au démarrage
-        startCarMovement();
-        startAnimation();
-
         setVisible(true);
     }
 
-    private void initializeCars(int numberOfCars) {
-        Random random = new Random();
-        for (int i = 0; i < numberOfCars; i++) {
-            int startX = random.nextInt(COLS);
-            int startY = random.nextInt(ROWS);
-            Color color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
-            cars.add(new Car(startX, startY, color));
+    private JPanel createMapPanel() {
+        JPanel panel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                drawMap(g);
+            }
+        };
+        panel.setPreferredSize(new Dimension(COLS * cellSize, ROWS * cellSize));
+        return panel;
+    }
+
+    private void drawMap(Graphics g) {
+        Case[][] grid = cityMap.getGrid();
+
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLS; j++) {
+                int x = j * cellSize;
+                int y = i * cellSize;
+
+                Case currentCase = grid[i][j];
+
+                // Dessiner la route si elle existe
+                if (currentCase.getRoad() != null) {
+                    g.setColor(Color.GRAY);
+                    g.fillRect(x, y, cellSize, cellSize);
+                }
+                // Dessiner le bâtiment si il existe
+                else if (currentCase.getBuilding() != null) {
+                    g.setColor(Color.DARK_GRAY);
+                    g.fillRect(x, y, cellSize, cellSize);
+                }
+                // Dessiner le véhicule si il existe
+                else if (currentCase.getVehicle() != null) {
+                    g.setColor(Color.RED);
+                    g.fillRect(x, y, cellSize, cellSize);
+                }
+                // Dessiner une case vide
+                else {
+                    g.setColor(Color.LIGHT_GRAY);
+                    g.fillRect(x, y, cellSize, cellSize);
+                }
+
+                // Dessiner les bordures
+                g.setColor(Color.BLACK);
+                g.drawRect(x, y, cellSize, cellSize);
+            }
         }
-    }
-
-    private void startCarMovement() {
-        moveCarTimer = new Timer(500, e -> {
-            if (!isPaused) {
-                for (Car car : cars) {
-                    car.moveRandomly();
-                }
-            }
-        });
-        moveCarTimer.start();
-    }
-
-    private void startAnimation() {
-        animationTimer = new Timer(16, e -> {
-            if (!isPaused) {
-                for (Car car : cars) {
-                    car.animate();
-                }
-                mapPanel.repaint();
-            }
-        });
-        animationTimer.start();
     }
 
     private JMenuBar createMenuBar() {
@@ -108,15 +123,9 @@ public class TrafficSimulatorGUI extends JFrame {
         JMenu simulationMenu = new JMenu("Simulation");
         JMenuItem startItem = new JMenuItem("Démarrer");
         JMenuItem stopItem = new JMenuItem("Arrêter");
-        JMenuItem pauseItem = new JMenuItem("Pause");
-
-        startItem.addActionListener(e -> isPaused = false);
-        stopItem.addActionListener(e -> resetSimulation());
-        pauseItem.addActionListener(e -> isPaused = !isPaused);
 
         simulationMenu.add(startItem);
         simulationMenu.add(stopItem);
-        simulationMenu.add(pauseItem);
         menuBar.add(simulationMenu);
 
         JMenu viewMenu = new JMenu("Affichage");
@@ -135,65 +144,18 @@ public class TrafficSimulatorGUI extends JFrame {
 
     private JPanel createControlPanel() {
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(1, 4));
+        panel.setLayout(new GridLayout(1, 3));
 
-        JButton addCarButton = new JButton("Ajouter une voiture");
-        JButton resetButton = new JButton("Réinitialiser");
-        JLabel speedLabel = new JLabel("Vitesse: 50%");
+        JLabel avgTimeLabel = new JLabel("Temps moyen: 0s");
+        JLabel congestionLabel = new JLabel("Embouteillages: 0%");
+        JLabel fuelLabel = new JLabel("Consommation: 0L");
 
-        addCarButton.addActionListener(e -> {
-            Random random = new Random();
-            int startX = random.nextInt(COLS);
-            int startY = random.nextInt(ROWS);
-            Color color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
-            cars.add(new Car(startX, startY, color));
-        });
+        panel.add(avgTimeLabel);
+        panel.add(congestionLabel);
+        panel.add(fuelLabel);
 
-        resetButton.addActionListener(e -> resetSimulation());
-
-
-        panel.add(addCarButton);
-        panel.add(resetButton);
-
-        panel.add(speedLabel);
-
-        panel.setBorder(BorderFactory.createTitledBorder("Contrôles"));
+        panel.setBorder(BorderFactory.createTitledBorder("Statistiques en temps réel"));
         return panel;
-    }
-
-    private void resetSimulation() {
-        cars.clear();
-        initializeCars(5);
-    }
-
-    private JPanel createMapPanel() {
-        JPanel panel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                drawMap(g);
-                for (Car car : cars) {
-                    car.draw(g, cellSize);
-                }
-            }
-        };
-        panel.setPreferredSize(new Dimension(COLS * cellSize, ROWS * cellSize));
-        return panel;
-    }
-
-    private void drawMap(Graphics g) {
-        for (int i = 0; i < ROWS; i++) {
-            for (int j = 0; j < COLS; j++) {
-                int x = j * cellSize;
-                int y = i * cellSize;
-
-                g.setColor(Color.LIGHT_GRAY);
-                g.fillRect(x, y, cellSize, cellSize);
-
-                g.setColor(Color.GRAY);
-                g.drawRect(x, y, cellSize, cellSize);
-            }
-        }
     }
 
     private void zoom(boolean zoomIn, Point cursorPosition) {
@@ -261,53 +223,31 @@ public class TrafficSimulatorGUI extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(TrafficSimulatorGUI::new);
-    }
-
-    private static class Car {
-        private int x, y;
-        private float xPos, yPos;
-        private int targetX, targetY;
-        private Color color;
-        private float speed = 0.1f;
-
-        public Car(int x, int y, Color color) {
-            this.x = x;
-            this.y = y;
-            this.xPos = x;
-            this.yPos = y;
-            this.targetX = x;
-            this.targetY = y;
-            this.color = color;
+        // Créer une carte de 100x100 cases
+        CityMap cityMap = new CityMap(20, 20);
+    
+        // Ajouter des bâtiments partout sauf sur les routes
+        cityMap.setBuilding();
+    
+        // Ajouter des routes horizontales
+        for (int i = 0; i < 20; i++) {
+            cityMap.setRoad(new Position(i, 10), Direction.RIGHT, "Route Horizontale 1");
+            cityMap.setRoad(new Position(i, 11), Direction.RIGHT, "Route Horizontale 1");
+            cityMap.setRoad(new Position(i, 50), Direction.RIGHT, "Route Horizontale 2");
         }
-
-        public void moveRandomly() {
-            Random random = new Random();
-            int direction = random.nextInt(4);
-
-            switch (direction) {
-                case 0 -> { if (x > 0) targetX--; }
-                case 1 -> { if (x < COLS - 1) targetX++; }
-                case 2 -> { if (y > 0) targetY--; }
-                case 3 -> { if (y < ROWS - 1) targetY++; }
-            }
+    
+        // Ajouter des routes verticales
+        for (int i = 0; i < 20; i++) {
+            cityMap.setRoad(new Position(2, i), Direction.DOWN, "Route Verticale 1");
+            cityMap.setRoad(new Position(8, i), Direction.DOWN, "Route Verticale 2");
         }
+    
 
-        public void animate() {
-            xPos += (targetX - xPos) * speed;
-            yPos += (targetY - yPos) * speed;
-
-            if (Math.abs(xPos - targetX) < 0.1 && Math.abs(yPos - targetY) < 0.1) {
-                x = targetX;
-                y = targetY;
-            }
-        }
-
-        public void draw(Graphics g, int cellSize) {
-            g.setColor(color);
-            g.fillRect((int) (xPos * cellSize), (int) (yPos * cellSize), cellSize, cellSize);
-        }
-
-
+    
+        // Afficher la carte dans la console (pour vérification)
+        cityMap.displayMap();
+    
+        // Lancer l'interface graphique
+        SwingUtilities.invokeLater(() -> new TrafficSimulatorGUI(cityMap));
     }
 }
