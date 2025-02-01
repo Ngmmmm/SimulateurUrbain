@@ -25,9 +25,15 @@ public class TrafficSimulatorGUI extends JFrame {
         setJMenuBar(createMenuBar());
         setLocationRelativeTo(null);
         // Ajouter la carte
+        JPanel containerPanel = new JPanel(new GridBagLayout()); // Conteneur centré
         mapPanel = createMapPanel();
-        scrollPane = new JScrollPane(mapPanel);
+        containerPanel.add(mapPanel, new GridBagConstraints()); // Centrage automatique
+
+        scrollPane = new JScrollPane(containerPanel);
+        scrollPane.setPreferredSize(new Dimension(800, 600)); // Taille par défaut
+
         add(scrollPane, BorderLayout.CENTER);
+
 
         // Ajouter la barre des statistiques
         JPanel statsPanel = createStatsPanel();
