@@ -3,24 +3,24 @@ package Vue;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class TrafficSimulatorGUI extends JFrame {
 
-    // Taille de la carte
-    private static final int ROWS = 20; // Nombre de lignes
-    private static final int COLS = 20; // Nombre de colonnes
-    private JPanel mapPanel; // Panneau de la carte
-    private JScrollPane scrollPane; // Conteneur avec barre de défilement
-    private int cellSize = 40; // Taille des cases (modifiable pour zoomer/dézoomer)
-    private double zoomFactor = 1.0; // Facteur de zoom
+    private static final int ROWS = 100;
+    private static final int COLS = 100;
+    private JPanel mapPanel;
+    private JScrollPane scrollPane;
+    private int cellSize = 40;
+    private double zoomFactor = 1.0;
 
-    // Position initiale de la voiture
-    private int carX = 10; // Position en X (au centre)
-    private int carY = 10; // Position en Y (au centre)
-
-    // Timer pour déplacer la voiture
+    private List<Car> cars = new ArrayList<>();
     private Timer moveCarTimer;
+    private Timer animationTimer;
+    private Point lastDragPoint;
+    private boolean isPaused = false;
 
     public TrafficSimulatorGUI() {
         setTitle("Simulateur de gestion de trafic urbain");
@@ -28,70 +28,70 @@ public class TrafficSimulatorGUI extends JFrame {
         setSize(800, 600);
         setLayout(new BorderLayout());
 
-        // Ajouter le menu
         setJMenuBar(createMenuBar());
         setLocationRelativeTo(null);
 
-        // Ajouter la carte
-        JPanel containerPanel = new JPanel(new GridBagLayout()); // Conteneur centré
+        JPanel containerPanel = new JPanel(new GridBagLayout());
         mapPanel = createMapPanel();
-        containerPanel.add(mapPanel, new GridBagConstraints()); // Centrage automatique
+        containerPanel.add(mapPanel, new GridBagConstraints());
         scrollPane = new JScrollPane(containerPanel);
-        scrollPane.setPreferredSize(new Dimension(800, 600)); // Taille par défaut
+        scrollPane.setPreferredSize(new Dimension(800, 600));
+
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+        
         add(scrollPane, BorderLayout.CENTER);
 
-        // Ajouter la barre des statistiques
-        JPanel statsPanel = createStatsPanel();
-        add(statsPanel, BorderLayout.SOUTH);
+        JPanel controlPanel = createControlPanel();
+        add(controlPanel, BorderLayout.SOUTH);
 
-        // Ajouter l'écouteur pour zoomer avec la molette/trackpad
         mapPanel.addMouseWheelListener(createMouseWheelZoomListener());
+        mapPanel.addMouseListener(createMouseDragListener());
+        mapPanel.addMouseMotionListener(createMouseMotionListener());
 
-        // Démarrer la simulation de déplacement de la voiture
+        initializeCars(5); // Ajouter 5 voitures au démarrage
         startCarMovement();
+        startAnimation();
 
         setVisible(true);
     }
 
-    // Démarrer le déplacement de la voiture
+    private void initializeCars(int numberOfCars) {
+        Random random = new Random();
+        for (int i = 0; i < numberOfCars; i++) {
+            int startX = random.nextInt(COLS);
+            int startY = random.nextInt(ROWS);
+            Color color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
+            cars.add(new Car(startX, startY, color));
+        }
+    }
+
     private void startCarMovement() {
-        // Créer un timer qui met à jour la position de la voiture toutes les 500ms
-        moveCarTimer = new Timer(500, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                moveCarRandomly();
-                mapPanel.repaint(); // Redessiner la carte après chaque déplacement
+        moveCarTimer = new Timer(500, e -> {
+            if (!isPaused) {
+                for (Car car : cars) {
+                    car.moveRandomly();
+                }
             }
         });
         moveCarTimer.start();
     }
 
-    // Déplacer la voiture dans une direction aléatoire
-    private void moveCarRandomly() {
-        Random random = new Random();
-        int direction = random.nextInt(4); // Génère un nombre entre 0 et 3
-
-        switch (direction) {
-            case 0: // Gauche
-                if (carX > 0) carX--;
-                break;
-            case 1: // Droite
-                if (carX < COLS - 1) carX++;
-                break;
-            case 2: // Haut
-                if (carY > 0) carY--;
-                break;
-            case 3: // Bas
-                if (carY < ROWS - 1) carY++;
-                break;
-        }
+    private void startAnimation() {
+        animationTimer = new Timer(16, e -> {
+            if (!isPaused) {
+                for (Car car : cars) {
+                    car.animate();
+                }
+                mapPanel.repaint();
+            }
+        });
+        animationTimer.start();
     }
 
-    // Création de la barre de menu
     private JMenuBar createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
 
-        // Menu Fichier
         JMenu fileMenu = new JMenu("Fichier");
         JMenuItem saveItem = new JMenuItem("Sauvegarder");
         JMenuItem loadItem = new JMenuItem("Charger");
@@ -105,22 +105,26 @@ public class TrafficSimulatorGUI extends JFrame {
         fileMenu.add(exitItem);
         menuBar.add(fileMenu);
 
-        // Menu Simulation
         JMenu simulationMenu = new JMenu("Simulation");
         JMenuItem startItem = new JMenuItem("Démarrer");
         JMenuItem stopItem = new JMenuItem("Arrêter");
+        JMenuItem pauseItem = new JMenuItem("Pause");
+
+        startItem.addActionListener(e -> isPaused = false);
+        stopItem.addActionListener(e -> resetSimulation());
+        pauseItem.addActionListener(e -> isPaused = !isPaused);
 
         simulationMenu.add(startItem);
         simulationMenu.add(stopItem);
+        simulationMenu.add(pauseItem);
         menuBar.add(simulationMenu);
 
-        // Menu Affichage (pour zoom)
         JMenu viewMenu = new JMenu("Affichage");
         JMenuItem zoomInItem = new JMenuItem("Zoom avant");
         JMenuItem zoomOutItem = new JMenuItem("Zoom arrière");
 
-        zoomInItem.addActionListener(e -> zoom(true, null)); // Zoom avant
-        zoomOutItem.addActionListener(e -> zoom(false, null)); // Zoom arrière
+        zoomInItem.addActionListener(e -> zoom(true, null));
+        zoomOutItem.addActionListener(e -> zoom(false, null));
 
         viewMenu.add(zoomInItem);
         viewMenu.add(zoomOutItem);
@@ -129,56 +133,80 @@ public class TrafficSimulatorGUI extends JFrame {
         return menuBar;
     }
 
-    // Création du panneau de la carte
+    private JPanel createControlPanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(1, 4));
+
+        JButton addCarButton = new JButton("Ajouter une voiture");
+        JButton resetButton = new JButton("Réinitialiser");
+        JLabel speedLabel = new JLabel("Vitesse: 50%");
+
+        addCarButton.addActionListener(e -> {
+            Random random = new Random();
+            int startX = random.nextInt(COLS);
+            int startY = random.nextInt(ROWS);
+            Color color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
+            cars.add(new Car(startX, startY, color));
+        });
+
+        resetButton.addActionListener(e -> resetSimulation());
+
+
+        panel.add(addCarButton);
+        panel.add(resetButton);
+
+        panel.add(speedLabel);
+
+        panel.setBorder(BorderFactory.createTitledBorder("Contrôles"));
+        return panel;
+    }
+
+    private void resetSimulation() {
+        cars.clear();
+        initializeCars(5);
+    }
+
     private JPanel createMapPanel() {
         JPanel panel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                drawMap(g); // Redessiner la carte
+                drawMap(g);
+                for (Car car : cars) {
+                    car.draw(g, cellSize);
+                }
             }
         };
-        panel.setPreferredSize(new Dimension(COLS * cellSize, ROWS * cellSize)); // Taille initiale
+        panel.setPreferredSize(new Dimension(COLS * cellSize, ROWS * cellSize));
         return panel;
     }
 
-    // Redessiner la carte
     private void drawMap(Graphics g) {
-        // Dessiner les cases
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLS; j++) {
                 int x = j * cellSize;
                 int y = i * cellSize;
 
-                g.setColor(Color.LIGHT_GRAY); // Couleur par défaut
+                g.setColor(Color.LIGHT_GRAY);
                 g.fillRect(x, y, cellSize, cellSize);
 
-                g.setColor(Color.GRAY); // Bordure des cases
+                g.setColor(Color.GRAY);
                 g.drawRect(x, y, cellSize, cellSize);
             }
         }
-
-        // Dessiner la voiture (un carré rouge)
-        int carXPos = carX * cellSize;
-        int carYPos = carY * cellSize;
-        g.setColor(Color.RED); // Couleur de la voiture
-        g.fillRect(carXPos, carYPos, cellSize, cellSize); // Dessiner le carré rouge
     }
 
-    // Gestion du zoom (true pour zoom avant, false pour zoom arrière)
     private void zoom(boolean zoomIn, Point cursorPosition) {
         if (zoomIn) {
-            zoomFactor += 0.1; // Augmente le facteur de zoom
-        } else if (zoomFactor > 0.2) { // Empêche le zoom arrière excessif
+            zoomFactor += 0.1;
+        } else if (zoomFactor > 0.2) {
             zoomFactor -= 0.1;
         }
 
-        // Mettre à jour la taille des cases et la carte
         cellSize = (int) (40 * zoomFactor);
         mapPanel.setPreferredSize(new Dimension(COLS * cellSize, ROWS * cellSize));
-        mapPanel.revalidate(); // Ajuste la taille du panneau
+        mapPanel.revalidate();
 
-        // Centrer la carte autour de la position du curseur
         if (cursorPosition != null) {
             JScrollBar horizontal = scrollPane.getHorizontalScrollBar();
             JScrollBar vertical = scrollPane.getVerticalScrollBar();
@@ -190,42 +218,96 @@ public class TrafficSimulatorGUI extends JFrame {
             vertical.setValue(Math.max(newCenterY - scrollPane.getHeight() / 2, 0));
         }
 
-        mapPanel.repaint(); // Redessine la carte
+        mapPanel.repaint();
     }
 
-    // Création d'un écouteur pour zoomer avec la molette/trackpad
     private MouseWheelListener createMouseWheelZoomListener() {
-        return new MouseWheelListener() {
-            @Override
-            public void mouseWheelMoved(MouseWheelEvent e) {
-                Point cursorPosition = e.getPoint(); // Position du curseur
-                if (e.getPreciseWheelRotation() < 0) {
-                    zoom(true, cursorPosition); // Zoom avant
-                } else {
-                    zoom(false, cursorPosition); // Zoom arrière
-                }
+        return e -> {
+            Point cursorPosition = e.getPoint();
+            if (e.getPreciseWheelRotation() < 0) {
+                zoom(true, cursorPosition);
+            } else {
+                zoom(false, cursorPosition);
             }
         };
     }
 
-    // Création de la barre des statistiques
-    private JPanel createStatsPanel() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(1, 3));
+    private MouseListener createMouseDragListener() {
+        return new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                lastDragPoint = e.getPoint();
+            }
+        };
+    }
 
-        JLabel avgTimeLabel = new JLabel("Temps moyen: 0s");
-        JLabel congestionLabel = new JLabel("Embouteillages: 0%");
-        JLabel fuelLabel = new JLabel("Consommation: 0L");
+    private MouseMotionListener createMouseMotionListener() {
+        return new MouseMotionAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if (lastDragPoint != null) {
+                    JScrollBar horizontal = scrollPane.getHorizontalScrollBar();
+                    JScrollBar vertical = scrollPane.getVerticalScrollBar();
 
-        panel.add(avgTimeLabel);
-        panel.add(congestionLabel);
-        panel.add(fuelLabel);
+                    int deltaX = lastDragPoint.x - e.getX();
+                    int deltaY = lastDragPoint.y - e.getY();
 
-        panel.setBorder(BorderFactory.createTitledBorder("Statistiques en temps réel"));
-        return panel;
+                    horizontal.setValue(horizontal.getValue() + deltaX);
+                    vertical.setValue(vertical.getValue() + deltaY);
+                }
+                lastDragPoint = e.getPoint();
+            }
+        };
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(TrafficSimulatorGUI::new);
+    }
+
+    private static class Car {
+        private int x, y;
+        private float xPos, yPos;
+        private int targetX, targetY;
+        private Color color;
+        private float speed = 0.1f;
+
+        public Car(int x, int y, Color color) {
+            this.x = x;
+            this.y = y;
+            this.xPos = x;
+            this.yPos = y;
+            this.targetX = x;
+            this.targetY = y;
+            this.color = color;
+        }
+
+        public void moveRandomly() {
+            Random random = new Random();
+            int direction = random.nextInt(4);
+
+            switch (direction) {
+                case 0 -> { if (x > 0) targetX--; }
+                case 1 -> { if (x < COLS - 1) targetX++; }
+                case 2 -> { if (y > 0) targetY--; }
+                case 3 -> { if (y < ROWS - 1) targetY++; }
+            }
+        }
+
+        public void animate() {
+            xPos += (targetX - xPos) * speed;
+            yPos += (targetY - yPos) * speed;
+
+            if (Math.abs(xPos - targetX) < 0.1 && Math.abs(yPos - targetY) < 0.1) {
+                x = targetX;
+                y = targetY;
+            }
+        }
+
+        public void draw(Graphics g, int cellSize) {
+            g.setColor(color);
+            g.fillRect((int) (xPos * cellSize), (int) (yPos * cellSize), cellSize, cellSize);
+        }
+
+
     }
 }
