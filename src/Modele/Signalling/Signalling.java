@@ -2,22 +2,22 @@ package Modele.Signalling;
 
 import Modele.Position;
 
-public class Signalling {
-
-
-    private Position pos;
-
-    public Signalling(Position pos){
-        this.pos = pos;
-        
+public abstract class Signalling {
+    protected Position position;
+    
+    public Signalling(Position position) {
+        this.position = position;
     }
     
-    public Position getPos() {
-        return this.pos;
+    public Position getPosition() {
+        return position;
     }
-
-    public void setPos(Position pos) {
-        this.pos = pos;
+    
+    public void setPosition(Position position) {
+        this.position = position;
     }
-
+    
+    public abstract String getType();
 }
+
+
