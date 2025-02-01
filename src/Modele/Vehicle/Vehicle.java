@@ -10,13 +10,15 @@ public abstract class Vehicle {
     protected Direction direction;
     protected boolean isMoving;
     protected float fuel;
+    protected float fuelConso;
 
-    public Vehicle(String id, double speed, Position position, Direction direction) {
+    public Vehicle(String id, double speed, Position position, Direction direction, float fuelConso) {
         this.id = id;
         this.speed = speed;
         this.position = position;
         this.direction = direction;
         this.isMoving = false;
+        this.fuelConso = fuelConso;
         this.fuel = 100;
     }
 
@@ -29,49 +31,67 @@ public abstract class Vehicle {
     }
 
     public void move(Direction d) {
-        changeDirection(d);
-        position = d.move(position);
+        if (fuel > 0) {
+            changeDirection(d);
+            position = d.move(position);
+            consumeFuel();
+        } else {
+            System.out.println("No fuel");
+            stop();
+        }
     }
 
     public void changeDirection(Direction newDirection) {
         this.direction = newDirection;
     }
 
-    // Getters & Setters
-    public String getId() {
-        return id;
+    public void consumeFuel() {
+        fuel -= fuelConso;
+        if (fuel < 0) {
+            fuel = 0;
+        }
     }
 
-    public double getSpeed() {
-        return speed;
+    public void refuel(float quantity) {
+        fuel += quantity;
+        if (fuel > 100) {
+            fuel = 100;
+        }
     }
 
-    public void setSpeed(double speed) {
-        this.speed = speed;
+    /*
+    public void accelerate(double amount) {
+        this.speed += amount;
     }
-
-    public Position getPosition() {
-        return position;
+    
+    public void brake(double amount) {
+        this.speed -= amount;
+        if (this.speed < 0) {
+            this.speed = 0;
+        }
     }
+    */
 
+    public float getFuel() {return this.fuel;}
+    public String getId() {return this.id;}
+    public double getSpeed() {return this.speed;}
+    public Position getPosition() {return this.position;}
+    public Direction getDirection() {return this.direction;}
+    public boolean isMoving() {return this.isMoving;}
+    public void setSpeed(double speed) {this.speed = speed;}
 
-    public Direction getDirection() {
-        return direction;
-    }
-
-    public boolean isMoving() {
-        return isMoving;
-    }
 
     @Override
     public String toString() {
         return "Vehicle{" +
                 "id='" + id + '\'' +
                 ", speed=" + speed +
-                ", positionX=" + position.getX()+
-                ", positionY=" + position.getY() +
+                ", position=(" + position.getX() + ", " + position.getY() + ")" +
                 ", direction=" + direction +
                 ", isMoving=" + isMoving +
+                ", fuel=" + fuel + "/" + 100 +
+                ", fuelConsumption=" + fuelConso +
                 '}';
     }
+
 }

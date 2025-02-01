@@ -2,8 +2,8 @@ package Vue;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
+import java.awt.event.*;
+import java.util.Random;
 
 public class TrafficSimulatorGUI extends JFrame {
 
@@ -15,6 +15,13 @@ public class TrafficSimulatorGUI extends JFrame {
     private int cellSize = 40; // Taille des cases (modifiable pour zoomer/dézoomer)
     private double zoomFactor = 1.0; // Facteur de zoom
 
+    // Position initiale de la voiture
+    private int carX = 10; // Position en X (au centre)
+    private int carY = 10; // Position en Y (au centre)
+
+    // Timer pour déplacer la voiture
+    private Timer moveCarTimer;
+
     public TrafficSimulatorGUI() {
         setTitle("Simulateur de gestion de trafic urbain");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -24,9 +31,13 @@ public class TrafficSimulatorGUI extends JFrame {
         // Ajouter le menu
         setJMenuBar(createMenuBar());
         setLocationRelativeTo(null);
+
         // Ajouter la carte
+        JPanel containerPanel = new JPanel(new GridBagLayout()); // Conteneur centré
         mapPanel = createMapPanel();
-        scrollPane = new JScrollPane(mapPanel);
+        containerPanel.add(mapPanel, new GridBagConstraints()); // Centrage automatique
+        scrollPane = new JScrollPane(containerPanel);
+        scrollPane.setPreferredSize(new Dimension(800, 600)); // Taille par défaut
         add(scrollPane, BorderLayout.CENTER);
 
         // Ajouter la barre des statistiques
@@ -36,7 +47,44 @@ public class TrafficSimulatorGUI extends JFrame {
         // Ajouter l'écouteur pour zoomer avec la molette/trackpad
         mapPanel.addMouseWheelListener(createMouseWheelZoomListener());
 
+        // Démarrer la simulation de déplacement de la voiture
+        startCarMovement();
+
         setVisible(true);
+    }
+
+    // Démarrer le déplacement de la voiture
+    private void startCarMovement() {
+        // Créer un timer qui met à jour la position de la voiture toutes les 500ms
+        moveCarTimer = new Timer(500, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                moveCarRandomly();
+                mapPanel.repaint(); // Redessiner la carte après chaque déplacement
+            }
+        });
+        moveCarTimer.start();
+    }
+
+    // Déplacer la voiture dans une direction aléatoire
+    private void moveCarRandomly() {
+        Random random = new Random();
+        int direction = random.nextInt(4); // Génère un nombre entre 0 et 3
+
+        switch (direction) {
+            case 0: // Gauche
+                if (carX > 0) carX--;
+                break;
+            case 1: // Droite
+                if (carX < COLS - 1) carX++;
+                break;
+            case 2: // Haut
+                if (carY > 0) carY--;
+                break;
+            case 3: // Bas
+                if (carY < ROWS - 1) carY++;
+                break;
+        }
     }
 
     // Création de la barre de menu
@@ -96,6 +144,7 @@ public class TrafficSimulatorGUI extends JFrame {
 
     // Redessiner la carte
     private void drawMap(Graphics g) {
+        // Dessiner les cases
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLS; j++) {
                 int x = j * cellSize;
@@ -108,6 +157,12 @@ public class TrafficSimulatorGUI extends JFrame {
                 g.drawRect(x, y, cellSize, cellSize);
             }
         }
+
+        // Dessiner la voiture (un carré rouge)
+        int carXPos = carX * cellSize;
+        int carYPos = carY * cellSize;
+        g.setColor(Color.RED); // Couleur de la voiture
+        g.fillRect(carXPos, carYPos, cellSize, cellSize); // Dessiner le carré rouge
     }
 
     // Gestion du zoom (true pour zoom avant, false pour zoom arrière)
