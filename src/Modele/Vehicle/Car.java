@@ -4,24 +4,24 @@ import Modele.Direction;
 import Modele.Position;
 
 public class Car extends Vehicle {
-    private int numberOfDoors;
-
-    public Car(String id, double speed, Position position, Direction direction, int numberOfDoors) {
-        super(id, speed, position, direction);
-        this.numberOfDoors = numberOfDoors;
+    
+    public Car(String id, double speed, Position position, Direction direction, int numberOfDoors, float fuelConso) {
+        super(id, speed, position, direction, 2);
     }
 
-
-    public int getNumberOfDoors() {
-        return numberOfDoors;
-    }
-
-    public void setNumberOfDoors(int numberOfDoors) {
-        this.numberOfDoors = numberOfDoors;
+    @Override
+    public void move(Direction d) {
+        if (fuel > 0) {
+            super.move(d);
+            consumeFuel();
+        } else {
+            System.out.println("No fuel");
+            stop();
+        }
     }
 
     @Override
     public String toString() {
-        return super.toString() + ", numberOfDoors=" + numberOfDoors + '}';
+        return super.toString() + ", fuel=" + fuel;
     }
 }
