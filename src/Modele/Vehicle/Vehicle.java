@@ -31,8 +31,14 @@ public abstract class Vehicle {
     }
 
     public void move(Direction d) {
-        changeDirection(d);
-        position = d.move(position);
+        if (fuel > 0) {
+            changeDirection(d);
+            position = d.move(position);
+            consumeFuel();
+        } else {
+            System.out.println("No fuel");
+            stop();
+        }
     }
 
     public void changeDirection(Direction newDirection) {
@@ -53,6 +59,7 @@ public abstract class Vehicle {
         }
     }
 
+    /*
     public void accelerate(double amount) {
         this.speed += amount;
     }
@@ -62,7 +69,8 @@ public abstract class Vehicle {
         if (this.speed < 0) {
             this.speed = 0;
         }
-    }    
+    }
+    */
 
     public float getFuel() {return this.fuel;}
     public String getId() {return this.id;}
