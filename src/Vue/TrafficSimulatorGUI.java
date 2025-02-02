@@ -10,6 +10,7 @@ import Modele.Case;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 
 
 public class TrafficSimulatorGUI extends JFrame {
@@ -18,7 +19,7 @@ public class TrafficSimulatorGUI extends JFrame {
     private static final int COLS = 20;
     private JPanel mapPanel;
     private JScrollPane scrollPane;
-    private int cellSize = 40;
+    private int cellSize = 100;
     private double zoomFactor = 1.0;
 
     private CityMap cityMap; // Référence à la carte de la ville
@@ -67,42 +68,59 @@ public class TrafficSimulatorGUI extends JFrame {
         return panel;
     }
 
+    //dessine la case selon sa place et ses propriétés
+    private void drawCase(Graphics g, int i, int j, Case currentCase){
+        int x = j * cellSize;
+        int y = i * cellSize;
+
+        // Dessiner la route si elle existe
+        if (currentCase.getRoad() != null) {
+            g.drawImage(Image.imgRoad, x, y, null);
+                    
+            // Dessiner le véhicule si il existe
+            if (currentCase.getVehicle() != null) {
+                g.drawImage(Image.imgCar , x, y, null);
+            }
+
+            // Dessiner un signalement si il existe
+            if (currentCase.getSignalling() != null){
+                BufferedImage img = switch (currentCase.getSignalling().getType()){
+                    case "TrafficLights" -> Image.imgTrafficLight;
+                    case "Stop" -> Image.imgStop;
+                    case "NoEntry" -> Image.imgNoEntry;
+                    default -> null;
+                };
+                g.drawImage(img, x, y, null);
+            }
+        }
+        // Dessiner le bâtiment si il existe
+        else if (currentCase.getBuilding() != null) {
+            g.drawImage(Image.imgBuilding, x, y, null);
+        }
+ 
+        // Dessiner une case vide
+        else {
+            g.setColor(Color.LIGHT_GRAY);
+            g.fillRect(x, y, cellSize, cellSize);
+        }
+                
+        // Dessiner les bordures
+        g.setColor(Color.BLACK);
+        g.drawRect(x, y, cellSize, cellSize);
+
+    }
+
     private void drawMap(Graphics g) {
         Case[][] grid = cityMap.getGrid();
+        Image.loadImg();
 
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLS; j++) {
-                int x = j * cellSize;
-                int y = i * cellSize;
 
-                Case currentCase = grid[i][j];
-
-                // Dessiner la route si elle existe
-                if (currentCase.getRoad() != null) {
-                    g.setColor(Color.GRAY);
-                    g.fillRect(x, y, cellSize, cellSize);
-                }
-                // Dessiner le bâtiment si il existe
-                else if (currentCase.getBuilding() != null) {
-                    g.setColor(Color.DARK_GRAY);
-                    g.fillRect(x, y, cellSize, cellSize);
-                }
-                // Dessiner le véhicule si il existe
-                else if (currentCase.getVehicle() != null) {
-                    g.setColor(Color.RED);
-                    g.fillRect(x, y, cellSize, cellSize);
-                }
-                // Dessiner une case vide
-                else {
-                    g.setColor(Color.LIGHT_GRAY);
-                    g.fillRect(x, y, cellSize, cellSize);
-                }
-
-                // Dessiner les bordures
-                g.setColor(Color.BLACK);
-                g.drawRect(x, y, cellSize, cellSize);
+                drawCase(g, i, j, grid[i][j]);
             }
         }
+
     }
 
     private JMenuBar createMenuBar() {

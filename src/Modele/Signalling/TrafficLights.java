@@ -35,4 +35,6 @@ class TrafficLights extends Signalling {
     public String getType() {
         return "TrafficLights";
     }
+
+
 }

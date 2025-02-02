@@ -2,6 +2,7 @@ package Modele.Signalling;
 
 import Modele.Position;
 
+
 public abstract class Signalling {
     protected Position position;
     
@@ -18,6 +19,7 @@ public abstract class Signalling {
     }
     
     public abstract String getType();
+
 }
 
 

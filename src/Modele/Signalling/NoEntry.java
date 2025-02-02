@@ -12,4 +12,5 @@ class NoEntry extends Signalling {
     public String getType() {
         return "NoEntry";
     }
+
 }
