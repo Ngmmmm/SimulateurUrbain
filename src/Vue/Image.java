@@ -1,4 +1,4 @@
-package Modele;
+package Vue;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -30,28 +30,5 @@ public class Image {
         }
     }
 
-    public static BufferedImage getCar(){
-        return imgCar;
-    }
-
-    public static BufferedImage getBuilding(){
-        return imgBuilding;
-    }
-
-    public static BufferedImage getRoad(){
-        return imgRoad;
-    }
-
-    public static BufferedImage getStop(){
-        return imgStop;
-    }
-
-    public static BufferedImage getTrafficLight(){
-        return imgTrafficLight;
-    }
-
-    public static BufferedImage getNoEntry(){
-        return imgNoEntry;
-    }
     
 }

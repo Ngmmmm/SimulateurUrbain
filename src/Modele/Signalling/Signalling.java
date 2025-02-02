@@ -1,6 +1,5 @@
 package Modele.Signalling;
 
-import java.awt.image.BufferedImage;
 import Modele.Position;
 
 
@@ -21,7 +20,6 @@ public abstract class Signalling {
     
     public abstract String getType();
 
-    public abstract BufferedImage getImg();
 }
 
 

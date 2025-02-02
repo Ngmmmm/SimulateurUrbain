@@ -2,7 +2,6 @@ package Vue;
 
 import Modele.CityMap;
 import Modele.Direction;
-import Modele.Image;
 import Modele.Position;
 import Modele.AffichageTemp;
 import Modele.Case;
@@ -11,6 +10,7 @@ import Modele.Case;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 
 
 public class TrafficSimulatorGUI extends JFrame {
@@ -75,21 +75,27 @@ public class TrafficSimulatorGUI extends JFrame {
 
         // Dessiner la route si elle existe
         if (currentCase.getRoad() != null) {
-            g.drawImage(Image.getRoad(), x, y, null);
+            g.drawImage(Image.imgRoad, x, y, null);
                     
             // Dessiner le véhicule si il existe
             if (currentCase.getVehicle() != null) {
-                g.drawImage(Image.getCar(), x, y, null);
+                g.drawImage(Image.imgCar , x, y, null);
             }
 
             // Dessiner un signalement si il existe
             if (currentCase.getSignalling() != null){
-                g.drawImage((currentCase.getSignalling()).getImg(), x, y, null);
+                BufferedImage img = switch (currentCase.getSignalling().getType()){
+                    case "TrafficLights" -> Image.imgTrafficLight;
+                    case "Stop" -> Image.imgStop;
+                    case "NoEntry" -> Image.imgNoEntry;
+                    default -> null;
+                };
+                g.drawImage(img, x, y, null);
             }
         }
         // Dessiner le bâtiment si il existe
         else if (currentCase.getBuilding() != null) {
-            g.drawImage(Image.getBuilding(), x, y, null);
+            g.drawImage(Image.imgBuilding, x, y, null);
         }
  
         // Dessiner une case vide
