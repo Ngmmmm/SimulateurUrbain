@@ -1,6 +1,8 @@
 package Modele.Signalling;
 
+import java.awt.image.BufferedImage;
 import Modele.Position;
+import Modele.Image;
 
 class TrafficLights extends Signalling {
     private enum LightColor {RED, ORANGE, GREEN}
@@ -35,4 +37,9 @@ class TrafficLights extends Signalling {
     public String getType() {
         return "TrafficLights";
     }
+
+    public BufferedImage getImg(){
+        return Image.getTrafficLight();
+    }
+
 }
