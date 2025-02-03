@@ -2,6 +2,7 @@ package Modele.Vehicle;
 
 import Modele.Direction;
 import Modele.Position;
+import java.awt.image.BufferedImage;
 
 public abstract class Vehicle {
     protected String id;
@@ -11,6 +12,7 @@ public abstract class Vehicle {
     protected boolean isMoving;
     protected float fuel;
     protected float fuelConso;
+    protected BufferedImage img;
 
     public Vehicle(String id, double speed, Position position, Direction direction, float fuelConso) {
         this.id = id;
@@ -92,6 +94,24 @@ public abstract class Vehicle {
                 ", fuel=" + fuel + "/" + 100 +
                 ", fuelConsumption=" + fuelConso +
                 '}';
+    }
+
+
+
+    public void nextPositionLeft(){
+        position.setX(position.getX() - 1);
+    }
+
+    public void nextPositionRight(){
+        position.setX(position.getX() + 1);
+    }
+
+    public void nextPositionUp(){
+        position.setY(position.getY() + 1);
+    }
+
+    public void nextPositionDown(){
+        position.setY(position.getY() - 1);
     }
 
 }
