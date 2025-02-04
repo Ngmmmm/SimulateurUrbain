@@ -1,18 +1,21 @@
 package Modele;
 
 import Modele.Vehicle.Vehicle;
+import Vue.UpdateInter;
 
 
 public class CityMap {
     private int rows;
     private int cols;
+    private UpdateInter update;
     private Case[][] grid; // Grille représentant la carte
 
 
-    public CityMap(int rows, int cols) {
+    public CityMap(int rows, int cols, UpdateInter update) {
         this.rows = rows;
         this.cols = cols;
         this.grid = new Case[rows][cols];
+        this.update = update;
         initializeGrid();
     }
 

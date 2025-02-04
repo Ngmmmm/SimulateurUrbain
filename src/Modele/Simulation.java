@@ -1,13 +1,13 @@
 package Modele;
-
+import Vue.UpdateInter;
 
 
 public class Simulation {
     private CityMap cityMap;
 
-    public Simulation() {
+    public Simulation(UpdateInter update) {
         // Créer une carte de 10x10
-        this.cityMap = new CityMap(10, 10);
+        this.cityMap = new CityMap(50, 50, update);
         initializeMap();
     }
 
@@ -21,14 +21,5 @@ public class Simulation {
 
     }
 
-
-
-    public static void main(String [] args){
-        Simulation s = new Simulation();
-
-        AffichageTemp.affiche(s.cityMap.getGrid());
-
-
-    }
 
 }

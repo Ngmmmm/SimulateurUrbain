@@ -13,7 +13,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 
 
-public class TrafficSimulatorGUI extends JFrame {
+public class TrafficSimulatorGUI extends JFrame implements UpdateInter {
 
     private static final int ROWS = 20;
     private static final int COLS = 20;
@@ -22,11 +22,13 @@ public class TrafficSimulatorGUI extends JFrame {
     private int cellSize = 100;
     private double zoomFactor = 1.0;
 
-    private CityMap cityMap; // Référence à la carte de la ville
-    private Point lastDragPoint; // Ajoutez cette ligne pour déclarer lastDragPoint
+    private CityMap cityMap;
+    private Point lastDragPoint;
+    private Case[][] grid; // Stockage de la grille pour mises à jour dynamiques
 
-    public TrafficSimulatorGUI(CityMap cityMap) {
+    public TrafficSimulatorGUI(CityMap cityMap, Case[][] grid) {
         this.cityMap = cityMap;
+        this.grid = grid; // Initialiser la grille
 
         setTitle("Simulateur de gestion de trafic urbain");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -57,34 +59,28 @@ public class TrafficSimulatorGUI extends JFrame {
     }
 
     private JPanel createMapPanel() {
-        JPanel panel = new JPanel() {
+        return new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 drawMap(g);
             }
         };
-        panel.setPreferredSize(new Dimension(COLS * cellSize, ROWS * cellSize));
-        return panel;
     }
 
-    //dessine la case selon sa place et ses propriétés
-    private void drawCase(Graphics g, int i, int j, Case currentCase){
+    private void drawCase(Graphics g, int i, int j, Case currentCase) {
         int x = j * cellSize;
         int y = i * cellSize;
 
-        // Dessiner la route si elle existe
         if (currentCase.getRoad() != null) {
             g.drawImage(Image.imgRoad, x, y, null);
-                    
-            // Dessiner le véhicule si il existe
+
             if (currentCase.getVehicle() != null) {
-                g.drawImage(Image.imgCar , x, y, null);
+                g.drawImage(Image.imgCar, x, y, null);
             }
 
-            // Dessiner un signalement si il existe
-            if (currentCase.getSignalling() != null){
-                BufferedImage img = switch (currentCase.getSignalling().getType()){
+            if (currentCase.getSignalling() != null) {
+                BufferedImage img = switch (currentCase.getSignalling().getType()) {
                     case "TrafficLights" -> Image.imgTrafficLight;
                     case "Stop" -> Image.imgStop;
                     case "NoEntry" -> Image.imgNoEntry;
@@ -92,36 +88,39 @@ public class TrafficSimulatorGUI extends JFrame {
                 };
                 g.drawImage(img, x, y, null);
             }
-        }
-        // Dessiner le bâtiment si il existe
-        else if (currentCase.getBuilding() != null) {
+        } else if (currentCase.getBuilding() != null) {
             g.drawImage(Image.imgBuilding, x, y, null);
-        }
- 
-        // Dessiner une case vide
-        else {
+        } else {
             g.setColor(Color.LIGHT_GRAY);
             g.fillRect(x, y, cellSize, cellSize);
         }
-                
-        // Dessiner les bordures
+
         g.setColor(Color.BLACK);
         g.drawRect(x, y, cellSize, cellSize);
-
     }
 
     private void drawMap(Graphics g) {
-        Case[][] grid = cityMap.getGrid();
+        if (grid == null) return; // Ne rien dessiner si grid est null
         Image.loadImg();
-
+        
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLS; j++) {
-
-                drawCase(g, i, j, grid[i][j]);
+                if (grid[i][j] != null) { // Vérifie que la case existe
+                    drawCase(g, i, j, grid[i][j]);
+                }
             }
         }
-
     }
+    
+
+    @Override
+    public void update(Case[][] newGrid) {
+        this.grid = newGrid; // Mettre à jour la grille
+        this.drawMap(getGraphics());
+        mapPanel.repaint(); // Redessiner la carte avec les nouvelles données
+    }
+
+
 
     private JMenuBar createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
@@ -241,32 +240,34 @@ public class TrafficSimulatorGUI extends JFrame {
         };
     }
 
-    public static void main(String[] args) {
-        // Créer une carte de 100x100 cases
-        CityMap cityMap = new CityMap(20, 20);
-    
-        // Ajouter des bâtiments partout sauf sur les routes
-        cityMap.setBuilding();
-    
-        // Ajouter des routes horizontales
-        for (int i = 0; i < 20; i++) {
-            cityMap.setRoad(new Position(i, 10), Direction.RIGHT, "Route Horizontale 1");
-            cityMap.setRoad(new Position(i, 11), Direction.RIGHT, "Route Horizontale 1");
-            cityMap.setRoad(new Position(i, 50), Direction.RIGHT, "Route Horizontale 2");
-        }
-    
-        // Ajouter des routes verticales
-        for (int i = 0; i < 20; i++) {
-            cityMap.setRoad(new Position(2, i), Direction.DOWN, "Route Verticale 1");
-            cityMap.setRoad(new Position(8, i), Direction.DOWN, "Route Verticale 2");
-        }
-    
 
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            // 1. Créer l'interface graphique avec une grille vide (null)
+            TrafficSimulatorGUI gui = new TrafficSimulatorGUI(null, null);
     
-        // Afficher la carte dans la console (pour vérification)
-        AffichageTemp.affiche(cityMap.getGrid());  
-          
-        // Lancer l'interface graphique
-        SwingUtilities.invokeLater(() -> new TrafficSimulatorGUI(cityMap));
+            // 2. Créer CityMap et y associer l'interface pour la mise à jour
+            CityMap cityMap = new CityMap(50, 50, gui);
+    
+            // 3. Ajouter des bâtiments et routes
+            cityMap.setBuilding();
+    
+            for (int i = 0; i < 20; i++) {
+                cityMap.setRoad(new Position(i, 10), Direction.RIGHT, "Route Horizontale 1");
+                cityMap.setRoad(new Position(i, 11), Direction.RIGHT, "Route Horizontale 1");
+                cityMap.setRoad(new Position(i, 15), Direction.RIGHT, "Route Horizontale 2");
+            }
+    
+            for (int i = 0; i < 20; i++) {
+                cityMap.setRoad(new Position(2, i), Direction.DOWN, "Route Verticale 1");
+                cityMap.setRoad(new Position(8, i), Direction.DOWN, "Route Verticale 2");
+            }
+    
+            // 4. Mettre à jour la grille et redessiner l'interface
+            gui.update(cityMap.getGrid());
+        });
     }
+    
+    
 }
