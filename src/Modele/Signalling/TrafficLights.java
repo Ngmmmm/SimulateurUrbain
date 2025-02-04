@@ -2,7 +2,7 @@ package Modele.Signalling;
 
 import Modele.Position;
 
-class TrafficLights extends Signalling {
+public class TrafficLights extends Signalling {
     private enum LightColor {RED, ORANGE, GREEN}
     private LightColor color;
     
