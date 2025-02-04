@@ -2,7 +2,7 @@ package Modele.Signalling;
 
 import Modele.Position;
 
-class Stop extends Signalling {
+public class Stop extends Signalling {
     
     public Stop(Position position) {
         super(position);

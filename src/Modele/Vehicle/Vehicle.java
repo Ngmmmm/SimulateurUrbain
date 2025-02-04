@@ -1,7 +1,12 @@
 package Modele.Vehicle;
 
+import Modele.Case;
 import Modele.Direction;
 import Modele.Position;
+import Modele.Signalling.NoEntry;
+import Modele.Signalling.Signalling;
+import Modele.Signalling.Stop;
+import Modele.Signalling.TrafficLights;
 import java.awt.image.BufferedImage;
 
 public abstract class Vehicle {
@@ -13,8 +18,9 @@ public abstract class Vehicle {
     protected float fuel;
     protected float fuelConso;
     protected BufferedImage img;
+    protected Case[][] map;
 
-    public Vehicle(String id, double speed, Position position, Direction direction, float fuelConso) {
+    public Vehicle(String id, double speed, Position position, Direction direction, float fuelConso, Case[][] map) {
         this.id = id;
         this.speed = speed;
         this.position = position;
@@ -22,6 +28,7 @@ public abstract class Vehicle {
         this.isMoving = false;
         this.fuelConso = fuelConso;
         this.fuel = 100;
+        this.map = map;
     }
 
     public void start() {
@@ -98,12 +105,57 @@ public abstract class Vehicle {
 
 
 
-    public void nextPosition(){
-        position = direction.move(position);
+    public Position nextPosition(){
+        return direction.move(position);
     }
 
     public void tourner(Direction direction){
         this.direction = direction;
     }
+
+    public Case getCase(Position pos){
+        return map[pos.getX()][pos.getY()];
+    }
+
+    public boolean nextCaseIsValid(){
+        Case next = getCase(nextPosition());
+        return next.isEmpty();
+    }
+
+    public boolean signallingOk(Case act){
+        Signalling signal = act.getSignalling();
+        if(signal != null){
+            if(signal instanceof TrafficLights trafficLights){
+                if (trafficLights.getColor().equals("RED")){
+                    return false;
+                }
+            }else if(signal instanceof Stop){
+                if(checkCaseForSignalling() != null){
+                    if(getCase(checkCaseForSignalling()).isEmpty()){
+                        return true;
+                    }
+                }
+
+            }else return !(signal instanceof NoEntry);
+        }
+        return true;
+    }
+
+    public void moove(){
+        Case act = getCase(position);
+        if (nextCaseIsValid()){
+            if(act.getSignalling() == null || signallingOk(act)){
+                act.setVehicle(null);
+                position = nextPosition();
+                map[position.getX()][position.getY()].setVehicle(this);
+            }
+        }
+    }
+
+    public Position checkCaseForSignalling(){
+        return position.checkPosForSignalling(direction);
+    }
+
+    
 
 }

@@ -108,5 +108,9 @@ public class Case{
         
     }
 
+    public boolean isEmpty(){
+        return (this.vehicle == null && this.building == null);
+    }
+
 
 }
