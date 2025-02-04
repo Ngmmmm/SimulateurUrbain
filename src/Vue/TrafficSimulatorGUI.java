@@ -1,22 +1,19 @@
 package Vue;
 
-import Modele.CityMap;
-import Modele.Direction;
-import Modele.Position;
 import Modele.AffichageTemp;
 import Modele.Case;
-
-
-import javax.swing.*;
+import Modele.CityMap;
+import Modele.Simulation;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import javax.swing.*;
 
 
 public class TrafficSimulatorGUI extends JFrame {
 
-    private static final int ROWS = 20;
-    private static final int COLS = 20;
+    private static final int ROWS = 50;
+    private static final int COLS = 50;
     private JPanel mapPanel;
     private JScrollPane scrollPane;
     private int cellSize = 100;
@@ -242,31 +239,13 @@ public class TrafficSimulatorGUI extends JFrame {
     }
 
     public static void main(String[] args) {
-        // Créer une carte de 100x100 cases
-        CityMap cityMap = new CityMap(20, 20);
-    
-        // Ajouter des bâtiments partout sauf sur les routes
-        cityMap.setBuilding();
-    
-        // Ajouter des routes horizontales
-        for (int i = 0; i < 20; i++) {
-            cityMap.setRoad(new Position(i, 10), Direction.RIGHT, "Route Horizontale 1");
-            cityMap.setRoad(new Position(i, 11), Direction.RIGHT, "Route Horizontale 1");
-            cityMap.setRoad(new Position(i, 50), Direction.RIGHT, "Route Horizontale 2");
-        }
-    
-        // Ajouter des routes verticales
-        for (int i = 0; i < 20; i++) {
-            cityMap.setRoad(new Position(2, i), Direction.DOWN, "Route Verticale 1");
-            cityMap.setRoad(new Position(8, i), Direction.DOWN, "Route Verticale 2");
-        }
-    
 
+        Simulation s = new Simulation();
     
         // Afficher la carte dans la console (pour vérification)
-        AffichageTemp.affiche(cityMap.getGrid());  
+        AffichageTemp.affiche(s.getCityMap().getGrid());  
           
         // Lancer l'interface graphique
-        SwingUtilities.invokeLater(() -> new TrafficSimulatorGUI(cityMap));
+        SwingUtilities.invokeLater(() -> new TrafficSimulatorGUI(s.getCityMap()));
     }
 }
