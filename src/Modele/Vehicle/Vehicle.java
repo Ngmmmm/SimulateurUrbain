@@ -98,20 +98,9 @@ public abstract class Vehicle {
 
 
 
-    public void nextPositionLeft(){
-        position.setX(position.getX() - 1);
-    }
+    public void nextPosition(){
+        position = direction.move(position);
 
-    public void nextPositionRight(){
-        position.setX(position.getX() + 1);
-    }
-
-    public void nextPositionUp(){
-        position.setY(position.getY() + 1);
-    }
-
-    public void nextPositionDown(){
-        position.setY(position.getY() - 1);
     }
 
 }
