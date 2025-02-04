@@ -100,7 +100,10 @@ public abstract class Vehicle {
 
     public void nextPosition(){
         position = direction.move(position);
+    }
 
+    public void tourner(Direction direction){
+        this.direction = direction;
     }
 
 }
