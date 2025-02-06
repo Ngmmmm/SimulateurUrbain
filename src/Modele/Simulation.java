@@ -11,67 +11,54 @@ public class Simulation {
     private void initializeMap() {
         cityMap.setBuilding();
 
-        // Routes principales horizontales (double file)
+        // Routes principales horizontales (Avenues)
         for (int i = 0; i < 50; i++) {
-            cityMap.setRoad(new Position(i, 8), Direction.RIGHT, "Avenue Est-Ouest 1");
-            cityMap.setRoad(new Position(i, 9), Direction.RIGHT, "Avenue Est-Ouest 1");
+            cityMap.setRoad(new Position(i, 1), "Continue", Direction.LEFT);
+            cityMap.setRoad(new Position(i, 2), "Continue", Direction.RIGHT);
 
-            cityMap.setRoad(new Position(i, 25), Direction.RIGHT, "Avenue Est-Ouest 2");
-            cityMap.setRoad(new Position(i, 26), Direction.RIGHT, "Avenue Est-Ouest 2");
+            cityMap.setRoad(new Position(i, 12), "Continue", Direction.LEFT);
+            cityMap.setRoad(new Position(i, 13), "Continue", Direction.RIGHT);
 
-            cityMap.setRoad(new Position(i, 42), Direction.RIGHT, "Avenue Est-Ouest 3");
-            cityMap.setRoad(new Position(i, 43), Direction.RIGHT, "Avenue Est-Ouest 3");
+            cityMap.setRoad(new Position(i, 31), "Continue", Direction.LEFT);
+            cityMap.setRoad(new Position(i, 32), "Continue", Direction.RIGHT);
+
+            cityMap.setRoad(new Position(i, 40), "Continue", Direction.LEFT);
+            cityMap.setRoad(new Position(i, 41), "Continue", Direction.RIGHT);
         }
 
-        // Routes principales verticales (double file)
+        // Routes principales verticales (Boulevards)
         for (int i = 0; i < 50; i++) {
-            cityMap.setRoad(new Position(5, i), Direction.DOWN, "Boulevard Nord-Sud 1");
-            cityMap.setRoad(new Position(6, i), Direction.DOWN, "Boulevard Nord-Sud 1");
+            cityMap.setRoad(new Position(23, i), "Pointillé", Direction.DOWN);
+            cityMap.setRoad(new Position(24, i), "Pointillé", Direction.DOWN);
 
-            cityMap.setRoad(new Position(20, i), Direction.DOWN, "Boulevard Nord-Sud 2");
-            cityMap.setRoad(new Position(21, i), Direction.DOWN, "Boulevard Nord-Sud 2");
-
-            cityMap.setRoad(new Position(35, i), Direction.DOWN, "Boulevard Nord-Sud 3");
-            cityMap.setRoad(new Position(36, i), Direction.DOWN, "Boulevard Nord-Sud 3");
+            cityMap.setRoad(new Position(25, i), "Pointillé", Direction.UP);
+            cityMap.setRoad(new Position(26, i), "Pointillé", Direction.UP);
         }
+
+        // Routes verticales double sens
+        for (int i = 14; i < 31; i++) {
+            cityMap.setRoad(new Position(34, i), "Continue", Direction.DOWN);
+            cityMap.setRoad(new Position(35, i), "Continue", Direction.UP);
+        }
+        for (int i = 33; i < 40; i++) {
+            cityMap.setRoad(new Position(5, i), "Continue", Direction.DOWN);
+            cityMap.setRoad(new Position(6, i), "Continue", Direction.UP);
+        }
+
 
         // Sens uniques
-        for (int i = 10; i < 15; i++) {
-            cityMap.setRoad(new Position(i, 15), Direction.RIGHT, "Sens Unique Est");
+        for (int i = 33; i < 40; i++) {
+            cityMap.setRoad(new Position(40, i), "Continue", Direction.DOWN);
         }
-        for (int i = 30; i < 35; i++) {
-            cityMap.setRoad(new Position(i, 32), Direction.LEFT, "Sens Unique Ouest");
+        for (int i = 14; i < 31; i++) {
+            cityMap.setRoad(new Position(10, i), "Continue", Direction.UP);
+        }
+        for (int i = 3; i < 12; i++) {
+            cityMap.setRoad(new Position(47, i), "Continue", Direction.DOWN);
         }
 
-        // Ronds-points carrés
-        addRoundabout(15, 15);
-        addRoundabout(15, 35);
-        addRoundabout(35, 15);
-        addRoundabout(35, 35);
-
-        // Connexions aux ronds-points
-        connectRoundabout(15, 15);
-        connectRoundabout(15, 35);
-        connectRoundabout(35, 15);
-        connectRoundabout(35, 35);
-    }
-
-    private void addRoundabout(int x, int y) {
-        // Rond-point carré 3x3
-        for (int i = -1; i <= 1; i++) {
-            for (int j = -1; j <= 1; j++) {
-                cityMap.setRoad(new Position(x + i, y + j), Direction.RIGHT, "Rond-Point");
-            }
-        }
-    }
-
-    private void connectRoundabout(int x, int y) {
-        // Routes arrivant sur les ronds-points
-        for (int i = 1; i <= 3; i++) {
-            cityMap.setRoad(new Position(x, y - i - 1), Direction.DOWN, "Accès Rond-Point Nord");
-            cityMap.setRoad(new Position(x, y + i + 1), Direction.UP, "Accès Rond-Point Sud");
-            cityMap.setRoad(new Position(x - i - 1, y), Direction.RIGHT, "Accès Rond-Point Ouest");
-            cityMap.setRoad(new Position(x + i + 1, y), Direction.LEFT, "Accès Rond-Point Est");
+        for (int i = 3; i < 12; i++) {
+            cityMap.setRoad(new Position(47, i), "Continue", Direction.DOWN);
         }
     }
 

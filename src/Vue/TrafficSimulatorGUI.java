@@ -1,6 +1,5 @@
 package Vue;
 
-import Modele.AffichageTemp;
 import Modele.Case;
 import Modele.CityMap;
 import Modele.Simulation;
@@ -243,7 +242,7 @@ public class TrafficSimulatorGUI extends JFrame {
         Simulation s = new Simulation();
     
         // Afficher la carte dans la console (pour vérification)
-        AffichageTemp.affiche(s.getCityMap().getGrid());  
+        //AffichageTemp.affiche(s.getCityMap().getGrid());  
           
         // Lancer l'interface graphique
         SwingUtilities.invokeLater(() -> new TrafficSimulatorGUI(s.getCityMap()));

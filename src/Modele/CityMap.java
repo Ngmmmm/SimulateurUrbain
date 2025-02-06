@@ -26,7 +26,7 @@ public class CityMap {
     }
 
     // Ajouter une route à la carte
-    public void setRoad(Position pos, Direction d, String ligne) {
+    public void setRoad(Position pos,String ligne, Direction... d) {
         int row = pos.getY();
         int col = pos.getX();
         if (isValidPosition(row, col)) {
