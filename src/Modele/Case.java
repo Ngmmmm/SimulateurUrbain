@@ -89,15 +89,12 @@ public class Case {
 
     @Override
     public String toString() {
-        if (vehicle != null) {
-            return vehicle.toString(); // Si un véhicule est présent, on l'affiche
-        } else if (road != null) {
-            return road.toString(); // Si une route est présente, on l'affiche
-        } else if (building != null) {
-            return building.toString(); // Si un bâtiment est présent, on l'affiche
-        } else {
-            return "Empty"; // Si rien n'est présent, on affiche "Empty"
-        }
+        StringBuilder sb = new StringBuilder();
+        if (vehicle != null) sb.append("Vehicle: ").append(vehicle.toString()).append(" ");
+        if (road != null) sb.append("Road: ").append(road.toString()).append(" ");
+        if (building != null) sb.append("Building: ").append(building.toString()).append(" ");
+        if (signalling != null) sb.append("Signalling: ").append(signalling.getType()).append(" ");
+        return sb.length() == 0 ? "Empty" : sb.toString();
     }
 
 
