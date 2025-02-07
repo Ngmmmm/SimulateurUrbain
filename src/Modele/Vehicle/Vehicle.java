@@ -126,7 +126,7 @@ public abstract class Vehicle {
         Signalling signal = act.getSignalling();
         if(signal != null){
             if(signal instanceof TrafficLights trafficLights){
-                if (trafficLights.getColor().equals("RED")){
+                if (trafficLights.getColor().equals("RED") || trafficLights.getColor().equals("ORANGE")){
                     return false;
                 }
             }else if(signal instanceof Stop){
