@@ -1,6 +1,6 @@
 package Controle;
 
 
-public interface UpdateInter {
-    void update();
+public interface UpdateInter extends Update{
+    void updateVue();
 }

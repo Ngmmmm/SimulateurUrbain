@@ -125,8 +125,13 @@ public class TrafficSimulatorGUI extends JFrame implements UpdateInter {
         // va update toutes les cases qui ont été mises dans la liste des case a update 
         for(TuplePosCase tileAt : toUpdate){
             grid[tileAt.getX()][tileAt.getY()].update(tileAt.getCase());
+            this.drawCase(getGraphics(), tileAt.getX(), tileAt.getY(), tileAt.getCase());
         }
         toUpdate.clear();
+        mapPanel.repaint();
+    }
+
+    public void updateVue(){
         this.drawMap(getGraphics());
         mapPanel.repaint();
     }
