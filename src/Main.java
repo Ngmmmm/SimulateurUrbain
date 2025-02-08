@@ -1,11 +1,10 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import Modele.Direction;
 import Modele.Position;
 import Modele.Signalling.TrafficLight;
-import Modele.Signalling.TrafficLightManager;
+import Modele.Signalling.TrafficLightGroup;
 
 public class Main {
 
@@ -18,7 +17,7 @@ public class Main {
 
         
 
-        TrafficLightManager manager = new TrafficLightManager(allLights);
+        TrafficLightGroup groupe1 = new TrafficLightGroup(allLights);
     
     }
     
