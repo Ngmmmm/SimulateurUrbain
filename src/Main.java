@@ -14,6 +14,8 @@ public class Main {
         List<TrafficLight> allLights = new ArrayList<>();
         allLights.add(new TrafficLight(new Position(2, 3), Direction.UP)  );
         allLights.add(new TrafficLight(new Position(3, 3), Direction.LEFT)   );
+
+
         
 
         TrafficLightManager manager = new TrafficLightManager(allLights);

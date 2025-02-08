@@ -7,6 +7,7 @@ public class TrafficLightGroup {
     private List<TrafficLight> lights;
     private int cycleTimeGreen = 10;  // Durée du feu vert
     private int cycleTimeOrange = 3;  // Durée du feu orange
+    private int cycleTimeRed = 2;     // Durée du feu rouge (ajouté)
     private boolean isNSGreen; // Indique si les feux Nord-Sud sont verts
     private ScheduledExecutorService scheduler;
 
@@ -23,8 +24,8 @@ public class TrafficLightGroup {
             sleep(cycleTimeGreen);
             switchLights(LightColor.ORANGE);
             sleep(cycleTimeOrange);
-            switchLights(LightColor.RED);
-        }, 0, cycleTimeGreen + cycleTimeOrange, TimeUnit.SECONDS);
+            isNSGreen = !isNSGreen; // Inverser le cycle après le rouge
+        }, 0, cycleTimeGreen + cycleTimeOrange + cycleTimeRed, TimeUnit.SECONDS);
     }
 
     private void switchLights(LightColor newState) {
@@ -35,16 +36,14 @@ public class TrafficLightGroup {
                 light.setColor(isNSGreen ? getOppositeState(newState) : newState);
             }
         }
-        if (newState == LightColor.RED) {
-            isNSGreen = !isNSGreen; // Inverser le cycle après le rouge
-        }
+        System.out.println("Switched lights to " + newState + " (NSGreen: " + isNSGreen + ")");
     }
 
     private LightColor getOppositeState(LightColor state) {
         switch (state) {
             case GREEN: return LightColor.RED;
             case RED: return LightColor.GREEN;
-            case ORANGE: return LightColor.ORANGE;
+            case ORANGE: return LightColor.ORANGE; // L'orange reste orange
             default: return LightColor.RED;
         }
     }

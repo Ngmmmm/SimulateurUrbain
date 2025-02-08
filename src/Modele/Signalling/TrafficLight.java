@@ -31,6 +31,11 @@ public class TrafficLight extends Signalling {
     public String getType() {
         return "TrafficLights";
     }
+
+    @Override
+    public String toString(){
+        return "Feu à (" + getPosition().getX() + "," + getPosition().getY() + ") [" + direction + "] -> " + color;
+    }
 }
 
 
