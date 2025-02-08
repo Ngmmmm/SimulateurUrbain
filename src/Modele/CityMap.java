@@ -3,9 +3,10 @@ package Modele;
 import Modele.Vehicle.Vehicle;
 
 
-public class CityMap {
+public class CityMap{
     private int rows;
     private int cols;
+
     private Case[][] grid; // Grille représentant la carte
 
 
@@ -69,4 +70,6 @@ public class CityMap {
     public Case[][] getGrid() {
         return grid;
     }
+
+
 }
