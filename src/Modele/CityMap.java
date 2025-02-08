@@ -2,6 +2,7 @@ package Modele;
 
 import Modele.Vehicle.Vehicle;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -28,31 +29,30 @@ public class CityMap {
     }
 
     public void setRoad(Position pos, String ligne, Direction... d) {
-        int row = pos.getY();
-        int col = pos.getX();
-        if (isValidPosition(row, col)) {
-            Road currentRoad = grid[row][col].getRoad();
-            
-            // Si la route existe déjà, on fusionne les directions
-            if (currentRoad != null) {
-                List<Direction> updatedDirections = new ArrayList<>();
-                for (Direction existingDirection : currentRoad.getDirection()) {
-                    updatedDirections.add(existingDirection);
+    int row = pos.getY();
+    int col = pos.getX();
+    if (isValidPosition(row, col)) {
+        Road currentRoad = grid[row][col].getRoad();
+
+        if (currentRoad != null) {
+            // Fusionner les directions existantes avec les nouvelles
+            List<Direction> updatedDirections = new ArrayList<>(Arrays.asList(currentRoad.getDirection()));
+
+            for (Direction newDirection : d) {
+                if (!updatedDirections.contains(newDirection)) {
+                    updatedDirections.add(newDirection);
                 }
-                for (Direction newDirection : d) {
-                    // On ajoute la nouvelle direction si elle n'est pas déjà présente
-                    if (!updatedDirections.contains(newDirection)) {
-                        updatedDirections.add(newDirection);
-                    }
-                }
-                // Mise à jour de la route avec les directions fusionnées
-                currentRoad.setDirection(updatedDirections.toArray(new Direction[0]));
-            } else {
-                // Sinon, on crée une nouvelle route avec les directions données
-                grid[row][col].setRoad(new Road(d, ligne));
             }
+
+            // Mettre à jour la route existante avec les directions fusionnées
+            currentRoad.setDirection(updatedDirections.toArray(new Direction[0]));
+        } else {
+            // Créer une nouvelle route avec les directions données
+            grid[row][col].setRoad(new Road(d, ligne));
         }
     }
+}
+
 
 
     // Ajouter un véhicule à la carte
