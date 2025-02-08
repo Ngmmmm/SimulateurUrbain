@@ -7,7 +7,10 @@ import Modele.Signalling.NoEntry;
 import Modele.Signalling.Signalling;
 import Modele.Signalling.Stop;
 import Modele.Signalling.TrafficLights;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import javax.swing.Timer;
 
 public abstract class Vehicle {
     protected String id;
@@ -132,6 +135,13 @@ public abstract class Vehicle {
             }else if(signal instanceof Stop){
                 if(checkCaseForSignalling() != null){
                     if(getCase(checkCaseForSignalling()).isEmpty()){
+                        Timer timer = new Timer(1000, new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                            }
+                        });
+                        timer.setRepeats(false); // S'assure que le timer ne se répète pas
+                        timer.start();
                         return true;
                     }
                 }
