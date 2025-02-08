@@ -3,11 +3,16 @@ package Vue;
 import Modele.CityMap;
 import Modele.Direction;
 import Modele.Position;
+import Modele.TuplePosCase;
 import Modele.AffichageTemp;
 import Modele.Case;
 
 
 import javax.swing.*;
+
+import Controle.UpdateInter;
+
+import java.util.ArrayList;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -25,6 +30,7 @@ public class TrafficSimulatorGUI extends JFrame implements UpdateInter {
     private CityMap cityMap;
     private Point lastDragPoint;
     private Case[][] grid; // Stockage de la grille pour mises à jour dynamiques
+    private ArrayList<TuplePosCase> toUpdate = new ArrayList<TuplePosCase>();
 
     public TrafficSimulatorGUI(CityMap cityMap, Case[][] grid) {
         this.cityMap = cityMap;
@@ -40,6 +46,7 @@ public class TrafficSimulatorGUI extends JFrame implements UpdateInter {
 
         JPanel containerPanel = new JPanel(new GridBagLayout());
         mapPanel = createMapPanel();
+        mapPanel.setPreferredSize(new Dimension(COLS * cellSize, ROWS * cellSize));
         containerPanel.add(mapPanel, new GridBagConstraints());
         scrollPane = new JScrollPane(containerPanel);
         scrollPane.setPreferredSize(new Dimension(800, 600));
@@ -114,10 +121,14 @@ public class TrafficSimulatorGUI extends JFrame implements UpdateInter {
     
 
     @Override
-    public void update(Case[][] newGrid) {
-        this.grid = newGrid; // Mettre à jour la grille
+    public void update() {
+        // va update toutes les cases qui ont été mises dans la liste des case a update 
+        for(TuplePosCase tileAt : toUpdate){
+            grid[tileAt.getX()][tileAt.getY()].update(tileAt.getCase());
+        }
+        toUpdate.clear();
         this.drawMap(getGraphics());
-        mapPanel.repaint(); // Redessiner la carte avec les nouvelles données
+        mapPanel.repaint();
     }
 
 
@@ -245,10 +256,10 @@ public class TrafficSimulatorGUI extends JFrame implements UpdateInter {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             // 1. Créer l'interface graphique avec une grille vide (null)
-            TrafficSimulatorGUI gui = new TrafficSimulatorGUI(null, null);
     
-            // 2. Créer CityMap et y associer l'interface pour la mise à jour
-            CityMap cityMap = new CityMap(50, 50, gui);
+            // 2. Créer CityMap et l'associer à l'interface graphique
+            CityMap cityMap = new CityMap(20, 20);
+
     
             // 3. Ajouter des bâtiments et routes
             cityMap.setBuilding();
@@ -263,9 +274,13 @@ public class TrafficSimulatorGUI extends JFrame implements UpdateInter {
                 cityMap.setRoad(new Position(2, i), Direction.DOWN, "Route Verticale 1");
                 cityMap.setRoad(new Position(8, i), Direction.DOWN, "Route Verticale 2");
             }
+
+            AffichageTemp.affiche(cityMap.getGrid());  
+
+            new TrafficSimulatorGUI(cityMap, cityMap.getGrid());
     
             // 4. Mettre à jour la grille et redessiner l'interface
-            gui.update(cityMap.getGrid());
+
         });
     }
     

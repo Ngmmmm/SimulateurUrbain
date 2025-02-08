@@ -1,5 +1,5 @@
 package Modele;
-import Vue.UpdateInter;
+import Controle.UpdateInter;
 
 
 public class Simulation {
@@ -7,7 +7,7 @@ public class Simulation {
 
     public Simulation(UpdateInter update) {
         // Créer une carte de 10x10
-        this.cityMap = new CityMap(50, 50, update);
+        this.cityMap = new CityMap(10, 10);
         initializeMap();
     }
 

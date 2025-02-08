@@ -1,9 +1,10 @@
 package Modele;
 
+
 import Modele.Signalling.Signalling;
 import Modele.Vehicle.Vehicle;
 
-public class Case {
+public class Case{
 
     private Vehicle vehicle;
     private Building building;
@@ -98,6 +99,16 @@ public class Case {
         } else {
             return "Empty"; // Si rien n'est présent, on affiche "Empty"
         }
+    }
+
+    
+    public void update(Case tile){
+        vehicle = tile.vehicle;
+        building = tile.building;
+        road = tile.road;
+        signalling = tile.signalling;
+        pos = tile.pos;
+        
     }
 
 
