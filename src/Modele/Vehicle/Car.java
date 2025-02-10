@@ -6,8 +6,8 @@ import Modele.Position;
 
 public class Car extends Vehicle {
     
-    public Car(String id, double speed, Position position, Direction direction, int numberOfDoors, Case[][] map) {
-        super(id, speed, position, direction, 2, map);
+    public Car(String id, double speed, Position position, Direction direction, int numberOfDoors, Case[][] map, Position destination) {
+        super(id, speed, position, direction, 2, map, destination);
     }
 
     @Override
