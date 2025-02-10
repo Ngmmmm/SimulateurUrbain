@@ -22,8 +22,9 @@ public abstract class Vehicle {
     protected float fuelConso;
     protected BufferedImage img;
     protected Case[][] map;
+    protected Position destination;
 
-    public Vehicle(String id, double speed, Position position, Direction direction, float fuelConso, Case[][] map) {
+    public Vehicle(String id, double speed, Position position, Direction direction, float fuelConso, Case[][] map, Position destination) {
         this.id = id;
         this.speed = speed;
         this.position = position;
@@ -32,6 +33,7 @@ public abstract class Vehicle {
         this.fuelConso = fuelConso;
         this.fuel = 100;
         this.map = map;
+        this.destination = destination;
     }
 
     public void start() {
@@ -142,7 +144,7 @@ public abstract class Vehicle {
                         });
                         timer.setRepeats(false); // S'assure que le timer ne se répète pas
                         timer.start();
-                        return true;
+                        return getCase(checkCaseForSignalling()).isEmpty();
                     }
                 }
 
