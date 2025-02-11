@@ -173,28 +173,39 @@ public class TrafficSimulatorGUI extends JFrame {
         return panel;
     }
 
+    private static final double MAX_ZOOM = 2.5;  // Le facteur de zoom maximal autorisé
+
     private void zoom(boolean zoomIn, Point cursorPosition) {
         if (zoomIn) {
-            zoomFactor += 0.1;
-        } else if (zoomFactor > 0.2) {
-            zoomFactor -= 0.1;
+            
+            if (zoomFactor < MAX_ZOOM) {
+                zoomFactor += 0.1;
+            }
+        } else {
+            
+            if (zoomFactor > 0.2) {
+                zoomFactor -= 0.1;
+            }
         }
-
+    
+        
         cellSize = (int) (40 * zoomFactor);
         mapPanel.setPreferredSize(new Dimension(COLS * cellSize, ROWS * cellSize));
         mapPanel.revalidate();
-
+    
         if (cursorPosition != null) {
             JScrollBar horizontal = scrollPane.getHorizontalScrollBar();
             JScrollBar vertical = scrollPane.getVerticalScrollBar();
-
+    
+           
             int newCenterX = (int) (cursorPosition.x * zoomFactor);
             int newCenterY = (int) (cursorPosition.y * zoomFactor);
-
+    
             horizontal.setValue(Math.max(newCenterX - scrollPane.getWidth() / 2, 0));
             vertical.setValue(Math.max(newCenterY - scrollPane.getHeight() / 2, 0));
         }
-
+    
+       
         mapPanel.repaint();
     }
 
