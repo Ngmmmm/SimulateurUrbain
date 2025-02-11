@@ -1,7 +1,5 @@
 package Modele;
 
-import java.util.Arrays;
-
 public class Simulation {
     private CityMap cityMap;
 
@@ -60,22 +58,14 @@ public class Simulation {
         for (int i = 17; i < 27; i++) {cityMap.setRoad(new Position(i, 26), "Continue", Direction.LEFT);}
         for (int i = 18; i < 27; i++) {cityMap.setRoad(new Position(16, i), "Continue", Direction.UP);}
         for (int i = 26; i < 31; i++) {cityMap.setRoad(new Position(16, i), "Continue", Direction.DOWN);}
-        System.out.println(Arrays.toString(cityMap.getRoad(new Position(26,26)).getDirection()));
 
 
-        /*
-        for (int i = 34; i < 45; i++) {
-            cityMap.setRoad(new Position(i, 20), "Continue", Direction.RIGHT);
-        }
+        for (int i = 34; i < 45; i++) {cityMap.setRoad(new Position(i, 20), "Continue", Direction.RIGHT);}
         for (int i = 20; i < 31; i++) {
             cityMap.setRoad(new Position(45, i), "Continue", Direction.DOWN);
-        }
+        }        
         
-        
-        for (int i = 14; i < 31; i++) {
-            cityMap.setRoad(new Position(10, i), "Continue", Direction.UP);
-        }
-        */
+        for (int i = 14; i < 33; i++) {cityMap.setRoad(new Position(10, i), "Continue", Direction.UP);}
 
         countIntersections();
     }
