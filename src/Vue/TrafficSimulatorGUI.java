@@ -2,7 +2,10 @@ package Vue;
 
 import Modele.Case;
 import Modele.CityMap;
+import Modele.Direction;
+import Modele.Position;
 import Modele.Simulation;
+import Modele.Vehicle.Car;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -249,13 +252,17 @@ public class TrafficSimulatorGUI extends JFrame {
     }
 
     public static void main(String[] args) {
-
         Simulation s = new Simulation();
-    
-        // Afficher la carte dans la console (pour vérification)
-        //AffichageTemp.affiche(s.getCityMap().getGrid());  
-          
+        CityMap cityMap = s.getCityMap();
+
+        Position centerPosition = new Position(25, 25);
+
+        // Ajouter une voiture si la position est une route
+        Car car = new Car("rouge", (double)10, centerPosition , Direction.UP, 1);
+        cityMap.getGrid()[centerPosition.getY()][centerPosition.getX()].setVehicle(car);
+
         // Lancer l'interface graphique
-        SwingUtilities.invokeLater(() -> new TrafficSimulatorGUI(s.getCityMap()));
+        SwingUtilities.invokeLater(() -> new TrafficSimulatorGUI(cityMap));
     }
+
 }
