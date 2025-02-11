@@ -4,15 +4,23 @@ import Modele.Case;
 import Modele.CityMap;
 import Modele.Direction;
 import Modele.Position;
-import Modele.Simulation;
-import Modele.Vehicle.Car;
+import Modele.TuplePosCase;
+import Modele.AffichageTemp;
+import Modele.Case;
+
+
+import javax.swing.*;
+
+import Controle.UpdateInter;
+
+import java.util.ArrayList;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import javax.swing.*;
 
 
-public class TrafficSimulatorGUI extends JFrame {
+public class TrafficSimulatorGUI extends JFrame implements UpdateInter {
 
     private static final int ROWS = 50;
     private static final int COLS = 50;
@@ -21,11 +29,14 @@ public class TrafficSimulatorGUI extends JFrame {
     private int cellSize = 100;
     private double zoomFactor = 1.0;
 
-    private CityMap cityMap; // Référence à la carte de la ville
-    private Point lastDragPoint; // Ajoutez cette ligne pour déclarer lastDragPoint
+    private CityMap cityMap;
+    private Point lastDragPoint;
+    private Case[][] grid; // Stockage de la grille pour mises à jour dynamiques
+    private ArrayList<TuplePosCase> toUpdate = new ArrayList<TuplePosCase>();
 
-    public TrafficSimulatorGUI(CityMap cityMap) {
+    public TrafficSimulatorGUI(CityMap cityMap, Case[][] grid) {
         this.cityMap = cityMap;
+        this.grid = grid; // Initialiser la grille
 
         setTitle("Simulateur de gestion de trafic urbain");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -37,6 +48,7 @@ public class TrafficSimulatorGUI extends JFrame {
 
         JPanel containerPanel = new JPanel(new GridBagLayout());
         mapPanel = createMapPanel();
+        mapPanel.setPreferredSize(new Dimension(COLS * cellSize, ROWS * cellSize));
         containerPanel.add(mapPanel, new GridBagConstraints());
         scrollPane = new JScrollPane(containerPanel);
         scrollPane.setPreferredSize(new Dimension(800, 600));
@@ -56,34 +68,28 @@ public class TrafficSimulatorGUI extends JFrame {
     }
 
     private JPanel createMapPanel() {
-        JPanel panel = new JPanel() {
+        return new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 drawMap(g);
             }
         };
-        panel.setPreferredSize(new Dimension(COLS * cellSize, ROWS * cellSize));
-        return panel;
     }
 
-    //dessine la case selon sa place et ses propriétés
-    private void drawCase(Graphics g, int i, int j, Case currentCase){
+    private void drawCase(Graphics g, int i, int j, Case currentCase) {
         int x = j * cellSize;
         int y = i * cellSize;
 
-        // Dessiner la route si elle existe
         if (currentCase.getRoad() != null) {
             g.drawImage(Image.imgRoad, x, y, null);
-                    
-            // Dessiner le véhicule si il existe
+
             if (currentCase.getVehicle() != null) {
-                g.drawImage(Image.imgCar , x, y, null);
+                g.drawImage(Image.imgCar, x, y, null);
             }
 
-            // Dessiner un signalement si il existe
-            if (currentCase.getSignalling() != null){
-                BufferedImage img = switch (currentCase.getSignalling().getType()){
+            if (currentCase.getSignalling() != null) {
+                BufferedImage img = switch (currentCase.getSignalling().getType()) {
                     case "TrafficLights" -> Image.imgTrafficLight;
                     case "Stop" -> Image.imgStop;
                     case "NoEntry" -> Image.imgNoEntry;
@@ -91,36 +97,48 @@ public class TrafficSimulatorGUI extends JFrame {
                 };
                 g.drawImage(img, x, y, null);
             }
-        }
-        // Dessiner le bâtiment si il existe
-        else if (currentCase.getBuilding() != null) {
+        } else if (currentCase.getBuilding() != null) {
             g.drawImage(Image.imgBuilding, x, y, null);
-        }
- 
-        // Dessiner une case vide
-        else {
+        } else {
             g.setColor(Color.LIGHT_GRAY);
             g.fillRect(x, y, cellSize, cellSize);
         }
-                
-        // Dessiner les bordures
+
         g.setColor(Color.BLACK);
         g.drawRect(x, y, cellSize, cellSize);
-
     }
 
     private void drawMap(Graphics g) {
-        Case[][] grid = cityMap.getGrid();
+        if (grid == null) return; // Ne rien dessiner si grid est null
         Image.loadImg();
-
+        
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLS; j++) {
-
-                drawCase(g, i, j, grid[i][j]);
+                if (grid[i][j] != null) { // Vérifie que la case existe
+                    drawCase(g, i, j, grid[i][j]);
+                }
             }
         }
-
     }
+    
+
+    @Override
+    public void update() {
+        // va update toutes les cases qui ont été mises dans la liste des case a update 
+        for(TuplePosCase tileAt : toUpdate){
+            grid[tileAt.getX()][tileAt.getY()].update(tileAt.getCase());
+            this.drawCase(getGraphics(), tileAt.getX(), tileAt.getY(), tileAt.getCase());
+        }
+        toUpdate.clear();
+        mapPanel.repaint();
+    }
+
+    public void updateVue(){
+        this.drawMap(getGraphics());
+        mapPanel.repaint();
+    }
+
+
 
     private JMenuBar createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
@@ -250,6 +268,8 @@ public class TrafficSimulatorGUI extends JFrame {
             }
         };
     }
+
+
 
     public static void main(String[] args) {
         Simulation s = new Simulation();

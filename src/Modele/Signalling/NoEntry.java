@@ -2,7 +2,7 @@ package Modele.Signalling;
 
 import Modele.Position;
 
-class NoEntry extends Signalling {
+public class NoEntry extends Signalling {
     
     public NoEntry(Position position) {
         super(position);

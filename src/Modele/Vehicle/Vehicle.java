@@ -1,7 +1,16 @@
 package Modele.Vehicle;
 
+import Modele.Case;
 import Modele.Direction;
 import Modele.Position;
+import Modele.Signalling.NoEntry;
+import Modele.Signalling.Signalling;
+import Modele.Signalling.Stop;
+import Modele.Signalling.TrafficLights;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import javax.swing.Timer;
 
 public abstract class Vehicle {
     protected String id;
@@ -11,8 +20,11 @@ public abstract class Vehicle {
     protected boolean isMoving;
     protected float fuel;
     protected float fuelConso;
+    protected BufferedImage img;
+    protected Case[][] map;
+    protected Position destination;
 
-    public Vehicle(String id, double speed, Position position, Direction direction, float fuelConso) {
+    public Vehicle(String id, double speed, Position position, Direction direction, float fuelConso, Case[][] map, Position destination) {
         this.id = id;
         this.speed = speed;
         this.position = position;
@@ -20,6 +32,8 @@ public abstract class Vehicle {
         this.isMoving = false;
         this.fuelConso = fuelConso;
         this.fuel = 100;
+        this.map = map;
+        this.destination = destination;
     }
 
     public void start() {
@@ -93,5 +107,67 @@ public abstract class Vehicle {
                 ", fuelConsumption=" + fuelConso +
                 '}';
     }
+
+
+
+    public Position nextPosition(){
+        return direction.move(position);
+    }
+
+    public void tourner(Direction direction){
+        this.direction = direction;
+    }
+
+    public Case getCase(Position pos){
+        return map[pos.getX()][pos.getY()];
+    }
+
+    public boolean nextCaseIsValid(){
+        Case next = getCase(nextPosition());
+        return next.isEmpty();
+    }
+
+    public boolean signallingOk(Case act){
+        Signalling signal = act.getSignalling();
+        if(signal != null){
+            if(signal instanceof TrafficLights trafficLights){
+                if (trafficLights.getColor().equals("RED") || trafficLights.getColor().equals("ORANGE")){
+                    return false;
+                }
+            }else if(signal instanceof Stop){
+                if(checkCaseForSignalling() != null){
+                    if(getCase(checkCaseForSignalling()).isEmpty()){
+                        Timer timer = new Timer(1000, new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                            }
+                        });
+                        timer.setRepeats(false); // S'assure que le timer ne se répète pas
+                        timer.start();
+                        return getCase(checkCaseForSignalling()).isEmpty();
+                    }
+                }
+
+            }else return !(signal instanceof NoEntry);
+        }
+        return true;
+    }
+
+    public void moove(){
+        Case act = getCase(position);
+        if (nextCaseIsValid()){
+            if(act.getSignalling() == null || signallingOk(act)){
+                act.setVehicle(null);
+                position = nextPosition();
+                map[position.getX()][position.getY()].setVehicle(this);
+            }
+        }
+    }
+
+    public Position checkCaseForSignalling(){
+        return position.checkPosForSignalling(direction);
+    }
+
+    
 
 }

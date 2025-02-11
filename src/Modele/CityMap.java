@@ -1,18 +1,23 @@
 package Modele;
 
+import java.util.ArrayList;
+
+import Controle.Update;
 import Modele.Vehicle.Vehicle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import Vue.TrafficSimulatorGUI; // à enlever
 
-
-public class CityMap {
+public class CityMap implements Update{
     private int rows;
     private int cols;
+    private ArrayList<TuplePosCase> toUpdate = new ArrayList<TuplePosCase>();
+
     private Case[][] grid; // Grille représentant la carte
 
 
-    public CityMap(int rows, int cols) {
+    public CityMap(int rows, int cols){
         this.rows = rows;
         this.cols = cols;
         this.grid = new Case[rows][cols];
@@ -110,5 +115,21 @@ public class CityMap {
         }
         return null;
     }
+
+    public void update(TrafficSimulatorGUI gui) { 
+        
+        // enlevez la dernière ligne et l'argument dans la réel implémentation 
+        
+        // va update toutes les cases qui ont été mises dans la liste des case a update 
+        for(TuplePosCase tileAt : toUpdate){
+            grid[tileAt.getX()][tileAt.getY()].update(tileAt.getCase());
+        }
+        toUpdate.clear();
+        gui.updateVue();
+
+    }
+
+    public void update(){} // pour remplir l'implémentation en attendant
+
 
 }
