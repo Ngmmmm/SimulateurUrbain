@@ -30,15 +30,15 @@ public class Simulation {
 
         // Routes principales verticales (Boulevards)
         for (int i = 0; i < 50; i++) {
-            //cityMap.setRoad(new Position(23, i), "Pointillé", Direction.DOWN);
-            cityMap.setRoad(new Position(23, i), "Pointillé", Direction.DOWN, Direction.RIGHT);
-            //cityMap.setRoad(new Position(24, i), "Pointillé", Direction.DOWN);
-            cityMap.setRoad(new Position(24, i), "Pointillé", Direction.DOWN, Direction.LEFT);
+            cityMap.setRoad(new Position(23, i), "Pointillé", Direction.DOWN);
+            //cityMap.setRoad(new Position(23, i), "Pointillé", Direction.DOWN, Direction.RIGHT);
+            cityMap.setRoad(new Position(24, i), "Pointillé", Direction.DOWN);
+            //cityMap.setRoad(new Position(24, i), "Pointillé", Direction.DOWN, Direction.LEFT);
 
-            //cityMap.setRoad(new Position(25, i), "Pointillé", Direction.UP);
-            cityMap.setRoad(new Position(25, i), "Pointillé", Direction.UP, Direction.RIGHT);
-            //cityMap.setRoad(new Position(26, i), "Pointillé", Direction.UP);
-            cityMap.setRoad(new Position(26, i), "Pointillé", Direction.UP, Direction.LEFT);
+            cityMap.setRoad(new Position(25, i), "Pointillé", Direction.UP);
+            //cityMap.setRoad(new Position(25, i), "Pointillé", Direction.UP, Direction.RIGHT);
+            cityMap.setRoad(new Position(26, i), "Pointillé", Direction.UP);
+            //cityMap.setRoad(new Position(26, i), "Pointillé", Direction.UP, Direction.LEFT);
         }
 
         // Routes verticales double sens
