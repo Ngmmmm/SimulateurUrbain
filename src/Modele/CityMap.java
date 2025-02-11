@@ -116,7 +116,7 @@ public class CityMap implements Update{
         return null;
     }
 
-    public void update(TrafficSimulatorGUI gui) { 
+    /*public void update(TrafficSimulatorGUI gui) { 
         
         // enlevez la dernière ligne et l'argument dans la réel implémentation 
         
@@ -127,7 +127,7 @@ public class CityMap implements Update{
         toUpdate.clear();
         gui.updateVue();
 
-    }
+    }*/
 
     public void update(){} // pour remplir l'implémentation en attendant
 

@@ -1,14 +1,9 @@
 package Modele;
-import Controle.UpdateInter;
 
 public class Simulation {
     private CityMap cityMap;
 
     public Simulation() {
-        this.cityMap = new CityMap(50, 50);
-    }
-
-    public Simulation(UpdateInter update) {
         this.cityMap = new CityMap(50, 50);
         initializeMap();
     }
