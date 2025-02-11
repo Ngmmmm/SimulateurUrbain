@@ -1,5 +1,6 @@
 package Vue;
 
+import Modele.Case;
 import Modele.CityMap;
 import Modele.Direction;
 import Modele.Position;
@@ -16,12 +17,13 @@ import java.util.ArrayList;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import javax.swing.*;
 
 
 public class TrafficSimulatorGUI extends JFrame implements UpdateInter {
 
-    private static final int ROWS = 20;
-    private static final int COLS = 20;
+    private static final int ROWS = 50;
+    private static final int COLS = 50;
     private JPanel mapPanel;
     private JScrollPane scrollPane;
     private int cellSize = 100;
@@ -192,28 +194,39 @@ public class TrafficSimulatorGUI extends JFrame implements UpdateInter {
         return panel;
     }
 
+    private static final double MAX_ZOOM = 2.5;  // Le facteur de zoom maximal autorisé
+
     private void zoom(boolean zoomIn, Point cursorPosition) {
         if (zoomIn) {
-            zoomFactor += 0.1;
-        } else if (zoomFactor > 0.2) {
-            zoomFactor -= 0.1;
+            
+            if (zoomFactor < MAX_ZOOM) {
+                zoomFactor += 0.1;
+            }
+        } else {
+            
+            if (zoomFactor > 0.2) {
+                zoomFactor -= 0.1;
+            }
         }
-
+    
+        
         cellSize = (int) (40 * zoomFactor);
         mapPanel.setPreferredSize(new Dimension(COLS * cellSize, ROWS * cellSize));
         mapPanel.revalidate();
-
+    
         if (cursorPosition != null) {
             JScrollBar horizontal = scrollPane.getHorizontalScrollBar();
             JScrollBar vertical = scrollPane.getVerticalScrollBar();
-
+    
+           
             int newCenterX = (int) (cursorPosition.x * zoomFactor);
             int newCenterY = (int) (cursorPosition.y * zoomFactor);
-
+    
             horizontal.setValue(Math.max(newCenterX - scrollPane.getWidth() / 2, 0));
             vertical.setValue(Math.max(newCenterY - scrollPane.getHeight() / 2, 0));
         }
-
+    
+       
         mapPanel.repaint();
     }
 
@@ -259,35 +272,17 @@ public class TrafficSimulatorGUI extends JFrame implements UpdateInter {
 
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            // 1. Créer l'interface graphique avec une grille vide (null)
-    
-            // 2. Créer CityMap et l'associer à l'interface graphique
-            CityMap cityMap = new CityMap(20, 20);
+        Simulation s = new Simulation();
+        CityMap cityMap = s.getCityMap();
 
-    
-            // 3. Ajouter des bâtiments et routes
-            cityMap.setBuilding();
-    
-            for (int i = 0; i < 20; i++) {
-                cityMap.setRoad(new Position(i, 10), Direction.RIGHT, "Route Horizontale 1");
-                cityMap.setRoad(new Position(i, 11), Direction.RIGHT, "Route Horizontale 1");
-                cityMap.setRoad(new Position(i, 15), Direction.RIGHT, "Route Horizontale 2");
-            }
-    
-            for (int i = 0; i < 20; i++) {
-                cityMap.setRoad(new Position(2, i), Direction.DOWN, "Route Verticale 1");
-                cityMap.setRoad(new Position(8, i), Direction.DOWN, "Route Verticale 2");
-            }
+        Position centerPosition = new Position(25, 25);
 
-            AffichageTemp.affiche(cityMap.getGrid());  
+        // Ajouter une voiture si la position est une route
+        Car car = new Car("rouge", (double)10, centerPosition , Direction.UP, 1);
+        cityMap.getGrid()[centerPosition.getY()][centerPosition.getX()].setVehicle(car);
 
-            new TrafficSimulatorGUI(cityMap, cityMap.getGrid());
-    
-            // 4. Mettre à jour la grille et redessiner l'interface
-
-        });
+        // Lancer l'interface graphique
+        SwingUtilities.invokeLater(() -> new TrafficSimulatorGUI(cityMap));
     }
-    
-    
+
 }

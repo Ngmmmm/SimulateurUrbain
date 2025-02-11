@@ -12,7 +12,7 @@ public class AffichageTemp {
                 }else if(grid[i][j].toString().equals("Voiture")){
                     System.out.print("V|");
                 }else{
-                    System.out.print("B|");
+                    System.out.print(".|");
                 }
             }
             System.out.println();
