@@ -88,6 +88,3 @@ public class Simulation {
         }
     }
 }
-
-}
->>>>>>> src/Modele/Simulation.java
