@@ -112,5 +112,9 @@ public class Case{
         return (this.vehicle == null && this.building == null);
     }
 
+    public boolean isEmpty(){
+        return (this.vehicle == null && this.building == null);
+    }
+
 
 }
