@@ -1,7 +1,9 @@
 package Modele.Vehicle;
 
 import Modele.Case;
+import Modele.CityMap;
 import Modele.Direction;
+import Modele.Pathfinding;
 import Modele.Position;
 import Modele.Signalling.NoEntry;
 import Modele.Signalling.Signalling;
@@ -10,6 +12,7 @@ import Modele.Signalling.TrafficLights;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import javax.swing.Timer;
 
 public abstract class Vehicle {
@@ -21,10 +24,10 @@ public abstract class Vehicle {
     protected float fuel;
     protected float fuelConso;
     protected BufferedImage img;
-    protected Case[][] map;
+    protected CityMap map;
     protected Position destination;
 
-    public Vehicle(String id, double speed, Position position, Direction direction, float fuelConso, Case[][] map, Position destination) {
+    public Vehicle(String id, double speed, Position position, Direction direction, float fuelConso, CityMap map, Position destination) {
         this.id = id;
         this.speed = speed;
         this.position = position;
@@ -119,7 +122,7 @@ public abstract class Vehicle {
     }
 
     public Case getCase(Position pos){
-        return map[pos.getX()][pos.getY()];
+        return map.getGrid()[pos.getX()][pos.getY()];
     }
 
     public boolean nextCaseIsValid(){
@@ -159,13 +162,19 @@ public abstract class Vehicle {
             if(act.getSignalling() == null || signallingOk(act)){
                 act.setVehicle(null);
                 position = nextPosition();
-                map[position.getX()][position.getY()].setVehicle(this);
+                map.getGrid()[position.getX()][position.getY()].setVehicle(this);
             }
         }
     }
 
     public Position checkCaseForSignalling(){
         return position.checkPosForSignalling(direction);
+    }
+
+
+    public void followPast(){
+        ArrayList<Position> past = Pathfinding.findShortestPath(map, position, destination);
+        
     }
 
     
