@@ -2,10 +2,14 @@ package Vue;
 
 import Modele.Case;
 import Modele.CityMap;
+import Modele.Pathfinding;
+import Modele.Position;
 import Modele.Simulation;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+
 import javax.swing.*;
 
 
@@ -251,7 +255,13 @@ public class TrafficSimulatorGUI extends JFrame {
     public static void main(String[] args) {
         Simulation s = new Simulation();
         CityMap cityMap = s.getCityMap();
+        
 
+        ArrayList<Position> pos = Pathfinding.findShortestPath(cityMap, new Position(0,2), new Position(45,41) );
+        for(int i = 0; i < pos.size()  ; i++){
+            System.out.println(pos.get(i));
+
+        }
         // Lancer l'interface graphique
         SwingUtilities.invokeLater(() -> new TrafficSimulatorGUI(cityMap));
     }

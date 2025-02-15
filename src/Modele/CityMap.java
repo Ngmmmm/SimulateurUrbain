@@ -66,7 +66,7 @@ public class CityMap implements Update{
     }
 
     // Vérifier si une position est valide
-    private boolean isValidPosition(int row, int col) {
+    public boolean isValidPosition(int row, int col) {
         return row >= 0 && row < rows && col >= 0 && col < cols;
     }
 
