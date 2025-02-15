@@ -1,13 +1,10 @@
 package Modele;
 
 import java.util.ArrayList;
-
 import Controle.Update;
 import Modele.Vehicle.Vehicle;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import Vue.TrafficSimulatorGUI; // à enlever
 
 public class CityMap implements Update{
     private int rows;
@@ -34,39 +31,43 @@ public class CityMap implements Update{
     }
 
     public void setRoad(Position pos, String ligne, Direction... d) {
-    int row = pos.getY();
-    int col = pos.getX();
-    if (isValidPosition(row, col)) {
-        Road currentRoad = grid[row][col].getRoad();
+        int row = pos.getY();
+        int col = pos.getX();
+        if (isValidPosition(row, col)) {
+            Road currentRoad = grid[row][col].getRoad();
 
-        if (currentRoad != null) {
-            // Fusionner les directions existantes avec les nouvelles
-            List<Direction> updatedDirections = new ArrayList<>(Arrays.asList(currentRoad.getDirection()));
+            if (currentRoad != null) {
+                // Fusionner les directions existantes avec les nouvelles
+                List<Direction> updatedDirections = new ArrayList<>(Arrays.asList(currentRoad.getDirection()));
 
-            for (Direction newDirection : d) {
-                if (!updatedDirections.contains(newDirection)) {
-                    updatedDirections.add(newDirection);
+                for (Direction newDirection : d) {
+                    if (!updatedDirections.contains(newDirection)) {
+                        updatedDirections.add(newDirection);
+                    }
                 }
-            }
 
-            // Mettre à jour la route existante avec les directions fusionnées
-            currentRoad.setDirection(updatedDirections.toArray(new Direction[0]));
-        } else {
-            // Créer une nouvelle route avec les directions données
-            grid[row][col].setRoad(new Road(d, ligne));
+                // Mettre à jour la route existante avec les directions fusionnées
+                currentRoad.setDirection(updatedDirections.toArray(new Direction[0]));
+            } else {
+                // Créer une nouvelle route avec les directions données
+                grid[row][col].setRoad(new Road(d, ligne));
+            }
         }
     }
-}
 
 
 
-    // Ajouter un véhicule à la carte
-    public void addVehicle(Vehicle vehicle) {
-        
+    // Ajouter un véhicule à une position donnée s'il y a une route
+    public void addVehicle(Vehicle vehicle, Position pos) {
+        if (isValidPosition(pos.getY(), pos.getX()) && grid[pos.getY()][pos.getX()].getRoad() != null) {
+            grid[pos.getY()][pos.getX()].setVehicle(vehicle);
+        }
     }
+    
+
 
     // Vérifier si une position est valide
-    private boolean isValidPosition(int row, int col) {
+    public boolean isValidPosition(int row, int col) {
         return row >= 0 && row < rows && col >= 0 && col < cols;
     }
 

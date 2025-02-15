@@ -1,11 +1,16 @@
 package Modele;
 
+import Modele.Vehicle.Car;
+import Modele.Vehicle.Vehicle;
+import java.util.Random;
+
 public class Simulation {
     private CityMap cityMap;
 
     public Simulation() {
         this.cityMap = new CityMap(50, 50);
         initializeMap();
+        spawnRandomCars();
     }
 
     private void initializeMap() {
@@ -60,6 +65,37 @@ public class Simulation {
         for (int i = 20; i < 31; i++) {cityMap.setRoad(new Position(45, i), "Continue", Direction.DOWN);}        
         
         for (int i = 14; i < 33; i++) {cityMap.setRoad(new Position(10, i), "Continue", Direction.UP);}
+    }
+
+    public void spawnRandomCars() {
+        Random rand = new Random();
+
+        for (int i = 0; i < 10; i++) {  // Ajouter 10 voitures
+            Position randomPos;
+            do {
+                int x = rand.nextInt(50);
+                int y = rand.nextInt(50);
+                randomPos = new Position(y, x);
+            } while (!cityMap.isValidPosition(randomPos.getY(), randomPos.getX()) || cityMap.getGrid()[randomPos.getY()][randomPos.getX()].getRoad() == null);
+
+            Road road = cityMap.getRoad(randomPos);
+            Direction direction = Direction.RIGHT; // Valeur par défaut
+
+            if (road != null && road.getDirection().length > 0) {
+                direction = road.getDirection()[0]; // Prendre la première direction disponible
+            }
+            Position destination = new Position(rand.nextInt(50), rand.nextInt(50));
+
+            Car newCar = new Car("Car" + Vehicle.nbCar, 2.0, randomPos, direction, cityMap.getGrid(), destination);
+            cityMap.addVehicle(newCar, randomPos);
+
+            System.out.println("Nouvelle voiture ajoutée :");
+            System.out.println("ID: " + newCar.getId());
+            System.out.println("Vitesse: " + newCar.getSpeed());
+            System.out.println("Position: " + newCar.getPosition());
+            System.out.println("Direction: " + newCar.getDirection());
+            System.out.println("-------------------------------");
+        }
     }
 
     public CityMap getCityMap() {

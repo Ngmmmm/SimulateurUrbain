@@ -173,7 +173,7 @@ public class TrafficSimulatorGUI extends JFrame {
         return panel;
     }
 
-    private static final double MAX_ZOOM = 2.5;  // Le facteur de zoom maximal autorisé
+    private static final double MAX_ZOOM = 2.5;
 
     private void zoom(boolean zoomIn, Point cursorPosition) {
         if (zoomIn) {
