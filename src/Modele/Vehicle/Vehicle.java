@@ -6,7 +6,7 @@ import Modele.Position;
 import Modele.Signalling.NoEntry;
 import Modele.Signalling.Signalling;
 import Modele.Signalling.Stop;
-import Modele.Signalling.TrafficLights;
+import Modele.Signalling.TrafficLight;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -136,7 +136,7 @@ public abstract class Vehicle {
     public boolean signallingOk(Case act){
         Signalling signal = act.getSignalling();
         if(signal != null){
-            if(signal instanceof TrafficLights trafficLights){
+            if(signal instanceof TrafficLight trafficLights){
                 if (trafficLights.getColor().equals("RED") || trafficLights.getColor().equals("ORANGE")){
                     return false;
                 }

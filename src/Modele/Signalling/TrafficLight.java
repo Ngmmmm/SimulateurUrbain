@@ -5,11 +5,9 @@ import Modele.Position;
 
 public class TrafficLight extends Signalling {
     private LightColor color;
-    private Direction direction;
 
     public TrafficLight(Position pos, Direction direction) {
-        super(pos);
-        this.direction = direction;
+        super(pos, direction);
         this.color = LightColor.RED; // Initialisé en rouge
     }
 
@@ -21,8 +19,11 @@ public class TrafficLight extends Signalling {
     public boolean isNorthSouth() {
         return this.direction == Direction.UP || this.direction == Direction.DOWN;
     }
-
+    public String getColor() {
+        return color.name();
+    }
     public Direction getDirection() { return direction; }
+    @Override
     public Position getPosition() {
         return position;
     }
