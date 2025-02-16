@@ -47,7 +47,7 @@ public abstract class Vehicle {
         isMoving = false;
     }
 
-    public void move(Direction d) {
+    public void move1(Direction d) {
         if (fuel > 0) {
             changeDirection(d);
             position = d.move(position);
@@ -122,18 +122,19 @@ public abstract class Vehicle {
     }
 
     public Case getCase(Position pos){
-        return map.getGrid()[pos.getX()][pos.getY()];
+        return map.getGrid()[pos.getY()][pos.getX()];
     }
 
     public boolean nextCaseIsValid(){
         Case next = getCase(nextPosition());
-        return next.isEmpty();
+        return !next.isEmpty();
     }
 
     public boolean signallingOk(Case act){
         Signalling signal = act.getSignalling();
         if(signal != null){
             if(signal instanceof TrafficLights trafficLights){
+                System.out.println("FEUDANSLACASDE");
                 if (trafficLights.getColor().equals("RED") || trafficLights.getColor().equals("ORANGE")){
                     return false;
                 }
@@ -156,15 +157,17 @@ public abstract class Vehicle {
         return true;
     }
 
-    public void moove(){
+    public boolean move(){
         Case act = getCase(position);
         if (nextCaseIsValid()){
             if(act.getSignalling() == null || signallingOk(act)){
                 act.setVehicle(null);
                 position = nextPosition();
-                map.getGrid()[position.getX()][position.getY()].setVehicle(this);
+                map.getGrid()[position.getY()][position.getX()].setVehicle(this);
+                return true;
             }
         }
+        return false;
     }
 
     public Position checkCaseForSignalling(){
@@ -172,9 +175,35 @@ public abstract class Vehicle {
     }
 
 
-    public void followPast(){
-        ArrayList<Position> past = Pathfinding.findShortestPath(map, position, destination);
-        
+
+    private void followPath(ArrayList<Position> path, int index) {
+        if (index >= path.size()) {
+            return; // Arrêt si on a atteint la destination
+        }
+    
+        Position prochainePos = path.get(index);
+        Direction prochaineDir = Direction.getDirection(position, prochainePos);
+        changeDirection(prochaineDir);
+    
+        Timer timer = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                move();
+                System.out.print(position.getX());
+                System.out.println(position.getY());
+                followPath(path, index + 1); 
+            }
+        });
+    
+        timer.setRepeats(false); 
+        timer.start();
+    }
+    
+    public void followAllPath() {
+        ArrayList<Position> path = Pathfinding.findShortestPath(map, position, destination);
+        if (path.size() > 1) {
+            followPath(path, 1); 
+        }
     }
 
     

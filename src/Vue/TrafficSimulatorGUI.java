@@ -2,14 +2,17 @@ package Vue;
 
 import Modele.Case;
 import Modele.CityMap;
+import Modele.Direction;
 import Modele.Pathfinding;
 import Modele.Position;
+import Modele.Signalling.TrafficLight;
+import Modele.Signalling.TrafficLightGroup;
 import Modele.Simulation;
+import Modele.Vehicle.Car;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-
 import javax.swing.*;
 
 
@@ -255,6 +258,16 @@ public class TrafficSimulatorGUI extends JFrame {
     public static void main(String[] args) {
         Simulation s = new Simulation();
         CityMap cityMap = s.getCityMap();
+        Direction dir = Direction.LEFT;
+        Car car = new Car("1", 2, new Position(0, 2), dir, cityMap, new Position(45,41));
+        ArrayList<TrafficLight> allLights = new ArrayList<>();
+        TrafficLight feu = new TrafficLight(new Position(3,2), dir);
+        allLights.add(new TrafficLight(new Position(2, 3), Direction.UP)  );
+        allLights.add(feu);
+        cityMap.getGrid()[2][3].setSignalling(feu);
+        TrafficLightGroup groupe1 = new TrafficLightGroup(allLights);
+        
+
         
 
         ArrayList<Position> pos = Pathfinding.findShortestPath(cityMap, new Position(0,2), new Position(45,41) );
@@ -262,8 +275,15 @@ public class TrafficSimulatorGUI extends JFrame {
             System.out.println(pos.get(i));
 
         }
+        // System.out.println(car.getPosition().getX() +"," + car.getPosition().getY());
+        // car.suivreCheminComplet();
+        // System.out.println(car.getPosition().getX() +"," + car.getPosition().getY());
+        
         // Lancer l'interface graphique
         SwingUtilities.invokeLater(() -> new TrafficSimulatorGUI(cityMap));
+        System.out.println(car.getPosition().getX() +"," + car.getPosition().getY());
+        car.followAllPath();
+        System.out.println(car.getPosition().getX() +"," + car.getPosition().getY());
     }
 
 }
