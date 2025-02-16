@@ -1,15 +1,19 @@
 package Modele.Vehicle;
 
 import Modele.Case;
+import Modele.CityMap;
 import Modele.Direction;
+import Modele.Pathfinding;
 import Modele.Position;
 import Modele.Signalling.NoEntry;
 import Modele.Signalling.Signalling;
 import Modele.Signalling.Stop;
+import Modele.Signalling.TrafficLight;
 import Modele.Signalling.TrafficLights;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import javax.swing.Timer;
 
 public abstract class Vehicle {
@@ -21,10 +25,10 @@ public abstract class Vehicle {
     protected float fuel;
     protected float fuelConso;
     protected BufferedImage img;
-    protected Case[][] map;
+    protected CityMap map;
     protected Position destination;
 
-    public Vehicle(String id, double speed, Position position, Direction direction, float fuelConso, Case[][] map, Position destination) {
+    public Vehicle(String id, double speed, Position position, Direction direction, float fuelConso, CityMap map, Position destination) {
         this.id = id;
         this.speed = speed;
         this.position = position;
@@ -44,7 +48,7 @@ public abstract class Vehicle {
         isMoving = false;
     }
 
-    public void move(Direction d) {
+    public void move1(Direction d) {
         if (fuel > 0) {
             changeDirection(d);
             position = d.move(position);
@@ -119,18 +123,19 @@ public abstract class Vehicle {
     }
 
     public Case getCase(Position pos){
-        return map[pos.getX()][pos.getY()];
+        return map.getGrid()[pos.getY()][pos.getX()];
     }
 
     public boolean nextCaseIsValid(){
         Case next = getCase(nextPosition());
-        return next.isEmpty();
+        return !next.isEmpty();
     }
 
     public boolean signallingOk(Case act){
         Signalling signal = act.getSignalling();
         if(signal != null){
-            if(signal instanceof TrafficLights trafficLights){
+            if(signal instanceof TrafficLight trafficLights){
+                System.out.println("FEUDANSLACASDE");
                 if (trafficLights.getColor().equals("RED") || trafficLights.getColor().equals("ORANGE")){
                     return false;
                 }
@@ -153,19 +158,58 @@ public abstract class Vehicle {
         return true;
     }
 
-    public void moove(){
+    public boolean move(){
         Case act = getCase(position);
         if (nextCaseIsValid()){
             if(act.getSignalling() == null || signallingOk(act)){
                 act.setVehicle(null);
                 position = nextPosition();
-                map[position.getX()][position.getY()].setVehicle(this);
+                map.getGrid()[position.getY()][position.getX()].setVehicle(this);
+                return true;
             }
         }
+        return false;
     }
 
     public Position checkCaseForSignalling(){
         return position.checkPosForSignalling(direction);
+    }
+
+
+
+    private void followPath(ArrayList<Position> path, int index) {
+        if (index >= path.size()) {
+            return; // Arrêt si on a atteint la destination
+        }
+    
+        Position prochainePos = path.get(index);
+        Direction prochaineDir = Direction.getDirection(position, prochainePos);
+        changeDirection(prochaineDir);
+    
+        Timer timer = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.print(position.getX());
+                System.out.println(position.getY());
+                if(move()){
+                    followPath(path, index + 1); 
+                }else{
+                    followPath(path, index);
+                }
+                
+                
+            }
+        });
+    
+        timer.setRepeats(false); 
+        timer.start();
+    }
+    
+    public void followAllPath() {
+        ArrayList<Position> path = Pathfinding.findShortestPath(map, position, destination);
+        if (path.size() > 1) {
+            followPath(path, 1); 
+        }
     }
 
     

@@ -1,10 +1,9 @@
-import java.util.ArrayList;
-import java.util.List;
-
 import Modele.Direction;
 import Modele.Position;
 import Modele.Signalling.TrafficLight;
 import Modele.Signalling.TrafficLightGroup;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
 
