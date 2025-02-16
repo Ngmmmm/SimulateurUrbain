@@ -36,6 +36,9 @@ public class TrafficLight extends Signalling {
     public String toString(){
         return "Feu à (" + getPosition().getX() + "," + getPosition().getY() + ") [" + direction + "] -> " + color;
     }
+    public String getColor() {
+        return color.name();
+    }
 }
 
 

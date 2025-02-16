@@ -8,6 +8,7 @@ import Modele.Position;
 import Modele.Signalling.NoEntry;
 import Modele.Signalling.Signalling;
 import Modele.Signalling.Stop;
+import Modele.Signalling.TrafficLight;
 import Modele.Signalling.TrafficLights;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -133,7 +134,7 @@ public abstract class Vehicle {
     public boolean signallingOk(Case act){
         Signalling signal = act.getSignalling();
         if(signal != null){
-            if(signal instanceof TrafficLights trafficLights){
+            if(signal instanceof TrafficLight trafficLights){
                 System.out.println("FEUDANSLACASDE");
                 if (trafficLights.getColor().equals("RED") || trafficLights.getColor().equals("ORANGE")){
                     return false;
@@ -188,10 +189,15 @@ public abstract class Vehicle {
         Timer timer = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                move();
                 System.out.print(position.getX());
                 System.out.println(position.getY());
-                followPath(path, index + 1); 
+                if(move()){
+                    followPath(path, index + 1); 
+                }else{
+                    followPath(path, index);
+                }
+                
+                
             }
         });
     
