@@ -10,8 +10,8 @@ public class Main {
     public static void main(String[] args) {
         
         List<TrafficLight> allLights = new ArrayList<>();
-        allLights.add(new TrafficLight(new Position(2, 3), Direction.UP)  );
-        allLights.add(new TrafficLight(new Position(3, 3), Direction.LEFT)   );
+        allLights.add(new TrafficLight(new Position(2, 3), Direction.UP, null)  );
+        allLights.add(new TrafficLight(new Position(3, 3), Direction.LEFT, null)   );
 
 
         
