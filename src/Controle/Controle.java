@@ -42,8 +42,8 @@ public class Controle {
         dir = Direction.LEFT;
         car = new Car("1", 2, new Position(0, 2), dir, cityMap, new Position(45,41));
         allLights = new ArrayList<>();
-        feu = new TrafficLight(new Position(3,2), dir);
-        allLights.add(new TrafficLight(new Position(2, 3), Direction.UP)  );
+        feu = new TrafficLight(new Position(3,2), dir, cityMap);
+        allLights.add(new TrafficLight(new Position(2, 3), Direction.UP, cityMap)  );
         allLights.add(feu);      
         cityMap.getGrid()[2][3].setSignalling(feu);  
         TrafficLightGroup groupe1 = new TrafficLightGroup(allLights);
@@ -54,7 +54,6 @@ public class Controle {
 
         
 
-        
 
         
 
