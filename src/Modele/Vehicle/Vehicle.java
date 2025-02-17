@@ -37,7 +37,10 @@ public abstract class Vehicle {
         this.fuel = 100;
         this.map = map;
         this.destination = destination;
-        map.addVehicle(this);
+        if (map != null){
+            map.addVehicle(this);
+        }
+
     }
 
     public void start() {
