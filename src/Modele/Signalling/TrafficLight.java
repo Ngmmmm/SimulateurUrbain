@@ -39,6 +39,10 @@ public class TrafficLight extends Signalling {
     public String getColor() {
         return color.name();
     }
+
+    public LightColor getCol(){
+        return color;
+    }
 }
 
 
