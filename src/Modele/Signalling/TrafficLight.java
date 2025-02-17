@@ -12,7 +12,10 @@ public class TrafficLight extends Signalling {
         super(pos);
         this.direction = direction;
         this.color = LightColor.RED; // Initialisé en rouge
-        map.addTrafficLight(this);
+        if (map != null){
+            map.addTrafficLight(this);
+        }
+
     }
 
     public void setColor(LightColor color) {
