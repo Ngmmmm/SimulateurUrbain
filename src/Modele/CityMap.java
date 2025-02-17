@@ -3,6 +3,7 @@ package Modele;
 import java.util.ArrayList;
 
 import Controle.Update;
+import Modele.Signalling.TrafficLight;
 import Modele.Vehicle.Vehicle;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,8 +63,25 @@ public class CityMap implements Update{
 
     // Ajouter un véhicule à la carte
     public void addVehicle(Vehicle vehicle) {
+        Position pos = vehicle.getPosition();
+        int row = pos.getY();
+        int col = pos.getX();
         
+        if (isValidPosition(row, col)) {
+            grid[row][col].setVehicle(vehicle);
+        }
     }
+
+    public void addTrafficLight(TrafficLight trafficLight) {
+        Position pos = trafficLight.getPosition();
+        int row = pos.getY();
+        int col = pos.getX();
+        
+        if (isValidPosition(row, col)) {
+            grid[row][col].setSignalling(trafficLight);
+        }
+    }
+
 
     // Vérifier si une position est valide
     public boolean isValidPosition(int row, int col) {

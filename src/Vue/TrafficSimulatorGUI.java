@@ -261,8 +261,8 @@ public class TrafficSimulatorGUI extends JFrame {
         Direction dir = Direction.LEFT;
         Car car = new Car("1", 2, new Position(0, 2), dir, cityMap, new Position(45,41));
         ArrayList<TrafficLight> allLights = new ArrayList<>();
-        TrafficLight feu = new TrafficLight(new Position(3,2), dir);
-        allLights.add(new TrafficLight(new Position(2, 3), Direction.UP)  );
+        TrafficLight feu = new TrafficLight(new Position(3,2), dir, cityMap);
+        allLights.add(new TrafficLight(new Position(2, 3), Direction.UP, cityMap)  );
         allLights.add(feu);
         cityMap.getGrid()[2][3].setSignalling(feu);
         TrafficLightGroup groupe1 = new TrafficLightGroup(allLights);
