@@ -5,6 +5,7 @@ import Modele.CityMap;
 import Modele.Direction;
 import Modele.Pathfinding;
 import Modele.Position;
+import Modele.Signalling.LightColor;
 import Modele.Signalling.TrafficLight;
 import Modele.Signalling.TrafficLightGroup;
 import Modele.Simulation;
@@ -71,10 +72,19 @@ public class TrafficSimulatorGUI extends JFrame {
         return panel;
     }
 
+    private BufferedImage getTrafficCol(TrafficLight c){
+        switch (c.getCol()){
+            case LightColor.RED: return Image.imgTrafficRed;
+            case LightColor.ORANGE: return Image.imgTrafficOrange;
+            case LightColor.GREEN: return Image.imgTrafficGreen;
+            default: return null;
+        }
+    } 
     //dessine la case selon sa place et ses propriétés
-    private void drawCase(Graphics g, int i, int j, Case currentCase){
+    public void drawCase(Graphics g, int i, int j){
         int x = j * cellSize;
         int y = i * cellSize;
+        Case currentCase = cityMap.getGrid()[i][j];
 
         // Dessiner la route si elle existe
         if (currentCase.getRoad() != null) {
@@ -88,7 +98,7 @@ public class TrafficSimulatorGUI extends JFrame {
             // Dessiner un signalement si il existe
             if (currentCase.getSignalling() != null){
                 BufferedImage img = switch (currentCase.getSignalling().getType()){
-                    case "TrafficLights" -> Image.imgTrafficLight;
+                    case "TrafficLights" -> getTrafficCol((TrafficLight) currentCase.getSignalling());
                     case "Stop" -> Image.imgStop;
                     case "NoEntry" -> Image.imgNoEntry;
                     default -> null;
@@ -113,14 +123,12 @@ public class TrafficSimulatorGUI extends JFrame {
 
     }
 
-    private void drawMap(Graphics g) {
-        Case[][] grid = cityMap.getGrid();
+    public void drawMap(Graphics g) {
         Image.loadImg();
 
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLS; j++) {
-
-                drawCase(g, i, j, grid[i][j]);
+                drawCase(g, i, j);
             }
         }
 
@@ -255,35 +263,5 @@ public class TrafficSimulatorGUI extends JFrame {
         };
     }
 
-    public static void main(String[] args) {
-        Simulation s = new Simulation();
-        CityMap cityMap = s.getCityMap();
-        Direction dir = Direction.LEFT;
-        Car car = new Car("1", 2, new Position(0, 2), dir, cityMap, new Position(45,41));
-        ArrayList<TrafficLight> allLights = new ArrayList<>();
-        TrafficLight feu = new TrafficLight(new Position(3,2), dir, cityMap);
-        allLights.add(new TrafficLight(new Position(2, 3), Direction.UP, cityMap)  );
-        allLights.add(feu);
-        cityMap.getGrid()[2][3].setSignalling(feu);
-        TrafficLightGroup groupe1 = new TrafficLightGroup(allLights);
-        
-
-        
-
-        ArrayList<Position> pos = Pathfinding.findShortestPath(cityMap, new Position(0,2), new Position(45,41) );
-        for(int i = 0; i < pos.size()  ; i++){
-            System.out.println(pos.get(i));
-
-        }
-        // System.out.println(car.getPosition().getX() +"," + car.getPosition().getY());
-        // car.suivreCheminComplet();
-        // System.out.println(car.getPosition().getX() +"," + car.getPosition().getY());
-        
-        // Lancer l'interface graphique
-        SwingUtilities.invokeLater(() -> new TrafficSimulatorGUI(cityMap));
-        System.out.println(car.getPosition().getX() +"," + car.getPosition().getY());
-        car.followAllPath();
-        System.out.println(car.getPosition().getX() +"," + car.getPosition().getY());
-    }
 
 }

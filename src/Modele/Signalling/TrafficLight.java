@@ -43,6 +43,10 @@ public class TrafficLight extends Signalling {
             color;
     }
 
+
+    public LightColor getCol(){
+        return color;
+    }
 }
 
 

@@ -5,15 +5,14 @@ import Modele.CityMap;
 import Modele.Direction;
 import Modele.Pathfinding;
 import Modele.Position;
-import Modele.Signalling.NoEntry;
-import Modele.Signalling.Signalling;
-import Modele.Signalling.Stop;
-import Modele.Signalling.TrafficLight;
+import Modele.Signalling.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import javax.swing.Timer;
+
+import Controle.*;
 
 public abstract class Vehicle {
     protected String id;
@@ -166,6 +165,7 @@ public abstract class Vehicle {
         if (nextCaseIsValid()){
             if(act.getSignalling() == null || signallingOk(act)){
                 act.setVehicle(null);
+                Controle.addUpdate(new TuplePosAct(position, new Update(){public void update(Case c){}}));
                 position = nextPosition();
                 map.getGrid()[position.getY()][position.getX()].setVehicle(this);
                 return true;
@@ -196,6 +196,7 @@ public abstract class Vehicle {
                 System.out.println(position.getY());
                 if(move()){
                     followPath(path, index + 1); 
+                    Controle.addUpdate(new TuplePosAct(position, new Update(){public void update(Case c){}}));
                 }else{
                     followPath(path, index);
                 }
