@@ -1,11 +1,12 @@
 package Modele.Signalling;
 
+import Modele.Direction;
 import Modele.Position;
 
 public class Stop extends Signalling {
     
-    public Stop(Position position) {
-        super(position);
+    public Stop(Position position, Direction direction) {
+        super(position, direction);
     }
     
     @Override

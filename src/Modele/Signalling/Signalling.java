@@ -1,13 +1,16 @@
 package Modele.Signalling;
 
+import Modele.Direction;
 import Modele.Position;
 
 
 public abstract class Signalling {
     protected Position position;
+    protected Direction direction;
     
-    public Signalling(Position position) {
+    public Signalling(Position position, Direction direction) {
         this.position = position;
+        this.direction = direction;
     }
     
     public Position getPosition() {

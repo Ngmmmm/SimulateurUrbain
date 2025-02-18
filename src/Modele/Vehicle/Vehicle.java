@@ -25,6 +25,7 @@ public abstract class Vehicle {
     protected BufferedImage img;
     protected CityMap map;
     protected Position destination;
+    public static int nbCar = 0;
 
     public Vehicle(String id, double speed, Position position, Direction direction, float fuelConso, CityMap map, Position destination) {
         this.id = id;
@@ -36,9 +37,11 @@ public abstract class Vehicle {
         this.fuel = 100;
         this.map = map;
         this.destination = destination;
+        nbCar++;
         if (map != null){
-            map.addVehicle(this);
+            map.addVehicle(this, this.position);
         }
+        followAllPath();
 
     }
 
@@ -127,6 +130,11 @@ public abstract class Vehicle {
     public Case getCase(Position pos){
         return map.getGrid()[pos.getY()][pos.getX()];
     }
+
+    public int getNbCar(){
+        return nbCar;
+    }
+
 
     public boolean nextCaseIsValid(){
         Case next = getCase(nextPosition());

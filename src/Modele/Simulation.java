@@ -1,11 +1,20 @@
 package Modele;
 
+import Modele.Signalling.TrafficLight;
+import Modele.Signalling.TrafficLightGroup;
+import Modele.Vehicle.Car;
+import Modele.Vehicle.Vehicle;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 public class Simulation {
     private CityMap cityMap;
 
     public Simulation() {
         this.cityMap = new CityMap(50, 50);
         initializeMap();
+        spawnRandomCars();
     }
 
     private void initializeMap() {
@@ -49,17 +58,71 @@ public class Simulation {
         
         for (int i = 3; i < 14; i++) {cityMap.setRoad(new Position(47, i), "Continue", Direction.UP);}
 
-        for (int i = 31; i < 40; i++) {cityMap.setRoad(new Position(40, i), "Continue", Direction.DOWN);}
+        for (int i = 14; i < 33; i++) {cityMap.setRoad(new Position(10, i), "Continue", Direction.UP);}
         
         for (int i = 17; i < 27; i++) {cityMap.setRoad(new Position(i, 26), "Continue", Direction.LEFT);}
         for (int i = 18; i < 27; i++) {cityMap.setRoad(new Position(16, i), "Continue", Direction.UP);}
         for (int i = 26; i < 31; i++) {cityMap.setRoad(new Position(16, i), "Continue", Direction.DOWN);}
 
-
         for (int i = 34; i < 45; i++) {cityMap.setRoad(new Position(i, 20), "Continue", Direction.RIGHT);}
-        for (int i = 20; i < 31; i++) {cityMap.setRoad(new Position(45, i), "Continue", Direction.DOWN);}        
+        for (int i = 20; i < 31; i++) {cityMap.setRoad(new Position(45, i), "Continue", Direction.DOWN);}
         
-        for (int i = 14; i < 33; i++) {cityMap.setRoad(new Position(10, i), "Continue", Direction.UP);}
+        for (int i = 31; i < 40; i++) {cityMap.setRoad(new Position(40, i), "Continue", Direction.DOWN);}
+
+        cityMap.setNoEntry(new Position(19, 11));
+        cityMap.setNoEntry(new Position(19, 11));
+        cityMap.setNoEntry(new Position(47, 3));
+        cityMap.setNoEntry(new Position(10, 14));
+        cityMap.setNoEntry(new Position(16, 30));
+        cityMap.setNoEntry(new Position(45, 30));
+        cityMap.setNoEntry(new Position(40, 39));
+
+        cityMap.setStop(new Position(19, 11));
+        cityMap.setStop(new Position(19, 11));
+        cityMap.setStop(new Position(47, 3));
+        cityMap.setStop(new Position(10, 14));
+        cityMap.setStop(new Position(16, 30));
+        cityMap.setStop(new Position(45, 30));
+        cityMap.setStop(new Position(40, 39));
+        
+        List<TrafficLight> allLights = new ArrayList<>();
+        allLights.add(new TrafficLight(new Position(23, 0), Direction.DOWN, cityMap));
+        allLights.add(new TrafficLight(new Position(22, 2), Direction.RIGHT, cityMap));
+        allLights.add(new TrafficLight(new Position(27, 1), Direction.LEFT, cityMap));
+        allLights.add(new TrafficLight(new Position(26, 3), Direction.UP, cityMap));
+        TrafficLightGroup groupe1 = new TrafficLightGroup(allLights);
+    }
+
+    public void spawnRandomCars() {
+        Random rand = new Random();
+
+        for (int i = 0; i < 10; i++) {  // Ajouter 10 voitures
+            Position randomPos;
+            do {
+                int x = rand.nextInt(50);
+                int y = rand.nextInt(50);
+                randomPos = new Position(y, x);
+            } while (!cityMap.isValidPosition(randomPos.getY(), randomPos.getX()) || cityMap.getGrid()[randomPos.getY()][randomPos.getX()].getRoad() == null);
+
+            Road road = cityMap.getRoad(randomPos);
+            Direction direction = Direction.RIGHT; // Valeur par défaut
+
+            if (road != null && road.getDirection().length > 0) {
+                direction = road.getDirection()[0]; // Prendre la première direction disponible
+            }
+            ArrayList<Position> accessiblePosition = Pathfinding.findAllAccessiblePositions(cityMap, randomPos);
+            Position destination = accessiblePosition.get(rand.nextInt(accessiblePosition.size()));
+
+            Car newCar = new Car("Car" + Vehicle.nbCar, 2.0, randomPos, direction, cityMap, destination);
+            cityMap.addVehicle(newCar, randomPos);
+
+            System.out.println("Nouvelle voiture ajoutée :");
+            System.out.println("ID: " + newCar.getId());
+            System.out.println("Vitesse: " + newCar.getSpeed());
+            System.out.println("Position: " + newCar.getPosition());
+            System.out.println("Direction: " + newCar.getDirection());
+            System.out.println("-------------------------------");
+        }
     }
 
     public CityMap getCityMap() {

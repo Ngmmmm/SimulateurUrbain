@@ -39,4 +39,12 @@ public class Direction {
 
         return null;
     }
+
+    public Direction getOpposite() {
+        if (this == UP) return DOWN;
+        if (this == DOWN) return UP;
+        if (this == LEFT) return RIGHT;
+        if (this == RIGHT) return LEFT;
+        return null;
+    }
 }
