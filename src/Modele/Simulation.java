@@ -86,10 +86,10 @@ public class Simulation {
         cityMap.setStop(new Position(40, 39));
         
         List<TrafficLight> allLights = new ArrayList<>();
-        allLights.add(new TrafficLight(new Position(23, 0), Direction.DOWN));
-        allLights.add(new TrafficLight(new Position(22, 2), Direction.RIGHT));
-        allLights.add(new TrafficLight(new Position(27, 1), Direction.LEFT));
-        allLights.add(new TrafficLight(new Position(26, 3), Direction.UP));
+        allLights.add(new TrafficLight(new Position(23, 0), Direction.DOWN, cityMap));
+        allLights.add(new TrafficLight(new Position(22, 2), Direction.RIGHT, cityMap));
+        allLights.add(new TrafficLight(new Position(27, 1), Direction.LEFT, cityMap));
+        allLights.add(new TrafficLight(new Position(26, 3), Direction.UP, cityMap));
         TrafficLightGroup groupe1 = new TrafficLightGroup(allLights);
     }
 
@@ -110,9 +110,10 @@ public class Simulation {
             if (road != null && road.getDirection().length > 0) {
                 direction = road.getDirection()[0]; // Prendre la première direction disponible
             }
-            Position destination = new Position(rand.nextInt(50), rand.nextInt(50));
+            ArrayList<Position> accessiblePosition = Pathfinding.findAllAccessiblePositions(cityMap, randomPos);
+            Position destination = accessiblePosition.get(rand.nextInt(accessiblePosition.size()));
 
-            Car newCar = new Car("Car" + Vehicle.nbCar, 2.0, randomPos, direction, cityMap.getGrid(), destination);
+            Car newCar = new Car("Car" + Vehicle.nbCar, 2.0, randomPos, direction, cityMap, destination);
             cityMap.addVehicle(newCar, randomPos);
 
             System.out.println("Nouvelle voiture ajoutée :");

@@ -2,10 +2,18 @@ package Vue;
 
 import Modele.Case;
 import Modele.CityMap;
+import Modele.Direction;
+import Modele.Pathfinding;
+import Modele.Position;
+import Modele.Signalling.LightColor;
+import Modele.Signalling.TrafficLight;
+import Modele.Signalling.TrafficLightGroup;
 import Modele.Simulation;
+import Modele.Vehicle.Car;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import javax.swing.*;
 
 
@@ -64,10 +72,19 @@ public class TrafficSimulatorGUI extends JFrame {
         return panel;
     }
 
+    private BufferedImage getTrafficCol(TrafficLight c){
+        return switch (c.getCol()){
+            case RED -> Image.imgTrafficRed;
+            case ORANGE -> Image.imgTrafficOrange;
+            case GREEN -> Image.imgTrafficGreen;
+            default -> null;
+        };
+    } 
     //dessine la case selon sa place et ses propriétés
-    private void drawCase(Graphics g, int i, int j, Case currentCase){
+    public void drawCase(Graphics g, int i, int j){
         int x = j * cellSize;
         int y = i * cellSize;
+        Case currentCase = cityMap.getGrid()[i][j];
 
         // Dessiner la route si elle existe
         if (currentCase.getRoad() != null) {
@@ -81,7 +98,7 @@ public class TrafficSimulatorGUI extends JFrame {
             // Dessiner un signalement si il existe
             if (currentCase.getSignalling() != null){
                 BufferedImage img = switch (currentCase.getSignalling().getType()){
-                    case "TrafficLights" -> Image.imgTrafficLight;
+                    case "TrafficLights" -> getTrafficCol((TrafficLight) currentCase.getSignalling());
                     case "Stop" -> Image.imgStop;
                     case "NoEntry" -> Image.imgNoEntry;
                     default -> null;
@@ -106,14 +123,12 @@ public class TrafficSimulatorGUI extends JFrame {
 
     }
 
-    private void drawMap(Graphics g) {
-        Case[][] grid = cityMap.getGrid();
+    public void drawMap(Graphics g) {
         Image.loadImg();
 
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLS; j++) {
-
-                drawCase(g, i, j, grid[i][j]);
+                drawCase(g, i, j);
             }
         }
 
@@ -248,12 +263,5 @@ public class TrafficSimulatorGUI extends JFrame {
         };
     }
 
-    public static void main(String[] args) {
-        Simulation s = new Simulation();
-        CityMap cityMap = s.getCityMap();
-
-        // Lancer l'interface graphique
-        SwingUtilities.invokeLater(() -> new TrafficSimulatorGUI(cityMap));
-    }
 
 }

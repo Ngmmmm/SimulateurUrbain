@@ -1,17 +1,16 @@
 package Modele;
 
-import java.util.ArrayList;
-import Controle.Update;
 import Modele.Signalling.NoEntry;
 import Modele.Signalling.Stop;
+import Modele.Signalling.TrafficLight;
 import Modele.Vehicle.Vehicle;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class CityMap implements Update{
+public class CityMap{
     private int rows;
     private int cols;
-    private ArrayList<TuplePosCase> toUpdate = new ArrayList<TuplePosCase>();
 
     private Case[][] grid; // Grille représentant la carte
 
@@ -76,6 +75,16 @@ public class CityMap implements Update{
             System.out.println("Stop ajouté à la position " + pos + " avec la direction " + dir);
         } else {
             System.out.println("Impossible d'ajouter un Stop ici (position invalide ou pas de route).");
+        }
+    }
+
+    public void addTrafficLight(TrafficLight trafficLight) {
+        Position pos = trafficLight.getPosition();
+        int row = pos.getY();
+        int col = pos.getX();
+        
+        if (isValidPosition(row, col)) {
+            grid[row][col].setSignalling(trafficLight);
         }
     }
 
@@ -152,18 +161,6 @@ public class CityMap implements Update{
         return null;
     }
 
-    /*public void update(TrafficSimulatorGUI gui) { 
-        
-        // enlevez la dernière ligne et l'argument dans la réel implémentation 
-        
-        // va update toutes les cases qui ont été mises dans la liste des case a update 
-        for(TuplePosCase tileAt : toUpdate){
-            grid[tileAt.getX()][tileAt.getY()].update(tileAt.getCase());
-        }
-        toUpdate.clear();
-        gui.updateVue();
-
-    }*/
 
     public void update(){} // pour remplir l'implémentation en attendant
 

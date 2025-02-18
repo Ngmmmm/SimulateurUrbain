@@ -10,7 +10,9 @@ public class Image {
     static BufferedImage imgBuilding;
     static BufferedImage imgRoad;
     static BufferedImage imgStop;
-    static BufferedImage imgTrafficLight;
+    static BufferedImage imgTrafficGreen;
+    static BufferedImage imgTrafficRed;
+    static BufferedImage imgTrafficOrange;
     static BufferedImage imgNoEntry;
 
 
@@ -22,7 +24,9 @@ public class Image {
             imgBuilding = ImageIO.read(new File("building.png"));
             imgRoad = ImageIO.read(new File("road.png"));
             imgStop = ImageIO.read(new File("stop.png"));
-            imgTrafficLight = ImageIO.read(new File("trafficlight.png"));
+            imgTrafficGreen = ImageIO.read(new File("trafficGreen.png"));
+            imgTrafficRed = ImageIO.read(new File("trafficRed.png"));
+            imgTrafficOrange = ImageIO.read(new File("trafficOrange.png"));
             imgNoEntry = ImageIO.read(new File("noentry.png"));
             
         } catch (Exception e) {
