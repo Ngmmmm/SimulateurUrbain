@@ -1,7 +1,11 @@
 package Modele;
 
+import Modele.Signalling.TrafficLight;
+import Modele.Signalling.TrafficLightGroup;
 import Modele.Vehicle.Car;
 import Modele.Vehicle.Vehicle;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Simulation {
@@ -80,7 +84,13 @@ public class Simulation {
         cityMap.setStop(new Position(16, 30));
         cityMap.setStop(new Position(45, 30));
         cityMap.setStop(new Position(40, 39));
-  
+        
+        List<TrafficLight> allLights = new ArrayList<>();
+        allLights.add(new TrafficLight(new Position(23, 0), Direction.DOWN));
+        allLights.add(new TrafficLight(new Position(22, 2), Direction.RIGHT));
+        allLights.add(new TrafficLight(new Position(27, 1), Direction.LEFT));
+        allLights.add(new TrafficLight(new Position(26, 3), Direction.UP));
+        TrafficLightGroup groupe1 = new TrafficLightGroup(allLights);
     }
 
     public void spawnRandomCars() {
