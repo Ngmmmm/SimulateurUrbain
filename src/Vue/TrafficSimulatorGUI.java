@@ -73,12 +73,12 @@ public class TrafficSimulatorGUI extends JFrame {
     }
 
     private BufferedImage getTrafficCol(TrafficLight c){
-        switch (c.getCol()){
-            case LightColor.RED: return Image.imgTrafficRed;
-            case LightColor.ORANGE: return Image.imgTrafficOrange;
-            case LightColor.GREEN: return Image.imgTrafficGreen;
-            default: return null;
-        }
+        return switch (c.getCol()){
+            case RED -> Image.imgTrafficRed;
+            case ORANGE -> Image.imgTrafficOrange;
+            case GREEN -> Image.imgTrafficGreen;
+            default -> null;
+        };
     } 
     //dessine la case selon sa place et ses propriétés
     public void drawCase(Graphics g, int i, int j){
