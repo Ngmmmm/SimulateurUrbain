@@ -190,6 +190,7 @@ public abstract class Vehicle {
 
     private void followPath(ArrayList<Position> path, int index) {
         if (index >= path.size()) {
+            this.getCase(position).setVehicle(null);
             return; // Arrêt si on a atteint la destination
         }
     

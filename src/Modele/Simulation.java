@@ -123,6 +123,7 @@ public class Simulation {
             System.out.println("Direction: " + newCar.getDirection());
             System.out.println("-------------------------------");
         }
+        
     }
 
     public CityMap getCityMap() {
