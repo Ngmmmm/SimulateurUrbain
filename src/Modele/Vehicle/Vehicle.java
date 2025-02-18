@@ -39,7 +39,7 @@ public abstract class Vehicle {
         this.destination = destination;
         nbCar++;
         if (map != null){
-            map.addVehicle(this, this.position);
+            map.addVehicle(this);
         }
         followAllPath();
 

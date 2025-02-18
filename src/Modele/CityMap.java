@@ -59,9 +59,14 @@ public class CityMap{
 
 
     // Ajouter un véhicule à une position donnée s'il y a une route
-    public void addVehicle(Vehicle vehicle, Position pos) {
-        if (isValidPosition(pos.getY(), pos.getX()) && grid[pos.getY()][pos.getX()].getRoad() != null) {
-            grid[pos.getY()][pos.getX()].setVehicle(vehicle);
+    public void addVehicle(Vehicle vehicle) {
+        Position pos = vehicle.getPosition();
+        int row = pos.getY();
+        int col = pos.getX();
+        
+        if (isValidPosition(row, col)) {
+            grid[row][col].setVehicle(vehicle);
+        
         }
     }
     

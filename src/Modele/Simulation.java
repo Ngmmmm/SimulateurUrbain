@@ -114,7 +114,7 @@ public class Simulation {
             Position destination = accessiblePosition.get(rand.nextInt(accessiblePosition.size()));
 
             Car newCar = new Car("Car" + Vehicle.nbCar, 2.0, randomPos, direction, cityMap, destination);
-            cityMap.addVehicle(newCar, randomPos);
+            cityMap.addVehicle(newCar);
 
             System.out.println("Nouvelle voiture ajoutée :");
             System.out.println("ID: " + newCar.getId());
