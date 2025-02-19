@@ -85,12 +85,33 @@ public class Simulation {
         cityMap.setStop(new Position(45, 30));
         cityMap.setStop(new Position(40, 39));
         
-        List<TrafficLight> allLights = new ArrayList<>();
-        allLights.add(new TrafficLight(new Position(23, 0), Direction.DOWN, cityMap));
-        allLights.add(new TrafficLight(new Position(22, 2), Direction.RIGHT, cityMap));
-        allLights.add(new TrafficLight(new Position(27, 1), Direction.LEFT, cityMap));
-        allLights.add(new TrafficLight(new Position(26, 3), Direction.UP, cityMap));
-        TrafficLightGroup groupe1 = new TrafficLightGroup(allLights);
+        List<TrafficLight> allLights1 = new ArrayList<>();
+        allLights1.add(new TrafficLight(new Position(23, 0), Direction.DOWN, cityMap));
+        allLights1.add(new TrafficLight(new Position(22, 2), Direction.RIGHT, cityMap));
+        allLights1.add(new TrafficLight(new Position(27, 1), Direction.LEFT, cityMap));
+        allLights1.add(new TrafficLight(new Position(26, 3), Direction.UP, cityMap));
+        TrafficLightGroup groupe1 = new TrafficLightGroup(allLights1);
+
+        List<TrafficLight> allLights2 = new ArrayList<>();
+        allLights2.add(new TrafficLight(new Position(23, 11), Direction.DOWN, cityMap));
+        allLights2.add(new TrafficLight(new Position(22, 13), Direction.RIGHT, cityMap));
+        allLights2.add(new TrafficLight(new Position(27, 12), Direction.LEFT, cityMap));
+        allLights2.add(new TrafficLight(new Position(26, 14), Direction.UP, cityMap));
+        TrafficLightGroup groupe2 = new TrafficLightGroup(allLights2);
+
+        List<TrafficLight> allLights3 = new ArrayList<>();
+        allLights3.add(new TrafficLight(new Position(23, 30), Direction.DOWN, cityMap));
+        allLights3.add(new TrafficLight(new Position(22, 32), Direction.RIGHT, cityMap));
+        allLights3.add(new TrafficLight(new Position(27, 31), Direction.LEFT, cityMap));
+        allLights3.add(new TrafficLight(new Position(26, 33), Direction.UP, cityMap));
+        TrafficLightGroup groupe3 = new TrafficLightGroup(allLights3);
+
+        List<TrafficLight> allLights4 = new ArrayList<>();
+        allLights4.add(new TrafficLight(new Position(23, 39), Direction.DOWN, cityMap));
+        allLights4.add(new TrafficLight(new Position(22, 41), Direction.RIGHT, cityMap));
+        allLights4.add(new TrafficLight(new Position(27, 40), Direction.LEFT, cityMap));
+        allLights4.add(new TrafficLight(new Position(26, 42), Direction.UP, cityMap));
+        TrafficLightGroup groupe4 = new TrafficLightGroup(allLights4);
     }
 
     public void spawnRandomCars() {
