@@ -165,7 +165,9 @@ public class CityMap{
         }
         return null;
     }
+    public int getRows(){return rows;}
 
+    public int getCols(){return cols;}
 
     public void update(){} // pour remplir l'implémentation en attendant
 

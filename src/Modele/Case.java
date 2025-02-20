@@ -45,6 +45,10 @@ public class Case{
         this.road = road;
         this.signalling = signalling;
         this.pos = pos;
+
+        if(building != null && road != null){
+            this.building = null;
+        }
     }
 
 
@@ -87,6 +91,11 @@ public class Case{
     public void setPos(Position pos) {
         this.pos = pos;
     }
+
+    public boolean isRoad(){
+        return this.road != null;
+    }
+    public boolean isBuilding(){return this.building != null;}
 
     @Override
     public String toString() {

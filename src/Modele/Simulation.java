@@ -15,7 +15,7 @@ public class Simulation {
         this.cityMap = new CityMap(50, 50);
         initializeMap();
         spawnRandomCars();
-        afficherCarte();
+        //afficherCarte();
     }
 
     private void initializeMap() {

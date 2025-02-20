@@ -136,4 +136,42 @@ public class Pathfinding {
     
         return accessiblePositions;
     }
+
+
+    public static ArrayList<Position> FindSpawnPosition(CityMap map){
+        ArrayList<Position> resultat = new ArrayList<>();
+        int rows = map.getRows();
+        int cols = map.getCols();
+
+        Case[][]grid = map.getGrid();
+        
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < 4; j++) {  // Boucle sur les 4 bords
+                int x = (j == 0) ? 0 : (j == 1) ? i : (j == 2) ? rows - 1 : i;
+                int y = (j == 0) ? i : (j == 1) ? 0 : (j == 2) ? i : cols - 1;
+        
+                if (grid[y][x].isRoad()) {
+                    Direction[] directions = grid[y][x].getRoad().getDirection();
+                    Position pos = new Position(x, y);
+                    boolean test = false;
+        
+                    for (Direction dir : directions) {
+                        if (dir.move(pos).posIsInMap(rows, cols)) {
+                            test = true;
+                            break;
+                        }
+                    }
+        
+                    if (test) {
+                        resultat.add(pos);
+                    }
+                }
+            }
+        }
+        
+        return resultat;
+
+
+    }
+    
 }

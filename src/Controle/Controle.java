@@ -47,6 +47,7 @@ public class Controle {
         
 
 
+
         
 
         ArrayList<Position> pos = Pathfinding.findShortestPath(a.cityMap, new Position(0,2), new Position(45,41) );
@@ -81,6 +82,15 @@ public class Controle {
 
             }
         );
+
+
+        ArrayList<Position> res = Pathfinding.FindSpawnPosition(a.cityMap);
+        System.out.println("#########################");
+        for(int i = 0; i < res.size()  ; i++){
+            System.out.println(res.get(i));
+
+        }
+        System.out.println("#########################");
         
     }
 }
