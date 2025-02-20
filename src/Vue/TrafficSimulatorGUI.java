@@ -9,6 +9,7 @@ import Modele.Signalling.LightColor;
 import Modele.Signalling.TrafficLight;
 import Modele.Signalling.TrafficLightGroup;
 import Modele.Simulation;
+import Modele.Enregistrer.GameSaver;
 import Modele.Vehicle.Car;
 import java.awt.*;
 import java.awt.event.*;
@@ -142,6 +143,7 @@ public class TrafficSimulatorGUI extends JFrame {
         JMenuItem loadItem = new JMenuItem("Charger");
         JMenuItem exitItem = new JMenuItem("Quitter");
 
+        saveItem.addActionListener(e -> saveMap());
         exitItem.addActionListener(e -> System.exit(0));
 
         fileMenu.add(saveItem);
@@ -261,6 +263,24 @@ public class TrafficSimulatorGUI extends JFrame {
                 lastDragPoint = e.getPoint();
             }
         };
+    }
+
+    private void saveMap() {
+        // Demander à l'utilisateur un nom de fichier pour la sauvegarde
+        String fileName = JOptionPane.showInputDialog(this, "Entrez le nom de la sauvegarde :", "Sauvegarder", JOptionPane.PLAIN_MESSAGE);
+
+        if (fileName != null && !fileName.trim().isEmpty()) {
+            // Appeler la classe GameSaver pour sauvegarder la carte
+            boolean success = GameSaver.saveGame(fileName, cityMap);
+
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Sauvegarde réussie !", "Succès", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Erreur lors de la sauvegarde.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Le nom de la sauvegarde ne peut pas être vide.", "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
 
