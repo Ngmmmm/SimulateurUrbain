@@ -15,6 +15,7 @@ public class Simulation {
         this.cityMap = new CityMap(50, 50);
         initializeMap();
         spawnRandomCars();
+        afficherCarte();
     }
 
     private void initializeMap() {
@@ -112,6 +113,24 @@ public class Simulation {
         allLights4.add(new TrafficLight(new Position(27, 40), Direction.LEFT, cityMap));
         allLights4.add(new TrafficLight(new Position(26, 42), Direction.UP, cityMap));
         TrafficLightGroup groupe4 = new TrafficLightGroup(allLights4);
+
+        List<TrafficLight> allLights5 = new ArrayList<>();
+        allLights5.add(new TrafficLight(new Position(36, 12), Direction.LEFT, cityMap));
+        allLights5.add(new TrafficLight(new Position(33, 13), Direction.RIGHT, cityMap));
+        allLights5.add(new TrafficLight(new Position(35, 14), Direction.UP, cityMap));
+        TrafficLightGroup groupe5 = new TrafficLightGroup(allLights5);
+
+        List<TrafficLight> allLights6 = new ArrayList<>();
+        allLights6.add(new TrafficLight(new Position(7, 31), Direction.LEFT, cityMap));
+        allLights6.add(new TrafficLight(new Position(4, 32), Direction.RIGHT, cityMap));
+        allLights6.add(new TrafficLight(new Position(6, 33), Direction.UP, cityMap));
+        TrafficLightGroup groupe6 = new TrafficLightGroup(allLights6);
+
+        List<TrafficLight> allLights7 = new ArrayList<>();
+        allLights7.add(new TrafficLight(new Position(7, 40), Direction.LEFT, cityMap));
+        allLights7.add(new TrafficLight(new Position(4, 41), Direction.RIGHT, cityMap));
+        allLights7.add(new TrafficLight(new Position(5, 39), Direction.DOWN, cityMap));
+        TrafficLightGroup groupe7 = new TrafficLightGroup(allLights7);
     }
 
     public void spawnRandomCars() {
