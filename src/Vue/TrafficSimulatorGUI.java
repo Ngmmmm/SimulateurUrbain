@@ -9,6 +9,7 @@ import Modele.Signalling.LightColor;
 import Modele.Signalling.TrafficLight;
 import Modele.Signalling.TrafficLightGroup;
 import Modele.Simulation;
+import Modele.Enregistrer.GameLoader;
 import Modele.Enregistrer.GameSaver;
 import Modele.Vehicle.Car;
 import java.awt.*;
@@ -141,10 +142,12 @@ public class TrafficSimulatorGUI extends JFrame {
         JMenu fileMenu = new JMenu("Fichier");
         JMenuItem saveItem = new JMenuItem("Sauvegarder");
         JMenuItem loadItem = new JMenuItem("Charger");
+        
         JMenuItem exitItem = new JMenuItem("Quitter");
 
         saveItem.addActionListener(e -> saveMap());
         exitItem.addActionListener(e -> System.exit(0));
+        loadItem.addActionListener(e -> loadMap()); 
 
         fileMenu.add(saveItem);
         fileMenu.add(loadItem);
@@ -277,6 +280,29 @@ public class TrafficSimulatorGUI extends JFrame {
                 JOptionPane.showMessageDialog(this, "Sauvegarde réussie !", "Succès", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(this, "Erreur lors de la sauvegarde.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Le nom de la sauvegarde ne peut pas être vide.", "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    /**
+     * Charge une carte à partir d'un fichier de sauvegarde.
+     */
+    private void loadMap() {
+        // Demander à l'utilisateur un nom de fichier pour le chargement
+        String fileName = JOptionPane.showInputDialog(this, "Entrez le nom de la sauvegarde :", "Charger", JOptionPane.PLAIN_MESSAGE);
+
+        if (fileName != null && !fileName.trim().isEmpty()) {
+            // Appeler la classe GameLoader pour charger la carte
+            CityMap loadedMap = GameLoader.loadGame(fileName);
+
+            if (loadedMap != null) {
+                // Mettre à jour la carte dans l'interface graphique
+                this.cityMap = loadedMap;
+                mapPanel.repaint(); // Rafraîchir l'affichage
+                JOptionPane.showMessageDialog(this, "Chargement réussi !", "Succès", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Erreur lors du chargement de la carte.", "Erreur", JOptionPane.ERROR_MESSAGE);
             }
         } else {
             JOptionPane.showMessageDialog(this, "Le nom de la sauvegarde ne peut pas être vide.", "Erreur", JOptionPane.ERROR_MESSAGE);
