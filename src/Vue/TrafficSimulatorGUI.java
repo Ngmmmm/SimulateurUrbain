@@ -15,6 +15,9 @@ import Modele.Vehicle.Car;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.*;
 
@@ -289,12 +292,37 @@ public class TrafficSimulatorGUI extends JFrame {
      * Charge une carte à partir d'un fichier de sauvegarde.
      */
     private void loadMap() {
-        // Demander à l'utilisateur un nom de fichier pour le chargement
-        String fileName = JOptionPane.showInputDialog(this, "Entrez le nom de la sauvegarde :", "Charger", JOptionPane.PLAIN_MESSAGE);
+        // Lire le fichier nom_save.txt pour obtenir la liste des sauvegardes
+        ArrayList<String> saveNames = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader("Save/nom_save.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                saveNames.add(line.trim());
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Erreur lors de la lecture des sauvegardes.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-        if (fileName != null && !fileName.trim().isEmpty()) {
+        // Vérifier s'il y a des sauvegardes disponibles
+        if (saveNames.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Aucune sauvegarde disponible.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Créer un JComboBox avec les noms des sauvegardes
+        JComboBox<String> saveComboBox = new JComboBox<>(saveNames.toArray(new String[0]));
+        saveComboBox.setSelectedIndex(0); // Sélectionner la première sauvegarde par défaut
+
+        // Afficher la boîte de dialogue avec le JComboBox
+        int option = JOptionPane.showConfirmDialog(this, saveComboBox, "Choisissez une sauvegarde", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+        if (option == JOptionPane.OK_OPTION) {
+            // Récupérer le nom de la sauvegarde sélectionnée
+            String selectedSave = (String) saveComboBox.getSelectedItem();
+
             // Appeler la classe GameLoader pour charger la carte
-            CityMap loadedMap = GameLoader.loadGame(fileName);
+            CityMap loadedMap = GameLoader.loadGame(selectedSave);
 
             if (loadedMap != null) {
                 // Mettre à jour la carte dans l'interface graphique
@@ -304,8 +332,6 @@ public class TrafficSimulatorGUI extends JFrame {
             } else {
                 JOptionPane.showMessageDialog(this, "Erreur lors du chargement de la carte.", "Erreur", JOptionPane.ERROR_MESSAGE);
             }
-        } else {
-            JOptionPane.showMessageDialog(this, "Le nom de la sauvegarde ne peut pas être vide.", "Erreur", JOptionPane.ERROR_MESSAGE);
         }
     }
 
