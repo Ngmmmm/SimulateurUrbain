@@ -226,5 +226,8 @@ public abstract class Vehicle {
     }
 
     
+    public Position getDestination() {
+        return destination;
+    }
 
 }

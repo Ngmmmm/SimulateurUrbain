@@ -22,46 +22,53 @@ public class GameSaver {
             // Sauvegarder les informations de la carte
             writer.write("Carte: " + cityMap.getRows() + "x" + cityMap.getCols());
             writer.newLine();
-
+    
             // Sauvegarder chaque case de la grille
             for (int i = 0; i < cityMap.getRows(); i++) {
                 for (int j = 0; j < cityMap.getCols(); j++) {
                     Case currentCase = cityMap.getGrid()[i][j];
                     writer.write("Case: " + i + "," + j);
                     writer.newLine();
-
+    
                     // Sauvegarder la route
                     if (currentCase.getRoad() != null) {
                         Road road = currentCase.getRoad();
                         writer.write("Route: " + road.getLineType() + " " + arrayToString(road.getDirection()));
                         writer.newLine();
                     }
-
+    
                     // Sauvegarder le bâtiment
                     if (currentCase.getBuilding() != null) {
                         writer.write("Batiment");
                         writer.newLine();
                     }
-
+    
                     // Sauvegarder le véhicule
                     if (currentCase.getVehicle() != null) {
                         Vehicle vehicle = currentCase.getVehicle();
-                        writer.write("Vehicule: " + vehicle.getId() + " " + vehicle.getPosition().getX() + "," + vehicle.getPosition().getY() + " " + vehicle.getDirection() + " " + vehicle.getFuel());
+                        writer.write("Vehicule: " + vehicle.getId() + " " + vehicle.getPosition().getX() + "," + vehicle.getPosition().getY() + " " + vehicle.getDirection() + " " + vehicle.getFuel() + " " + vehicle.getDestination().getX() + "," + vehicle.getDestination().getY());
                         writer.newLine();
                     }
-
+    
                     // Sauvegarder la signalisation
                     if (currentCase.getSignalling() != null) {
                         Signalling signalling = currentCase.getSignalling();
                         writer.write("Signalisation: " + signalling.getType() + " " + signalling.getPosition().getX() + "," + signalling.getPosition().getY());
+    
+                        // Si c'est un feu de signalisation, sauvegarder l'idGroupe
+                        if (signalling instanceof TrafficLight) {
+                            TrafficLight trafficLight = (TrafficLight) signalling;
+                            writer.write(" " + trafficLight.getIDGroupe());
+                        }
+    
                         writer.newLine();
                     }
                 }
             }
-
+    
             updateSaveList(fileName);
             return true;
-
+    
         } catch (IOException e) {
             e.printStackTrace();
             return false;
