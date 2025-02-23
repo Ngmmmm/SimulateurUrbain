@@ -188,7 +188,6 @@ Batiment
 Case: 1,27
 Route: Continue LEFT
 Batiment
-Vehicule: Car5 27,1 LEFT 100.0
 Signalisation: TrafficLights 27,1 1
 Case: 1,28
 Route: Continue LEFT
@@ -205,6 +204,7 @@ Batiment
 Case: 1,32
 Route: Continue LEFT
 Batiment
+Vehicule: Car0 32,1 LEFT 100.0 25,12
 Case: 1,33
 Route: Continue LEFT
 Batiment
@@ -1221,7 +1221,6 @@ Batiment
 Case: 10,24
 Route: Pointillé DOWN LEFT
 Batiment
-Vehicule: Car8 24,10 DOWN 100.0
 Case: 10,25
 Route: Pointillé UP RIGHT
 Batiment
@@ -1413,6 +1412,7 @@ Batiment
 Case: 12,9
 Route: Continue LEFT
 Batiment
+Vehicule: Car7 9,12 LEFT 100.0 5,12
 Case: 12,10
 Route: Continue LEFT
 Batiment
@@ -1601,7 +1601,6 @@ Batiment
 Case: 13,21
 Route: Continue RIGHT
 Batiment
-Vehicule: Car6 21,13 RIGHT 100.0
 Case: 13,22
 Route: Continue RIGHT
 Batiment
@@ -1961,6 +1960,7 @@ Batiment
 Case: 16,25
 Route: Pointillé UP RIGHT
 Batiment
+Vehicule: Car8 25,16 UP 100.0 35,30
 Case: 16,26
 Route: Pointillé UP LEFT
 Batiment
@@ -2554,6 +2554,7 @@ Batiment
 Case: 21,45
 Route: Continue DOWN
 Batiment
+Vehicule: Car1 45,21 DOWN 100.0 0,12
 Case: 21,46
 Batiment
 Case: 21,47
@@ -3037,7 +3038,6 @@ Batiment
 Case: 26,17
 Route: Continue LEFT
 Batiment
-Vehicule: Car1 17,26 LEFT 100.0
 Case: 26,18
 Route: Continue LEFT
 Batiment
@@ -3632,14 +3632,12 @@ Batiment
 Case: 31,25
 Route: Continue LEFT UP RIGHT
 Batiment
-Vehicule: Car9 25,31 LEFT 100.0
 Case: 31,26
 Route: Continue LEFT UP
 Batiment
 Case: 31,27
 Route: Continue LEFT
 Batiment
-Vehicule: Car0 27,31 LEFT 100.0
 Signalisation: TrafficLights 27,31 3
 Case: 31,28
 Route: Continue LEFT
@@ -3686,7 +3684,6 @@ Batiment
 Case: 31,42
 Route: Continue LEFT
 Batiment
-Vehicule: Car3 42,31 LEFT 100.0
 Case: 31,43
 Route: Continue LEFT
 Batiment
@@ -4632,13 +4629,13 @@ Batiment
 Case: 40,5
 Route: Continue LEFT
 Batiment
-Vehicule: Car2 5,40 LEFT 100.0
 Case: 40,6
 Route: Continue LEFT UP
 Batiment
 Case: 40,7
 Route: Continue LEFT
 Batiment
+Vehicule: Car5 7,40 LEFT 100.0 34,17
 Signalisation: TrafficLights 7,40 7
 Case: 40,8
 Route: Continue LEFT
@@ -4694,6 +4691,7 @@ Batiment
 Case: 40,25
 Route: Continue LEFT UP RIGHT
 Batiment
+Vehicule: Car6 25,40 UP 100.0 9,6
 Case: 40,26
 Route: Continue LEFT UP
 Batiment
@@ -4874,11 +4872,9 @@ Batiment
 Case: 41,34
 Route: Continue RIGHT
 Batiment
-Vehicule: Car7 34,41 RIGHT 100.0
 Case: 41,35
 Route: Continue RIGHT
 Batiment
-Vehicule: Car4 35,41 RIGHT 100.0
 Case: 41,36
 Route: Continue RIGHT
 Batiment
@@ -5390,6 +5386,7 @@ Batiment
 Case: 46,24
 Route: Pointillé DOWN LEFT
 Batiment
+Vehicule: Car3 24,46 DOWN 100.0 24,47
 Case: 46,25
 Route: Pointillé UP RIGHT
 Batiment

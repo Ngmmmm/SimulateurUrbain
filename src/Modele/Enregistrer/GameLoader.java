@@ -3,6 +3,10 @@ package Modele.Enregistrer;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import Modele.*;
 import Modele.Signalling.*;
 import Modele.Vehicle.Vehicle;
@@ -18,6 +22,7 @@ public class GameLoader {
     public static CityMap loadGame(String fileName) {
         String filePath = "Save/" + fileName + ".txt";
         CityMap cityMap = null;
+        Map<Integer, List<TrafficLight>> trafficLightGroups = new HashMap<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
@@ -49,37 +54,55 @@ public class GameLoader {
                     currentCol = Integer.parseInt(coords[1]);
                 } else if (line.startsWith("Route: ")) {
                     // Lecture des données de la route
-                    String[] roadData = line.split(" ")[1].split(" ");
+                    String[] roadData = line.substring(7).split(" ", 2);
                     String lineType = roadData[0];
                     Direction[] directions = parseDirections(roadData[1]);
                     Road road = new Road(directions, lineType);
                     cityMap.getGrid()[currentRow][currentCol].setRoad(road);
                 } else if (line.startsWith("Batiment")) {
-                    // Lecture des données du bâtiment (à implémenter si nécessaire)
-                    // Exemple : Building building = new Building();
-                    // cityMap.getGrid()[currentRow][currentCol].setBuilding(building);
+                    // Lecture des données du bâtiment
+                    Building building = new Building();
+                    cityMap.getGrid()[currentRow][currentCol].setBuilding(building);
                 } else if (line.startsWith("Vehicule: ")) {
                     // Lecture des données du véhicule
-                    String[] vehicleData = line.split(" ")[1].split(",");
+                    String[] vehicleData = line.substring(9).split(" ");
                     String id = vehicleData[0];
-                    int x = Integer.parseInt(vehicleData[1]);
-                    int y = Integer.parseInt(vehicleData[2]);
-                    Direction direction = Direction.valueOf(vehicleData[3]);
-                    float fuel = Float.parseFloat(vehicleData[4]);
-                    Vehicle vehicle = new Vehicle(id, 1.0, new Position(x, y), direction, 0.1f, cityMap, null);
-                    vehicle.setSpeed(Double.parseDouble(vehicleData[5])); // Vitesse supplémentaire si nécessaire
+                    String[] positionData = vehicleData[1].split(",");
+                    int x = Integer.parseInt(positionData[0]);
+                    int y = Integer.parseInt(positionData[1]);
+                    Direction direction = Direction.fromString(vehicleData[2]);
+                    float fuel = Float.parseFloat(vehicleData[3]);
+                    String[] destinationData = vehicleData[4].split(",");
+                    int destX = Integer.parseInt(destinationData[0]);
+                    int destY = Integer.parseInt(destinationData[1]);
+                    
+                    Vehicle vehicle = new Vehicle(id, 1.0, new Position(x, y), direction, 0.1f, cityMap, new Position(destX, destY));
                     cityMap.getGrid()[currentRow][currentCol].setVehicle(vehicle);
                 } else if (line.startsWith("Signalisation: ")) {
                     // Lecture des données de la signalisation
-                    String[] signallingData = line.split(" ")[1].split(",");
+                    String[] signallingData = line.substring(14).split(" ");
                     String type = signallingData[0];
-                    int x = Integer.parseInt(signallingData[1]);
-                    int y = Integer.parseInt(signallingData[2]);
-                    Direction direction = Direction.valueOf(signallingData[3]);
-                    Signalling signalling = createSignalling(type, new Position(x, y), direction);
+                    String[] positionData = signallingData[1].split(",");
+                    int x = Integer.parseInt(positionData[0]);
+                    int y = Integer.parseInt(positionData[1]);
+
+                    Signalling signalling = createSignalling(type, new Position(x, y));
+
+                    // Si c'est un feu de signalisation, on récupère l'idGroupe
+                    if (signalling instanceof TrafficLight && signallingData.length > 2) {
+                        int groupID = Integer.parseInt(signallingData[2]);
+                        ((TrafficLight) signalling).setIDGroupe(groupID);
+
+                        // Ajouter le feu dans la liste du groupe
+                        trafficLightGroups.computeIfAbsent(groupID, k -> new ArrayList<>()).add((TrafficLight) signalling);
+                    }
+
                     cityMap.getGrid()[currentRow][currentCol].setSignalling(signalling);
                 }
             }
+
+            // Recréer les groupes de feux après lecture complète
+            rebuildTrafficLightGroups(cityMap, trafficLightGroups);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -87,6 +110,30 @@ public class GameLoader {
         }
 
         return cityMap;
+    }
+
+    /**
+     * Recrée les groupes de feux et assigne les feux aux bons groupes.
+     *
+     * @param cityMap La carte de la ville
+     * @param trafficLightGroups Les groupes de feux stockés temporairement
+     */
+    private static void rebuildTrafficLightGroups(CityMap cityMap, Map<Integer, List<TrafficLight>> trafficLightGroups) {
+        for (Map.Entry<Integer, List<TrafficLight>> entry : trafficLightGroups.entrySet()) {
+            int groupID = entry.getKey();
+            List<TrafficLight> lights = entry.getValue();
+
+            // Créer un groupe de feux
+            TrafficLightGroup group = new TrafficLightGroup(groupID);
+
+            // Ajouter les feux au groupe
+            for (TrafficLight light : lights) {
+                group.addTrafficLight(light);
+            }
+
+            // Synchroniser le groupe dans la carte
+            cityMap.addTrafficLightGroup(group);
+        }
     }
 
     /**
@@ -99,10 +146,11 @@ public class GameLoader {
         String[] directionNames = directionsStr.split(" ");
         Direction[] directions = new Direction[directionNames.length];
         for (int i = 0; i < directionNames.length; i++) {
-            directions[i] = Direction.valueOf(directionNames[i]);
+            directions[i] = Direction.fromString(directionNames[i]);
         }
         return directions;
     }
+
 
     /**
      * Crée un objet de signalisation en fonction du type.
@@ -110,12 +158,13 @@ public class GameLoader {
      * @param type Le type de signalisation (ex: "TrafficLight", "Stop", "NoEntry").
      * @param position La position de la signalisation.
      * @param direction La direction de la signalisation.
+     * @param map La carte de la ville (nécessaire pour les feux tricolores).
      * @return Un objet Signalling.
      */
-    private static Signalling createSignalling(String type, Position position, Direction direction) {
+    private static Signalling createSignalling(String type, Position position, Direction direction, CityMap map) {
         switch (type) {
             case "TrafficLight":
-                return new TrafficLight(position, direction);
+                return new TrafficLight(position, direction, map);
             case "Stop":
                 return new Stop(position, direction);
             case "NoEntry":
