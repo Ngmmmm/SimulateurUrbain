@@ -69,6 +69,16 @@ public class CityMap{
         
         }
     }
+
+    public boolean isPositionOccupied(Position pos) {
+        for (Vehicle v : getAllVehicles()) {  
+            if (v.getPosition().equals(pos)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     
     public void setStop(Position pos) {
         int row = pos.getY();
@@ -171,5 +181,20 @@ public class CityMap{
 
     public void update(){} // pour remplir l'implémentation en attendant
 
+    public List<Vehicle> getAllVehicles() {
+        List<Vehicle> vehicles = new ArrayList<>();
+        
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                Vehicle vehicle = grid[i][j].getVehicle();
+                if (vehicle != null) {
+                    vehicles.add(vehicle);
+                }
+            }
+        }
+        
+        return vehicles;
+    }
 
+    
 }
