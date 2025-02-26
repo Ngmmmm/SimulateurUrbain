@@ -63,7 +63,7 @@ public class TrafficLightGroup {
 
     private void setIdLights(List<TrafficLight> lights) {
         for (TrafficLight light : lights) {
-            light.setId(this.id);
+            light.setIDGroupe(this.id);
         }
 
     }

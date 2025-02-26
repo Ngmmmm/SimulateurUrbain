@@ -52,7 +52,7 @@ public class TrafficLight extends Signalling {
     }
 
 
-    public void setId(int id) {
+    public void setIDGroupe(int id) {
         this.idGroupe = id;
     }
 

@@ -118,22 +118,17 @@ public class GameLoader {
      * @param cityMap La carte de la ville
      * @param trafficLightGroups Les groupes de feux stockés temporairement
      */
-    private static void rebuildTrafficLightGroups(CityMap cityMap, Map<Integer, List<TrafficLight>> trafficLightGroups) {
+    private static void rebuildTrafficLightGroups(Map<Integer, List<TrafficLight>> trafficLightGroups) {
         for (Map.Entry<Integer, List<TrafficLight>> entry : trafficLightGroups.entrySet()) {
-            int groupID = entry.getKey();
+
             List<TrafficLight> lights = entry.getValue();
 
             // Créer un groupe de feux
-            TrafficLightGroup group = new TrafficLightGroup(groupID);
+            TrafficLightGroup group = new TrafficLightGroup(lights);
 
-            // Ajouter les feux au groupe
-            for (TrafficLight light : lights) {
-                group.addTrafficLight(light);
-            }
-
-            // Synchroniser le groupe dans la carte
-            cityMap.addTrafficLightGroup(group);
         }
+
+
     }
 
     /**
