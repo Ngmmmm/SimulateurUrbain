@@ -48,7 +48,7 @@ Batiment
 Case: 0,23
 Route: Pointillé DOWN RIGHT
 Batiment
-Signalisation: TrafficLights 23,0 1
+Signalisation: TrafficLights 23,0 DOWN 1
 Case: 0,24
 Route: Pointillé DOWN LEFT
 Batiment
@@ -188,7 +188,7 @@ Batiment
 Case: 1,27
 Route: Continue LEFT
 Batiment
-Signalisation: TrafficLights 27,1 1
+Signalisation: TrafficLights 27,1 LEFT 1
 Case: 1,28
 Route: Continue LEFT
 Batiment
@@ -204,7 +204,6 @@ Batiment
 Case: 1,32
 Route: Continue LEFT
 Batiment
-Vehicule: Car0 32,1 LEFT 100.0 25,12
 Case: 1,33
 Route: Continue LEFT
 Batiment
@@ -325,7 +324,7 @@ Batiment
 Case: 2,22
 Route: Continue RIGHT
 Batiment
-Signalisation: TrafficLights 22,2 1
+Signalisation: TrafficLights 22,2 RIGHT 1
 Case: 2,23
 Route: Continue RIGHT DOWN
 Batiment
@@ -466,7 +465,7 @@ Batiment
 Case: 3,26
 Route: Pointillé UP LEFT
 Batiment
-Signalisation: TrafficLights 26,3 1
+Signalisation: TrafficLights 26,3 UP 1
 Case: 3,27
 Batiment
 Case: 3,28
@@ -510,7 +509,7 @@ Batiment
 Case: 3,47
 Route: Continue UP
 Batiment
-Signalisation: Stop 47,3
+Signalisation: Stop 47,3 UP
 Case: 3,48
 Batiment
 Case: 3,49
@@ -794,6 +793,7 @@ Batiment
 Case: 6,23
 Route: Pointillé DOWN RIGHT
 Batiment
+Vehicule: Car9 23,6 DOWN 2.0 40,34
 Case: 6,24
 Route: Pointillé DOWN LEFT
 Batiment
@@ -900,6 +900,7 @@ Batiment
 Case: 7,23
 Route: Pointillé DOWN RIGHT
 Batiment
+Vehicule: Car1 23,7 DOWN 2.0 2,12
 Case: 7,24
 Route: Pointillé DOWN LEFT
 Batiment
@@ -1315,7 +1316,7 @@ Batiment
 Case: 11,19
 Route: Continue DOWN
 Batiment
-Signalisation: Stop 19,11
+Signalisation: Stop 19,11 DOWN
 Case: 11,20
 Batiment
 Case: 11,21
@@ -1325,7 +1326,7 @@ Batiment
 Case: 11,23
 Route: Pointillé DOWN RIGHT
 Batiment
-Signalisation: TrafficLights 23,11 2
+Signalisation: TrafficLights 23,11 DOWN 2
 Case: 11,24
 Route: Pointillé DOWN LEFT
 Batiment
@@ -1412,7 +1413,6 @@ Batiment
 Case: 12,9
 Route: Continue LEFT
 Batiment
-Vehicule: Car7 9,12 LEFT 100.0 5,12
 Case: 12,10
 Route: Continue LEFT
 Batiment
@@ -1467,7 +1467,7 @@ Batiment
 Case: 12,27
 Route: Continue LEFT
 Batiment
-Signalisation: TrafficLights 27,12 2
+Signalisation: TrafficLights 27,12 LEFT 2
 Case: 12,28
 Route: Continue LEFT
 Batiment
@@ -1495,7 +1495,7 @@ Batiment
 Case: 12,36
 Route: Continue LEFT
 Batiment
-Signalisation: TrafficLights 36,12 5
+Signalisation: TrafficLights 36,12 LEFT 5
 Case: 12,37
 Route: Continue LEFT
 Batiment
@@ -1604,7 +1604,7 @@ Batiment
 Case: 13,22
 Route: Continue RIGHT
 Batiment
-Signalisation: TrafficLights 22,13 2
+Signalisation: TrafficLights 22,13 RIGHT 2
 Case: 13,23
 Route: Continue RIGHT DOWN
 Batiment
@@ -1638,7 +1638,7 @@ Batiment
 Case: 13,33
 Route: Continue RIGHT
 Batiment
-Signalisation: TrafficLights 33,13 5
+Signalisation: TrafficLights 33,13 RIGHT 5
 Case: 13,34
 Route: Continue RIGHT DOWN
 Batiment
@@ -1710,7 +1710,7 @@ Batiment
 Case: 14,10
 Route: Continue UP
 Batiment
-Signalisation: Stop 10,14
+Signalisation: Stop 10,14 UP
 Case: 14,11
 Batiment
 Case: 14,12
@@ -1747,7 +1747,7 @@ Batiment
 Case: 14,26
 Route: Pointillé UP LEFT
 Batiment
-Signalisation: TrafficLights 26,14 2
+Signalisation: TrafficLights 26,14 UP 2
 Case: 14,27
 Batiment
 Case: 14,28
@@ -1768,7 +1768,7 @@ Batiment
 Case: 14,35
 Route: Continue UP
 Batiment
-Signalisation: TrafficLights 35,14 5
+Signalisation: TrafficLights 35,14 UP 5
 Case: 14,36
 Batiment
 Case: 14,37
@@ -1960,7 +1960,6 @@ Batiment
 Case: 16,25
 Route: Pointillé UP RIGHT
 Batiment
-Vehicule: Car8 25,16 UP 100.0 35,30
 Case: 16,26
 Route: Pointillé UP LEFT
 Batiment
@@ -2554,7 +2553,6 @@ Batiment
 Case: 21,45
 Route: Continue DOWN
 Batiment
-Vehicule: Car1 45,21 DOWN 100.0 0,12
 Case: 21,46
 Batiment
 Case: 21,47
@@ -3246,6 +3244,7 @@ Batiment
 Case: 28,10
 Route: Continue UP
 Batiment
+Vehicule: Car6 10,28 UP 2.0 10,27
 Case: 28,11
 Batiment
 Case: 28,12
@@ -3477,7 +3476,7 @@ Batiment
 Case: 30,16
 Route: Continue DOWN
 Batiment
-Signalisation: Stop 16,30
+Signalisation: Stop 16,30 DOWN
 Case: 30,17
 Batiment
 Case: 30,18
@@ -3493,7 +3492,7 @@ Batiment
 Case: 30,23
 Route: Pointillé DOWN RIGHT
 Batiment
-Signalisation: TrafficLights 23,30 3
+Signalisation: TrafficLights 23,30 DOWN 3
 Case: 30,24
 Route: Pointillé DOWN LEFT
 Batiment
@@ -3544,7 +3543,7 @@ Batiment
 Case: 30,45
 Route: Continue DOWN
 Batiment
-Signalisation: Stop 45,30
+Signalisation: Stop 45,30 DOWN
 Case: 30,46
 Batiment
 Case: 30,47
@@ -3577,7 +3576,7 @@ Batiment
 Case: 31,7
 Route: Continue LEFT
 Batiment
-Signalisation: TrafficLights 7,31 6
+Signalisation: TrafficLights 7,31 LEFT 6
 Case: 31,8
 Route: Continue LEFT
 Batiment
@@ -3638,7 +3637,7 @@ Batiment
 Case: 31,27
 Route: Continue LEFT
 Batiment
-Signalisation: TrafficLights 27,31 3
+Signalisation: TrafficLights 27,31 LEFT 3
 Case: 31,28
 Route: Continue LEFT
 Batiment
@@ -3720,7 +3719,7 @@ Batiment
 Case: 32,4
 Route: Continue RIGHT
 Batiment
-Signalisation: TrafficLights 4,32 6
+Signalisation: TrafficLights 4,32 RIGHT 6
 Case: 32,5
 Route: Continue RIGHT DOWN
 Batiment
@@ -3775,7 +3774,7 @@ Batiment
 Case: 32,22
 Route: Continue RIGHT
 Batiment
-Signalisation: TrafficLights 22,32 3
+Signalisation: TrafficLights 22,32 RIGHT 3
 Case: 32,23
 Route: Continue RIGHT DOWN
 Batiment
@@ -3873,7 +3872,7 @@ Batiment
 Case: 33,6
 Route: Continue UP
 Batiment
-Signalisation: TrafficLights 6,33 6
+Signalisation: TrafficLights 6,33 UP 6
 Case: 33,7
 Batiment
 Case: 33,8
@@ -3918,7 +3917,7 @@ Batiment
 Case: 33,26
 Route: Pointillé UP LEFT
 Batiment
-Signalisation: TrafficLights 26,33 3
+Signalisation: TrafficLights 26,33 UP 3
 Case: 33,27
 Batiment
 Case: 33,28
@@ -4303,6 +4302,7 @@ Batiment
 Case: 37,6
 Route: Continue UP
 Batiment
+Vehicule: Car0 6,37 UP 2.0 42,31
 Case: 37,7
 Batiment
 Case: 37,8
@@ -4514,7 +4514,7 @@ Batiment
 Case: 39,5
 Route: Continue DOWN
 Batiment
-Signalisation: TrafficLights 5,39 7
+Signalisation: TrafficLights 5,39 DOWN 7
 Case: 39,6
 Route: Continue UP
 Batiment
@@ -4553,13 +4553,14 @@ Batiment
 Case: 39,23
 Route: Pointillé DOWN RIGHT
 Batiment
-Signalisation: TrafficLights 23,39 4
+Signalisation: TrafficLights 23,39 DOWN 4
 Case: 39,24
 Route: Pointillé DOWN LEFT
 Batiment
 Case: 39,25
 Route: Pointillé UP RIGHT
 Batiment
+Vehicule: Car4 25,39 UP 2.0 25,24
 Case: 39,26
 Route: Pointillé UP LEFT
 Batiment
@@ -4592,7 +4593,7 @@ Batiment
 Case: 39,40
 Route: Continue DOWN
 Batiment
-Signalisation: Stop 40,39
+Signalisation: Stop 40,39 DOWN
 Case: 39,41
 Batiment
 Case: 39,42
@@ -4635,8 +4636,7 @@ Batiment
 Case: 40,7
 Route: Continue LEFT
 Batiment
-Vehicule: Car5 7,40 LEFT 100.0 34,17
-Signalisation: TrafficLights 7,40 7
+Signalisation: TrafficLights 7,40 LEFT 7
 Case: 40,8
 Route: Continue LEFT
 Batiment
@@ -4691,14 +4691,13 @@ Batiment
 Case: 40,25
 Route: Continue LEFT UP RIGHT
 Batiment
-Vehicule: Car6 25,40 UP 100.0 9,6
 Case: 40,26
 Route: Continue LEFT UP
 Batiment
 Case: 40,27
 Route: Continue LEFT
 Batiment
-Signalisation: TrafficLights 27,40 4
+Signalisation: TrafficLights 27,40 LEFT 4
 Case: 40,28
 Route: Continue LEFT
 Batiment
@@ -4780,7 +4779,7 @@ Batiment
 Case: 41,4
 Route: Continue RIGHT
 Batiment
-Signalisation: TrafficLights 4,41 7
+Signalisation: TrafficLights 4,41 RIGHT 7
 Case: 41,5
 Route: Continue RIGHT
 Batiment
@@ -4835,7 +4834,7 @@ Batiment
 Case: 41,22
 Route: Continue RIGHT
 Batiment
-Signalisation: TrafficLights 22,41 4
+Signalisation: TrafficLights 22,41 RIGHT 4
 Case: 41,23
 Route: Continue RIGHT DOWN
 Batiment
@@ -4975,7 +4974,7 @@ Batiment
 Case: 42,26
 Route: Pointillé UP LEFT
 Batiment
-Signalisation: TrafficLights 26,42 4
+Signalisation: TrafficLights 26,42 UP 4
 Case: 42,27
 Batiment
 Case: 42,28
@@ -5386,7 +5385,6 @@ Batiment
 Case: 46,24
 Route: Pointillé DOWN LEFT
 Batiment
-Vehicule: Car3 24,46 DOWN 100.0 24,47
 Case: 46,25
 Route: Pointillé UP RIGHT
 Batiment

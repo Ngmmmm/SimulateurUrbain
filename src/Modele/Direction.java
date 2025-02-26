@@ -30,10 +30,10 @@ public class Direction {
 
     public static Direction fromString(String direction) {
         switch (direction.toUpperCase()) {
-            case "NORTH": return UP;
-            case "SOUTH": return DOWN;
-            case "EAST": return RIGHT;
-            case "WEST": return LEFT;
+            case "UP": return UP;
+            case "DOWN": return DOWN;
+            case "RIGHT": return RIGHT;
+            case "LEFT": return LEFT;
             default: throw new IllegalArgumentException("Direction inconnue: " + direction);
         }
     }
