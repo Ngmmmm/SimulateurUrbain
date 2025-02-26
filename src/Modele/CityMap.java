@@ -56,7 +56,64 @@ public class CityMap{
         }
     }
 
+    public boolean isEdge(Position pos, Direction dir) {
+        Position nextPos = pos.getNextPosition(dir);
+        return nextPos == null || !isValidPosition(nextPos.getY(), nextPos.getX());
+    }
 
+    public void changeEdge(Position pos, Direction dir) {
+        if (isEdge(pos, dir)) {
+            // Vérifier si la case contient une route
+            Road currentRoad = getRoad(pos);
+            if (currentRoad != null) {
+                Direction newDirection = null;
+    
+                // Déterminer la direction à ajouter en fonction de la direction actuelle
+                switch (dir.toString()) {
+                    case "UP" -> newDirection = Direction.LEFT;
+                    case "DOWN" -> newDirection = Direction.RIGHT;
+                    case "RIGHT" -> newDirection = Direction.UP;
+                    case "LEFT" -> newDirection = Direction.DOWN;
+                }
+    
+                // Ajouter la nouvelle direction si elle n'est pas déjà présente
+                if (newDirection != null && !Arrays.asList(currentRoad.getDirection()).contains(newDirection)) {
+                    currentRoad.addDirection(newDirection);
+                    System.out.println("Direction " + newDirection + " ajoutée à la route à la position " + pos);
+                } else {
+                    System.out.println("La direction " + newDirection + " est déjà présente ou est invalide.");
+                }
+            } else {
+                System.out.println("Aucune route à la position " + pos + " pour changer l'edge.");
+            }
+        }
+    }
+
+    public void updateAllEdges() {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                Position pos = new Position(j, i); // Créer une position à partir des indices
+                Road currentRoad = grid[i][j].getRoad(); // Récupérer la route à la position
+    
+                // Vérifier si la case contient une route
+                if (currentRoad != null) {
+                    // Vérifier les bords dans les quatre directions
+                    if (isEdge(pos, Direction.UP)) {
+                        changeEdge(pos, Direction.UP);
+                    }
+                    if (isEdge(pos, Direction.DOWN)) {
+                        changeEdge(pos, Direction.DOWN);
+                    }
+                    if (isEdge(pos, Direction.LEFT)) {
+                        changeEdge(pos, Direction.LEFT);
+                    }
+                    if (isEdge(pos, Direction.RIGHT)) {
+                        changeEdge(pos, Direction.RIGHT);
+                    }
+                }
+            }
+        }
+    }
 
     // Ajouter un véhicule à une position donnée s'il y a une route
     public void addVehicle(Vehicle vehicle) {

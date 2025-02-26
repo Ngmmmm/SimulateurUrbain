@@ -14,6 +14,7 @@ public class Simulation {
     public Simulation() {
         this.cityMap = new CityMap(50, 50);
         initializeMap();
+        cityMap.updateAllEdges();
         spawnRandomCars();
         afficherCarte();
     }
@@ -22,7 +23,7 @@ public class Simulation {
         cityMap.setBuilding();
 
         // Routes principales horizontales (Avenues)
-        for (int i = 1; i < 49; i++) {
+        for (int i = 0; i < 50; i++) {
             cityMap.setRoad(new Position(i, 1), "Continue", Direction.LEFT);
             cityMap.setRoad(new Position(i, 2), "Continue", Direction.RIGHT);
 
@@ -37,7 +38,7 @@ public class Simulation {
         }
 
         // Routes principales verticales (Boulevards)
-        for (int i = 1; i < 49; i++) {
+        for (int i = 0; i < 50; i++) {
             cityMap.setRoad(new Position(23, i), "Pointillé", Direction.DOWN, Direction.RIGHT);
             cityMap.setRoad(new Position(24, i), "Pointillé", Direction.DOWN, Direction.LEFT);
 
@@ -45,36 +46,6 @@ public class Simulation {
             cityMap.setRoad(new Position(26, i), "Pointillé", Direction.UP, Direction.LEFT);
         }
 
-        // Bords de map
-        cityMap.setRoad(new Position(0, 1), "Continue", Direction.DOWN);
-        cityMap.setRoad(new Position(0, 2), "Continue", Direction.RIGHT);
-        cityMap.setRoad(new Position(49, 1), "Continue", Direction.LEFT);
-        cityMap.setRoad(new Position(49, 2), "Continue", Direction.UP);
-
-        cityMap.setRoad(new Position(0, 12), "Continue", Direction.DOWN);
-        cityMap.setRoad(new Position(0, 13), "Continue", Direction.RIGHT);
-        cityMap.setRoad(new Position(49, 12), "Continue", Direction.LEFT);
-        cityMap.setRoad(new Position(49, 13), "Continue", Direction.UP);
-
-        cityMap.setRoad(new Position(0, 31), "Continue", Direction.DOWN);
-        cityMap.setRoad(new Position(0, 32), "Continue", Direction.RIGHT);
-        cityMap.setRoad(new Position(49, 31), "Continue", Direction.LEFT);
-        cityMap.setRoad(new Position(49, 32), "Continue", Direction.UP);
-
-        cityMap.setRoad(new Position(0, 40), "Continue", Direction.DOWN);
-        cityMap.setRoad(new Position(0, 41), "Continue", Direction.RIGHT);
-        cityMap.setRoad(new Position(49, 40), "Continue", Direction.LEFT);
-        cityMap.setRoad(new Position(49, 41), "Continue", Direction.UP);
-
-        cityMap.setRoad(new Position(23, 0), "Pointillé", Direction.DOWN, Direction.RIGHT);
-        cityMap.setRoad(new Position(24, 0), "Pointillé", Direction.DOWN, Direction.LEFT);
-        cityMap.setRoad(new Position(23, 49), "Pointillé",Direction.RIGHT);
-        cityMap.setRoad(new Position(24, 49), "Pointillé",Direction.RIGHT);
-
-        cityMap.setRoad(new Position(25, 0), "Pointillé", Direction.LEFT);
-        cityMap.setRoad(new Position(26, 0), "Pointillé", Direction.LEFT);
-        cityMap.setRoad(new Position(25, 49), "Pointillé", Direction.UP, Direction.RIGHT);
-        cityMap.setRoad(new Position(26, 49), "Pointillé", Direction.UP, Direction.LEFT);
 
         // Routes verticales double sens
         for (int i = 12; i < 31; i++) {cityMap.setRoad(new Position(34, i), "Continue", Direction.DOWN);}
