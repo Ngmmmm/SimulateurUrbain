@@ -22,7 +22,7 @@ public class TrafficLight extends Signalling {
 
     public void setColor(LightColor color) {
         this.color = color;
-        System.out.println(this);
+        //System.out.println(this);
         Controle.addUpdate(new TuplePosAct(position, new Update(){public void update(Case c){}}));
     }
 

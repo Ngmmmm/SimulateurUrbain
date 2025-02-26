@@ -47,4 +47,6 @@ public class Direction {
         if (this == RIGHT) return LEFT;
         return null;
     }
+
+
 }

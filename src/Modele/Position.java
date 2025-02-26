@@ -25,6 +25,17 @@ public class Position {
         
     }
 
+    public Position getNextPosition(Direction dir) {
+        return switch (dir.toString()) {
+            case "UP" -> new Position(this.x, this.y - 1);
+            case "DOWN" -> new Position(this.x, this.y + 1);
+            case "LEFT" -> new Position(this.x - 1, this.y);
+            case "RIGHT" -> new Position(this.x + 1, this.y);
+            default -> null;
+        };
+    }
+    
+
     /**
      * Retourne les positions adjacentes (haut, bas, gauche, droite).
      */
