@@ -68,15 +68,15 @@ public class GameLoader {
                     cityMap.getGrid()[currentRow][currentCol].setBuilding(building);
                 } else if (line.startsWith("Vehicule: ")) {
                     // Lecture des données du véhicule
-                    String[] vehicleData = line.substring(9).split(" ");
-                    String type = vehicleData[0];  // Ajoute une colonne dans le fichier de sauvegarde pour stocker le type
-                    String id = vehicleData[1];
-                    String[] positionData = vehicleData[2].split(",");
+                    String[] vehicleData = line.substring(10).split(" ");
+                    String type = vehicleData[0].substring(0, vehicleData[0].length() - 1);  // Ajoute une colonne dans le fichier de sauvegarde pour stocker le type
+                    String id = vehicleData[0];
+                    String[] positionData = vehicleData[1].split(",");
                     int x = Integer.parseInt(positionData[0]);
                     int y = Integer.parseInt(positionData[1]);
-                    Direction direction = Direction.fromString(vehicleData[3]);
-                    double speed = Double.parseDouble(vehicleData[4]);
-                    String[] destinationData = vehicleData[5].split(",");
+                    Direction direction = Direction.fromString(vehicleData[2]);
+                    double speed = Double.parseDouble(vehicleData[3]);
+                    String[] destinationData = vehicleData[4].split(",");
                     int destX = Integer.parseInt(destinationData[0]);
                     int destY = Integer.parseInt(destinationData[1]);
                 
@@ -84,32 +84,34 @@ public class GameLoader {
                     cityMap.getGrid()[currentRow][currentCol].setVehicle(vehicle);
                 } else if (line.startsWith("Signalisation: ")) {
                     // Lecture des données de la signalisation
-                    String[] signallingData = line.substring(14).split(" ");
-                    String type = signallingData[0];
-                    String[] positionData = signallingData[1].split(",");
+                    String[] signallingData = line.substring(15).split(" ");  // Diviser à partir de l'espace
+                    String type = signallingData[0];  // "TrafficLights"
+
+                    
+                    // Extraire les coordonnées
+                    String[] positionData = signallingData[1].split(",");  // Séparer les coordonnées
                     int x = Integer.parseInt(positionData[0]);
                     int y = Integer.parseInt(positionData[1]);
                     
-                    Direction direction = null;
-                    int dataIndex = 2;
-                    if (signallingData.length > 2 && !signallingData[2].matches("\\d+")) {
-                        direction = Direction.fromString(signallingData[2]);
-                        dataIndex = 3;
-                    }
-                    
+                    // La direction est toujours présente ici
+                    Direction direction = Direction.fromString(signallingData[2]);
+                
+                    // Créer la signalisation
                     Signalling signalling = createSignalling(type, new Position(x, y), direction, cityMap);
-                    
-                    // Si c'est un feu de signalisation, on récupère l'idGroupe
-                    if (signalling instanceof TrafficLight && signallingData.length > dataIndex) {
-                        int groupID = Integer.parseInt(signallingData[dataIndex]);
+                
+                    // Si c'est un feu de signalisation, récupérer l'ID de groupe
+                    if (signalling instanceof TrafficLight && signallingData.length > 3) {
+                        int groupID = Integer.parseInt(signallingData[3]);  // L'ID de groupe est à l'indice 3
                         ((TrafficLight) signalling).setIDGroupe(groupID);
-                        
+                
                         // Ajouter le feu dans la liste du groupe
                         trafficLightGroups.computeIfAbsent(groupID, k -> new ArrayList<>()).add((TrafficLight) signalling);
                     }
-                    
+                
+                    // Ajouter la signalisation à la carte
                     cityMap.getGrid()[currentRow][currentCol].setSignalling(signalling);
                 }
+                
 
             }
 
@@ -169,7 +171,7 @@ public class GameLoader {
      */
     private static Signalling createSignalling(String type, Position position, Direction direction, CityMap map) {
         switch (type) {
-            case "TrafficLight":
+            case "TrafficLights":
                 return new TrafficLight(position, direction, map);
             case "Stop":
                 return new Stop(position, direction);

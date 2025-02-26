@@ -231,6 +231,7 @@ Batiment
 Case: 1,41
 Route: Continue LEFT
 Batiment
+Vehicule: Car7 41,1 LEFT 2.0 24,48
 Case: 1,42
 Route: Continue LEFT
 Batiment
@@ -324,6 +325,7 @@ Batiment
 Case: 2,22
 Route: Continue RIGHT
 Batiment
+Vehicule: Car6 22,2 RIGHT 2.0 24,41
 Signalisation: TrafficLights 22,2 RIGHT 1
 Case: 2,23
 Route: Continue RIGHT DOWN
@@ -793,7 +795,6 @@ Batiment
 Case: 6,23
 Route: Pointillé DOWN RIGHT
 Batiment
-Vehicule: Car9 23,6 DOWN 2.0 40,34
 Case: 6,24
 Route: Pointillé DOWN LEFT
 Batiment
@@ -900,7 +901,6 @@ Batiment
 Case: 7,23
 Route: Pointillé DOWN RIGHT
 Batiment
-Vehicule: Car1 23,7 DOWN 2.0 2,12
 Case: 7,24
 Route: Pointillé DOWN LEFT
 Batiment
@@ -1847,6 +1847,7 @@ Batiment
 Case: 15,23
 Route: Pointillé DOWN RIGHT
 Batiment
+Vehicule: Car9 23,15 DOWN 2.0 24,20
 Case: 15,24
 Route: Pointillé DOWN LEFT
 Batiment
@@ -3244,7 +3245,6 @@ Batiment
 Case: 28,10
 Route: Continue UP
 Batiment
-Vehicule: Car6 10,28 UP 2.0 10,27
 Case: 28,11
 Batiment
 Case: 28,12
@@ -3662,6 +3662,7 @@ Batiment
 Case: 31,35
 Route: Continue LEFT UP
 Batiment
+Vehicule: Car2 35,31 LEFT 2.0 26,15
 Case: 31,36
 Route: Continue LEFT
 Batiment
@@ -4239,6 +4240,7 @@ Batiment
 Case: 36,26
 Route: Pointillé UP LEFT
 Batiment
+Vehicule: Car0 26,36 UP 2.0 10,30
 Case: 36,27
 Batiment
 Case: 36,28
@@ -4302,7 +4304,6 @@ Batiment
 Case: 37,6
 Route: Continue UP
 Batiment
-Vehicule: Car0 6,37 UP 2.0 42,31
 Case: 37,7
 Batiment
 Case: 37,8
@@ -4344,6 +4345,7 @@ Batiment
 Case: 37,25
 Route: Pointillé UP RIGHT
 Batiment
+Vehicule: Car8 25,37 UP 2.0 45,27
 Case: 37,26
 Route: Pointillé UP LEFT
 Batiment
@@ -4560,7 +4562,6 @@ Batiment
 Case: 39,25
 Route: Pointillé UP RIGHT
 Batiment
-Vehicule: Car4 25,39 UP 2.0 25,24
 Case: 39,26
 Route: Pointillé UP LEFT
 Batiment
@@ -4822,6 +4823,7 @@ Batiment
 Case: 41,18
 Route: Continue RIGHT
 Batiment
+Vehicule: Car3 18,41 RIGHT 2.0 45,27
 Case: 41,19
 Route: Continue RIGHT
 Batiment
@@ -4901,6 +4903,7 @@ Batiment
 Case: 41,44
 Route: Continue RIGHT
 Batiment
+Vehicule: Car1 44,41 RIGHT 2.0 48,41
 Case: 41,45
 Route: Continue RIGHT
 Batiment
