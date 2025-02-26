@@ -86,7 +86,7 @@ public class GameLoader {
                     int x = Integer.parseInt(positionData[0]);
                     int y = Integer.parseInt(positionData[1]);
 
-                    Signalling signalling = createSignalling(type, new Position(x, y));
+                    Signalling signalling = createSignalling(type, new Position(x, y), cityMap);
 
                     // Si c'est un feu de signalisation, on récupère l'idGroupe
                     if (signalling instanceof TrafficLight && signallingData.length > 2) {
@@ -102,7 +102,7 @@ public class GameLoader {
             }
 
             // Recréer les groupes de feux après lecture complète
-            rebuildTrafficLightGroups(cityMap, trafficLightGroups);
+            rebuildTrafficLightGroups(trafficLightGroups);
 
         } catch (IOException e) {
             e.printStackTrace();
