@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Map;
 import Modele.*;
 import Modele.Signalling.*;
+import Modele.Vehicle.Bus;
+import Modele.Vehicle.Car;
+import Modele.Vehicle.Truck;
 import Modele.Vehicle.Vehicle;
 
 public class GameLoader {
@@ -66,17 +69,18 @@ public class GameLoader {
                 } else if (line.startsWith("Vehicule: ")) {
                     // Lecture des données du véhicule
                     String[] vehicleData = line.substring(9).split(" ");
-                    String id = vehicleData[0];
-                    String[] positionData = vehicleData[1].split(",");
+                    String type = vehicleData[0];  // Ajoute une colonne dans le fichier de sauvegarde pour stocker le type
+                    String id = vehicleData[1];
+                    String[] positionData = vehicleData[2].split(",");
                     int x = Integer.parseInt(positionData[0]);
                     int y = Integer.parseInt(positionData[1]);
-                    Direction direction = Direction.fromString(vehicleData[2]);
-                    float fuel = Float.parseFloat(vehicleData[3]);
-                    String[] destinationData = vehicleData[4].split(",");
+                    Direction direction = Direction.fromString(vehicleData[3]);
+                    double speed = Double.parseDouble(vehicleData[4]);
+                    String[] destinationData = vehicleData[5].split(",");
                     int destX = Integer.parseInt(destinationData[0]);
                     int destY = Integer.parseInt(destinationData[1]);
-                    
-                    Vehicle vehicle = new Vehicle(id, 1.0, new Position(x, y), direction, 0.1f, cityMap, new Position(destX, destY));
+                
+                    Vehicle vehicle = createVehicle(type, id,speed, new Position(x, y), direction, new Position(destX, destY), cityMap);
                     cityMap.getGrid()[currentRow][currentCol].setVehicle(vehicle);
                 } else if (line.startsWith("Signalisation: ")) {
                     // Lecture des données de la signalisation
@@ -85,20 +89,28 @@ public class GameLoader {
                     String[] positionData = signallingData[1].split(",");
                     int x = Integer.parseInt(positionData[0]);
                     int y = Integer.parseInt(positionData[1]);
-
-                    Signalling signalling = createSignalling(type, new Position(x, y), cityMap);
-
+                    
+                    Direction direction = null;
+                    int dataIndex = 2;
+                    if (signallingData.length > 2 && !signallingData[2].matches("\\d+")) {
+                        direction = Direction.fromString(signallingData[2]);
+                        dataIndex = 3;
+                    }
+                    
+                    Signalling signalling = createSignalling(type, new Position(x, y), direction, cityMap);
+                    
                     // Si c'est un feu de signalisation, on récupère l'idGroupe
-                    if (signalling instanceof TrafficLight && signallingData.length > 2) {
-                        int groupID = Integer.parseInt(signallingData[2]);
+                    if (signalling instanceof TrafficLight && signallingData.length > dataIndex) {
+                        int groupID = Integer.parseInt(signallingData[dataIndex]);
                         ((TrafficLight) signalling).setIDGroupe(groupID);
-
+                        
                         // Ajouter le feu dans la liste du groupe
                         trafficLightGroups.computeIfAbsent(groupID, k -> new ArrayList<>()).add((TrafficLight) signalling);
                     }
-
+                    
                     cityMap.getGrid()[currentRow][currentCol].setSignalling(signalling);
                 }
+
             }
 
             // Recréer les groupes de feux après lecture complète
@@ -124,11 +136,10 @@ public class GameLoader {
             List<TrafficLight> lights = entry.getValue();
 
             // Créer un groupe de feux
+            @SuppressWarnings("unused")
             TrafficLightGroup group = new TrafficLightGroup(lights);
 
         }
-
-
     }
 
     /**
@@ -168,4 +179,18 @@ public class GameLoader {
                 throw new IllegalArgumentException("Type de signalisation inconnu : " + type);
         }
     }
+
+    private static Vehicle createVehicle(String type, String id, double speed, Position position, Direction direction, Position destination, CityMap map) {
+    switch (type) {
+        case "Car":
+            return new Car(id,speed, position, direction, map, destination);
+        case "Truck":
+            return new Truck(id, speed, position, direction, map, destination);
+        case "Bus":
+            return new Bus(id, speed, position, direction, map, destination);
+        default:
+            throw new IllegalArgumentException("Type de véhicule inconnu : " + type);
+    }
+}
+
 }

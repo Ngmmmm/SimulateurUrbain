@@ -46,7 +46,7 @@ public class GameSaver {
                     // Sauvegarder le véhicule
                     if (currentCase.getVehicle() != null) {
                         Vehicle vehicle = currentCase.getVehicle();
-                        writer.write("Vehicule: " + vehicle.getId() + " " + vehicle.getPosition().getX() + "," + vehicle.getPosition().getY() + " " + vehicle.getDirection() + " " + vehicle.getFuel() + " " + vehicle.getDestination().getX() + "," + vehicle.getDestination().getY());
+                        writer.write("Vehicule: " + vehicle.getId() + " " + vehicle.getPosition().getX() + "," + vehicle.getPosition().getY() + " " + vehicle.getDirection() + " " + vehicle.getSpeed() + " " + vehicle.getDestination().getX() + "," + vehicle.getDestination().getY());
                         writer.newLine();
                     }
     
