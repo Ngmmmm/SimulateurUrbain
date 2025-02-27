@@ -75,66 +75,67 @@ public class TrafficSimulatorGUI extends JFrame {
     } 
     //dessine la case selon sa place et ses propriétés
     public void drawCase(Graphics g, int i, int j) {
-    int x = j * cellSize;
-    int y = i * cellSize;
-    Case currentCase = cityMap.getGrid()[i][j];
+        int x = j * cellSize;
+        int y = i * cellSize;
+        Case currentCase = cityMap.getGrid()[i][j];
 
-    // Dessiner la route si elle existe
-    if (currentCase.getRoad() != null) {
-        Graphics2D g2d = (Graphics2D) g;
-        
-        // Obtenir la direction de la route et déterminer l'angle de rotation
-        double angle = 0;
-        Direction[] direction = currentCase.getRoad().getDirection();
-            switch (direction[0].toString()) {
-                case "UP" -> angle = 0;
-                case "DOWN" -> angle = 0;
-                case "RIGHT" -> angle = Math.PI / 2;
-                case "LEFT" -> angle = Math.PI / 2;
+        // Dessiner la route si elle existe
+        if (currentCase.getRoad() != null) {
+            Graphics2D g2d = (Graphics2D) g;
+            
+            // Obtenir la direction de la route et déterminer l'angle de rotation
+            double angle = 0;
+            Direction[] direction = currentCase.getRoad().getDirection();
+                switch (direction[0].toString()) {
+                    case "UP" -> angle = 0;
+                    case "DOWN" -> angle = 0;
+                    case "RIGHT" -> angle = Math.PI / 2;
+                    case "LEFT" -> angle = Math.PI / 2;
+                }
+
+            // Appliquer la rotation
+            g2d.translate(x + cellSize / 2, y + cellSize / 2); // Déplacer l'origine au centre
+            g2d.rotate(angle); // Faire pivoter
+
+            g2d.drawImage(Image.imgRoad, -cellSize / 2, -cellSize / 2, cellSize, cellSize, null);
+
+            // Restauration de l'état précédent
+            g2d.rotate(-angle);
+            g2d.translate(-x - cellSize / 2, -y - cellSize / 2);
+
+            // Dessiner le véhicule si il existe
+            if (currentCase.getVehicle() != null) {
+                g2d.drawImage(Image.imgCar, x, y, cellSize, cellSize, null);
             }
 
-        // Appliquer la rotation
-        g2d.translate(x + cellSize / 2, y + cellSize / 2); // Déplacer l'origine au centre
-        g2d.rotate(angle); // Faire pivoter
-
-        g2d.drawImage(Image.imgRoad, -cellSize / 2, -cellSize / 2, cellSize, cellSize, null);
-
-        // Restauration de l'état précédent
-        g2d.rotate(-angle);
-        g2d.translate(-x - cellSize / 2, -y - cellSize / 2);
-
-        // Dessiner le véhicule si il existe
-        if (currentCase.getVehicle() != null) {
-            g2d.drawImage(Image.imgCar, x, y, cellSize, cellSize, null);
-        }
-
-        // Dessiner un signalement si il existe
-        if (currentCase.getSignalling() != null) {
-            BufferedImage img = switch (currentCase.getSignalling().getType()) {
-                case "TrafficLights" -> getTrafficCol((TrafficLight) currentCase.getSignalling());
-                case "Stop" -> Image.imgStop;
-                case "NoEntry" -> Image.imgNoEntry;
-                default -> null;
-            };
-            if (img != null) {
-                g2d.drawImage(img, x, y, cellSize, cellSize, null);
+            // Dessiner un signalement si il existe
+            if (currentCase.getSignalling() != null) {
+                BufferedImage img = switch (currentCase.getSignalling().getType()) {
+                    case "TrafficLights" -> getTrafficCol((TrafficLight) currentCase.getSignalling());
+                    case "Stop" -> Image.imgStop;
+                    case "NoEntry" -> Image.imgNoEntry;
+                    default -> null;
+                };
+                if (img != null) {
+                    int sizeTrafficLight = cellSize / 2;
+                    g2d.drawImage(img, x + cellSize - sizeTrafficLight, y, sizeTrafficLight, sizeTrafficLight, null);
+                }
             }
         }
-    }
-    // Dessiner le bâtiment si il existe
-    else if (currentCase.getBuilding() != null) {
-        g.drawImage(Image.imgBuilding, x, y, cellSize, cellSize, null);
-    }
-    // Dessiner une case vide
-    else {
-        g.setColor(Color.LIGHT_GRAY);
-        g.fillRect(x, y, cellSize, cellSize);
-    }
+        // Dessiner le bâtiment si il existe
+        else if (currentCase.getBuilding() != null) {
+            g.drawImage(Image.imgBuilding, x, y, cellSize, cellSize, null);
+        }
+        // Dessiner une case vide
+        else {
+            g.setColor(Color.LIGHT_GRAY);
+            g.fillRect(x, y, cellSize, cellSize);
+        }
 
-    // Dessiner les bordures
-    g.setColor(Color.BLACK);
-    g.drawRect(x, y, cellSize, cellSize);
-}
+        // Dessiner les bordures
+        g.setColor(Color.BLACK);
+        g.drawRect(x, y, cellSize, cellSize);
+    }
 
 
     public void drawMap(Graphics g) {
