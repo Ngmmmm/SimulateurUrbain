@@ -20,7 +20,6 @@ public class Simulation {
     }
 
     private void initializeMap() {
-        cityMap.setBuilding();
 
         // Routes principales horizontales (Avenues)
         for (int i = 0; i < 50; i++) {
@@ -71,6 +70,7 @@ public class Simulation {
         for (int i = 20; i < 31; i++) {cityMap.setRoad(new Position(45, i), "Continue", Direction.DOWN);}
         
         for (int i = 31; i < 40; i++) {cityMap.setRoad(new Position(40, i), "Continue", Direction.DOWN);}
+        cityMap.setBuilding();
 
         cityMap.setNoEntry(new Position(19, 11));
         cityMap.setNoEntry(new Position(19, 11));
@@ -139,6 +139,7 @@ public class Simulation {
         allLights8.add(new TrafficLight(new Position(33, 32), Direction.RIGHT, cityMap));
         allLights8.add(new TrafficLight(new Position(34, 30), Direction.DOWN, cityMap));
         TrafficLightGroup groupe8 = new TrafficLightGroup(allLights8);
+
     }
 
     public void spawnRandomCars() {
