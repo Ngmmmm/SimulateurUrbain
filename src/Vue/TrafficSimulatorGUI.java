@@ -96,9 +96,7 @@ public class TrafficSimulatorGUI extends JFrame {
             // Appliquer la rotation
             g2d.translate(x + cellSize / 2, y + cellSize / 2); // Déplacer l'origine au centre
             g2d.rotate(angle); // Faire pivoter
-
             g2d.drawImage(Image.imgRoad, -cellSize / 2, -cellSize / 2, cellSize, cellSize, null);
-
             // Restauration de l'état précédent
             g2d.rotate(-angle);
             g2d.translate(-x - cellSize / 2, -y - cellSize / 2);
@@ -116,10 +114,33 @@ public class TrafficSimulatorGUI extends JFrame {
                     case "NoEntry" -> Image.imgNoEntry;
                     default -> null;
                 };
-                if (img != null) {
-                    int sizeTrafficLight = cellSize / 2;
-                    g2d.drawImage(img, x + cellSize - sizeTrafficLight, y, sizeTrafficLight, sizeTrafficLight, null);
+                int size = cellSize / 2;
+    
+                // Positionner le panneau en fonction de la direction de la route
+                int signalX = x + cellSize - size; // Par défaut à droite
+                int signalY = y; // Par défaut en haut
+
+                switch (direction[0].toString()) {
+                    case "UP" -> {
+                        signalX = x + cellSize - size; // En haut à droite
+                        signalY = y; // En haut
+                    }
+                    case "DOWN" -> {
+                        signalX = x; // En bas à gauche
+                        signalY = y + cellSize - size; // En bas
+                    }
+                    case "LEFT" -> {
+                        signalX = x; // À gauche en haut
+                        signalY = y; // En haut
+                    }
+                    case "RIGHT" -> {
+                        signalX = x + cellSize - size; // À droite en haut
+                        signalY = y + cellSize - size; // En haut
+                    }
                 }
+
+    
+                g2d.drawImage(img, signalX, signalY, size, size, null);
             }
         }
         // Dessiner le bâtiment si il existe
