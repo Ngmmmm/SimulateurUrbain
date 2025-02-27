@@ -78,35 +78,33 @@ public class TrafficSimulatorGUI extends JFrame {
         int x = j * cellSize;
         int y = i * cellSize;
         Case currentCase = cityMap.getGrid()[i][j];
-
-        // Dessiner la route si elle existe
+    
         if (currentCase.getRoad() != null) {
             Graphics2D g2d = (Graphics2D) g;
-            
-            // Obtenir la direction de la route et déterminer l'angle de rotation
+    
+            // Déterminer l'angle de rotation en fonction de la direction
             double angle = 0;
             Direction[] direction = currentCase.getRoad().getDirection();
-                switch (direction[0].toString()) {
-                    case "UP" -> angle = 0;
-                    case "DOWN" -> angle = 0;
-                    case "RIGHT" -> angle = Math.PI / 2;
-                    case "LEFT" -> angle = Math.PI / 2;
-                }
-
-            // Appliquer la rotation
-            g2d.translate(x + cellSize / 2, y + cellSize / 2); // Déplacer l'origine au centre
-            g2d.rotate(angle); // Faire pivoter
+            switch (direction[0].toString()) {
+                case "UP" -> angle = 0;
+                case "DOWN" -> angle = Math.PI;
+                case "RIGHT" -> angle = Math.PI / 2;
+                case "LEFT" -> angle = -Math.PI / 2;
+            }
+    
+            // Appliquer la rotation pour la route
+            g2d.translate(x + cellSize / 2, y + cellSize / 2);
+            g2d.rotate(angle);
             g2d.drawImage(Image.imgRoad, -cellSize / 2, -cellSize / 2, cellSize, cellSize, null);
-            // Restauration de l'état précédent
             g2d.rotate(-angle);
             g2d.translate(-x - cellSize / 2, -y - cellSize / 2);
-
-            // Dessiner le véhicule si il existe
+    
+            // Dessiner le véhicule s'il existe
             if (currentCase.getVehicle() != null) {
                 g2d.drawImage(Image.imgCar, x, y, cellSize, cellSize, null);
             }
-
-            // Dessiner un signalement si il existe
+    
+            // Dessiner un panneau s'il existe
             if (currentCase.getSignalling() != null) {
                 BufferedImage img = switch (currentCase.getSignalling().getType()) {
                     case "TrafficLights" -> getTrafficCol((TrafficLight) currentCase.getSignalling());
@@ -116,34 +114,38 @@ public class TrafficSimulatorGUI extends JFrame {
                 };
                 int size = cellSize / 2;
     
-                // Positionner le panneau en fonction de la direction de la route
-                int signalX = x + cellSize - size; // Par défaut à droite
-                int signalY = y; // Par défaut en haut
-
+                // Position du panneau
+                int signalX = x;
+                int signalY = y;
+    
                 switch (direction[0].toString()) {
                     case "UP" -> {
                         signalX = x + cellSize - size; // En haut à droite
-                        signalY = y; // En haut
+                        signalY = y;
                     }
                     case "DOWN" -> {
                         signalX = x; // En bas à gauche
-                        signalY = y + cellSize - size; // En bas
+                        signalY = y + cellSize - size;
                     }
                     case "LEFT" -> {
                         signalX = x; // À gauche en haut
-                        signalY = y; // En haut
+                        signalY = y;
                     }
                     case "RIGHT" -> {
                         signalX = x + cellSize - size; // À droite en haut
-                        signalY = y + cellSize - size; // En haut
+                        signalY = y + cellSize - size;
                     }
                 }
-
     
-                g2d.drawImage(img, signalX, signalY, size, size, null);
+                // Appliquer la même rotation que la route au panneau
+                g2d.translate(signalX + size / 2, signalY + size / 2);
+                g2d.rotate(angle);
+                g2d.drawImage(img, -size / 2, -size / 2, size, size, null);
+                g2d.rotate(-angle);
+                g2d.translate(-signalX - size / 2, -signalY - size / 2);
             }
         }
-        // Dessiner le bâtiment si il existe
+        // Dessiner le bâtiment s'il existe
         else if (currentCase.getBuilding() != null) {
             g.drawImage(Image.imgBuilding, x, y, cellSize, cellSize, null);
         }
@@ -152,11 +154,12 @@ public class TrafficSimulatorGUI extends JFrame {
             g.setColor(Color.LIGHT_GRAY);
             g.fillRect(x, y, cellSize, cellSize);
         }
-
+    
         // Dessiner les bordures
         g.setColor(Color.BLACK);
         g.drawRect(x, y, cellSize, cellSize);
     }
+    
 
 
     public void drawMap(Graphics g) {
