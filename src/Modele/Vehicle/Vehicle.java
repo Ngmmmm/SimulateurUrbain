@@ -175,23 +175,25 @@ public abstract class Vehicle {
     public boolean signallingOk(Case act){
         Signalling signal = act.getSignalling();
         if(signal != null){
-            if(signal instanceof TrafficLight trafficLights){
-                System.out.println("FEUDANSLACASDE");
-                if (trafficLights.getColor().equals("RED") || trafficLights.getColor().equals("ORANGE")){
-                    return false;
-                }
-            }else if(signal instanceof Stop){
-                if(checkCaseForSignalling() != null){
-                        Timer timer = new Timer(2000, (ActionEvent e) -> {
-                            this.stopOk = getCase(checkCaseForSignalling()).isEmpty();
-                        });
+            if(signal.getDirection().toString().equals(direction.toString())){
+                if(signal instanceof TrafficLight trafficLights){
+                    System.out.println("FEUDANSLACASDE");
+                    if (trafficLights.getColor().equals("RED") || trafficLights.getColor().equals("ORANGE")){
+                        return false;
+                    }
+                }else if(signal instanceof Stop){
+                    if(checkCaseForSignalling() != null){
+                            Timer timer = new Timer(2000, (ActionEvent e) -> {
+                                this.stopOk = getCase(checkCaseForSignalling()).isEmpty();
+                            });
                     
-                        timer.setRepeats(false); 
-                        timer.start();
-                        return this.stopOk;
-                }
+                            timer.setRepeats(false); 
+                            timer.start();
+                            return this.stopOk;
+                    }
 
-            }else return !(signal instanceof NoEntry);
+                }else return !(signal instanceof NoEntry);
+            }
         }
         return true;
     }
