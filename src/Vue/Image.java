@@ -14,6 +14,8 @@ public class Image {
     static BufferedImage imgTrafficRed;
     static BufferedImage imgTrafficOrange;
     static BufferedImage imgNoEntry;
+    static BufferedImage imgVirage;
+
 
 
 
@@ -28,6 +30,7 @@ public class Image {
             imgTrafficRed = ImageIO.read(new File("trafficRed.png"));
             imgTrafficOrange = ImageIO.read(new File("trafficOrange.png"));
             imgNoEntry = ImageIO.read(new File("noentry.png"));
+            imgVirage = ImageIO.read(new File("virage.png"));
             
         } catch (Exception e) {
             System.out.println("Erreur lors du chargement des images");

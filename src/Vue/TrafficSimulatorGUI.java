@@ -98,7 +98,11 @@ public class TrafficSimulatorGUI extends JFrame {
             g2d.drawImage(Image.imgRoad, -cellSize / 2, -cellSize / 2, cellSize, cellSize, null);
             g2d.rotate(-angle);
             g2d.translate(-x - cellSize / 2, -y - cellSize / 2);
-    
+            
+            // if (isCurve(currentCase, i, j)) {
+            //     g2d.drawImage(Image.imgVirage, x, y, cellSize, cellSize, null);
+            // }
+            
             // Dessiner le véhicule s'il existe
             if (currentCase.getVehicle() != null) {
                 g2d.drawImage(Image.imgCar, x, y, cellSize, cellSize, null);
@@ -160,7 +164,33 @@ public class TrafficSimulatorGUI extends JFrame {
         g.drawRect(x, y, cellSize, cellSize);
     }
     
-
+    // private boolean isCurve(Case currentCase, int i, int j) {
+    //     if (currentCase.getRoad() == null) {
+    //         return false;
+    //     }
+    
+    //     Direction[] currentDirections = currentCase.getRoad().getDirection();
+    
+    //     // Vérifier la case devant
+    //     int nextI = i, nextJ = j;
+    //     switch (currentDirections[0].toString()) {
+    //         case "UP" -> nextI--;
+    //         case "DOWN" -> nextI++;
+    //         case "LEFT" -> nextJ--;
+    //         case "RIGHT" -> nextJ++;
+    //     }
+    
+    //     // Vérifier si la case devant existe dans la grille
+    //     if (nextI < 0 || nextI >= cityMap.getGrid().length || nextJ < 0 || nextJ >= cityMap.getGrid()[0].length) {
+    //         return false;
+    //     }
+    
+    //     Case nextCase = cityMap.getGrid()[nextI][nextJ];
+    
+    //     // Vérifier si la case devant est une route et a une direction différente
+    //     return nextCase.getRoad() != null && nextCase.getRoad().getDirection()[0] != currentDirections[0];
+    // }
+    
 
     public void drawMap(Graphics g) {
         Image.loadImg();
