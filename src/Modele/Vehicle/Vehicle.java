@@ -7,9 +7,8 @@ import Modele.Pathfinding;
 import Modele.Position;
 import Modele.Signalling.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import javax.swing.Timer;
 
 import Controle.*;
@@ -28,6 +27,7 @@ public abstract class Vehicle {
     protected Position destination;
     public boolean stopOk;
     public static int nbCar = 0;
+    public LinkedList<Position> path;
 
     public Vehicle(String id, double speed, Position position, Direction direction, float fuelConso, CityMap map, Position destination) {
         this.id = id;
@@ -152,13 +152,7 @@ public abstract class Vehicle {
     }
 
     public Case getCase(Position pos){
-        if(pos.getX() >= 0 && pos.getY() >= 0 && pos.getX() < 50 && pos.getY() < 50){
-            System.out.print(pos.getX());
-            System.out.println(pos.getY());
-            return map.getGrid()[pos.getY()][pos.getX()];
-        }else{
-            return null;
-        }
+        return CityMap.getCase(map.getGrid(), pos);
         
     }
 
@@ -204,7 +198,7 @@ public abstract class Vehicle {
         if (nextCaseIsValid()){
             if((act.getSignalling() == null || signallingOk(act)) && (actRight == null ||actRight.getSignalling() == null || signallingOk(actRight))){
                 act.setVehicle(null);
-                Controle.addUpdate(new TuplePosAct(position, new Update(){public void update(Case c){}}));
+                Controle.addUpdate();
                 position = nextPosition();
                 map.getGrid()[position.getY()][position.getX()].setVehicle(this);
                 return true;
@@ -219,40 +213,30 @@ public abstract class Vehicle {
 
 
 
-    private void followPath(ArrayList<Position> path, int index) {
-        if (index >= path.size()) {
+    public boolean followPath(LinkedList<Position> path) {
+        if (path.isEmpty()) {
             this.getCase(position).setVehicle(null);
-            return; // Arrêt si on a atteint la destination
+            return false; // Arrêt si on a atteint la destination
         }
     
-        Position prochainePos = path.get(index);
+        Position prochainePos = path.pop();
         Direction prochaineDir = Direction.getDirection(position, prochainePos);
         changeDirection(prochaineDir);
+
+        boolean b = move();
+        if(!b){
+            path.push(prochainePos);
+        }
+        Controle.addUpdateCar(position);
+        return b;
     
-        Timer timer = new Timer(1000, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.print(position.getX());
-                System.out.println(position.getY());
-                if(move()){
-                    followPath(path, index + 1); 
-                    Controle.addUpdate(new TuplePosAct(position, new Update(){public void update(Case c){}}));
-                }else{
-                    followPath(path, index);
-                }
-                
-                
-            }
-        });
-    
-        timer.setRepeats(false); 
-        timer.start();
     }
     
     public void followAllPath() {
-        ArrayList<Position> path = Pathfinding.findShortestPath(map, position, destination);
-        if (path.size() > 1) {
-            followPath(path, 1); 
+        path = Pathfinding.findShortestPath(map, position, destination);
+        path.pop();
+        if (!path.isEmpty()) {
+            followPath(path); 
         }
     }
 

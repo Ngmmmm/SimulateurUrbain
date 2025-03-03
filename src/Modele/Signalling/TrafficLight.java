@@ -1,9 +1,6 @@
 package Modele.Signalling;
 
 import Controle.Controle;
-import Controle.TuplePosAct;
-import Controle.Update;
-import Modele.Case;
 import Modele.CityMap;
 import Modele.Direction;
 import Modele.Position;
@@ -23,7 +20,7 @@ public class TrafficLight extends Signalling {
     public void setColor(LightColor color) {
         this.color = color;
         //System.out.println(this);
-        Controle.addUpdate(new TuplePosAct(position, new Update(){public void update(Case c){}}));
+        Controle.addUpdate();
     }
 
     public boolean isNorthSouth() {

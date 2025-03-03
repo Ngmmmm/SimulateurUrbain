@@ -2,19 +2,14 @@ package Vue;
 
 import Modele.Case;
 import Modele.CityMap;
-import Modele.Direction;
-import Modele.Pathfinding;
-import Modele.Position;
-import Modele.Signalling.LightColor;
 import Modele.Signalling.TrafficLight;
-import Modele.Signalling.TrafficLightGroup;
-import Modele.Simulation;
-import Modele.Vehicle.Car;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import javax.swing.*;
+
+import Controle.Controle;
+
 
 
 public class TrafficSimulatorGUI extends JFrame {
@@ -28,6 +23,9 @@ public class TrafficSimulatorGUI extends JFrame {
 
     private CityMap cityMap; // Référence à la carte de la ville
     private Point lastDragPoint; // Ajoutez cette ligne pour déclarer lastDragPoint
+
+    private static boolean needUpdate;
+    private Timer uiTimer;
 
     public TrafficSimulatorGUI(CityMap cityMap) {
         this.cityMap = cityMap;
@@ -56,8 +54,13 @@ public class TrafficSimulatorGUI extends JFrame {
         mapPanel.addMouseWheelListener(createMouseWheelZoomListener());
         mapPanel.addMouseListener(createMouseDragListener());
         mapPanel.addMouseMotionListener(createMouseMotionListener());
+        mapPanel.addKeyListener(createKeyListener());
+
+        uiTimer = new Timer(500, createTimerListener());
+        uiTimer.start();
 
         setVisible(true);
+        mapPanel.setFocusable(true);
     }
 
     private JPanel createMapPanel() {
@@ -261,6 +264,48 @@ public class TrafficSimulatorGUI extends JFrame {
                 lastDragPoint = e.getPoint();
             }
         };
+    }
+
+    
+    private KeyListener createKeyListener(){
+        return new KeyAdapter(){
+            public void keyPressed(KeyEvent e){
+                switch(e.getKeyChar()){
+                    case 'p' : {
+                        if (uiTimer.isRunning()){
+                            uiTimer.stop();
+                            Controle.timerIsRunning = false;
+                        }else{
+                            uiTimer.start();
+                            Controle.timerIsRunning = true;
+                        }
+                    }
+                }
+            }
+        };
+    }
+
+    private ActionListener createTimerListener(){
+        return new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                if (needUpdate){
+                    mapPanel.repaint();
+                    needUpdate = false;
+                }
+            }
+        };
+    }
+    
+    public static void setUpdate(boolean b){
+        needUpdate = b;
+    }
+
+    public void pause(){
+        uiTimer.stop();
+    }
+
+    public void start(){
+        uiTimer.start();
     }
 
 

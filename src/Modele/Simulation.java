@@ -5,6 +5,7 @@ import Modele.Signalling.TrafficLightGroup;
 import Modele.Vehicle.Car;
 import Modele.Vehicle.Vehicle;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -144,7 +145,7 @@ public class Simulation {
 
     public void spawnRandomCars() {
         Random rand = new Random();
-        ArrayList<Position> spawnPositions = Pathfinding.FindSpawnPosition(cityMap);
+        LinkedList<Position> spawnPositions = Pathfinding.FindSpawnPosition(cityMap);
     
         if (spawnPositions.isEmpty()) {
             System.out.println("Pas de spawn disponible.");
@@ -164,7 +165,7 @@ public class Simulation {
             Road road = cityMap.getRoad(randomPos);
             Direction direction = (road != null && road.getDirection().length > 0) ? road.getDirection()[0] : Direction.RIGHT; // Par défaut
     
-            ArrayList<Position> accessiblePosition = Pathfinding.findAllAccessiblePositions(cityMap, randomPos);
+            LinkedList<Position> accessiblePosition = Pathfinding.findAllAccessiblePositions(cityMap, randomPos);
             if (accessiblePosition.isEmpty()) {
                 essai++;
                 continue; // Essaye une autre position
