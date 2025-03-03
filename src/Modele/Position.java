@@ -16,10 +16,10 @@ public class Position {
 
     public Position checkPosForSignalling(Direction dir){
         return switch (dir.toString()) {
-            case "UP" -> new Position(this.x+1,this.y+1);
+            case "UP" -> new Position(this.x-1,this.y-1);
             case "LEFT" -> new Position(this.x-1,this.y+1);
             case "RIGHT" -> new Position(this.x+1,this.y-1);
-            case "DOWN" -> new Position(this.x-1,this.y+1);
+            case "DOWN" -> new Position(this.x+1,this.y+1);
             default -> null;
         };
         
