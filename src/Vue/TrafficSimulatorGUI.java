@@ -105,7 +105,7 @@ public class TrafficSimulatorGUI extends JFrame {
             
             // Dessiner le véhicule s'il existe
             if (currentCase.getVehicle() != null) {
-                g2d.drawImage(Image.imgCar, x, y, cellSize, cellSize, null);
+                g2d.drawImage(Image.getImgCar(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
             }
     
             // Dessiner un panneau s'il existe
@@ -147,6 +147,11 @@ public class TrafficSimulatorGUI extends JFrame {
                 g2d.drawImage(img, -size / 2, -size / 2, size, size, null);
                 g2d.rotate(-angle);
                 g2d.translate(-signalX - size / 2, -signalY - size / 2);
+
+                // Dessiner le véhicule s'il existe
+            if (currentCase.getVehicle() != null) {
+                g2d.drawImage(Image.getImgCar(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
+            }
             }
         }
         // Dessiner le bâtiment s'il existe
