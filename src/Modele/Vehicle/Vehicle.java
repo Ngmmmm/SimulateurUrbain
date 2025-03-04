@@ -14,6 +14,7 @@ import javax.swing.Timer;
 
 import Controle.*;
 
+
 public abstract class Vehicle {
     protected String id;
     protected double speed;
@@ -25,6 +26,7 @@ public abstract class Vehicle {
     protected BufferedImage img;
     protected CityMap map;
     protected Position destination;
+    public boolean stopOk;
     public static int nbCar = 0;
 
     public Vehicle(String id, double speed, Position position, Direction direction, float fuelConso, CityMap map, Position destination) {
@@ -122,13 +124,42 @@ public abstract class Vehicle {
     public Position nextPosition(){
         return direction.move(position);
     }
+    public Position rightPos(){
+        if(position.getX() > 0 && position.getY() > 0){
+        switch (direction.toString()) {
+            case "UP" -> {
+                return new Position(this.position.getX() +1, this.position.getY());
+            }
+            case "LEFT" -> {
+                return new Position(this.position.getX(), this.position.getY() -1);
+            }
+            case "RIGHT" -> {
+                return new Position(this.position.getX(), this.position.getY() +1);
+            }
+            case "DOWN" -> {
+                return new Position(this.position.getX() -1, this.position.getY());
+            }
+            default -> {
+                return null;
+            }
+        }
+        }
+        return position;
+    }
 
     public void tourner(Direction direction){
         this.direction = direction;
     }
 
     public Case getCase(Position pos){
-        return map.getGrid()[pos.getY()][pos.getX()];
+        if(pos.getX() >= 0 && pos.getY() >= 0 && pos.getX() < 50 && pos.getY() < 50){
+            System.out.print(pos.getX());
+            System.out.println(pos.getY());
+            return map.getGrid()[pos.getY()][pos.getX()];
+        }else{
+            return null;
+        }
+        
     }
 
     public int getNbCar(){
@@ -138,40 +169,40 @@ public abstract class Vehicle {
 
     public boolean nextCaseIsValid(){
         Case next = getCase(nextPosition());
-        return !next.isEmpty();
+        return next != null && next.isEmpty();
     }
 
     public boolean signallingOk(Case act){
         Signalling signal = act.getSignalling();
         if(signal != null){
-            if(signal instanceof TrafficLight trafficLights){
-                System.out.println("FEUDANSLACASDE");
-                if (trafficLights.getColor().equals("RED") || trafficLights.getColor().equals("ORANGE")){
-                    return false;
-                }
-            }else if(signal instanceof Stop){
-                if(checkCaseForSignalling() != null){
-                    if(getCase(checkCaseForSignalling()).isEmpty()){
-                        Timer timer = new Timer(1000, new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                            }
-                        });
-                        timer.setRepeats(false); // S'assure que le timer ne se répète pas
-                        timer.start();
-                        return getCase(checkCaseForSignalling()).isEmpty();
+            if(signal.getDirection().toString().equals(direction.toString())){
+                if(signal instanceof TrafficLight trafficLights){
+                    System.out.println("FEUDANSLACASDE");
+                    if (trafficLights.getColor().equals("RED") || trafficLights.getColor().equals("ORANGE")){
+                        return false;
                     }
-                }
+                }else if(signal instanceof Stop){
+                    if(checkCaseForSignalling() != null){
+                            Timer timer = new Timer(2000, (ActionEvent e) -> {
+                                this.stopOk = getCase(checkCaseForSignalling()).isEmpty();
+                            });
+                    
+                            timer.setRepeats(false); 
+                            timer.start();
+                            return this.stopOk;
+                    }
 
-            }else return !(signal instanceof NoEntry);
+                }else return !(signal instanceof NoEntry);
+            }
         }
         return true;
     }
 
     public boolean move(){
         Case act = getCase(position);
+        Case actRight = getCase(rightPos());
         if (nextCaseIsValid()){
-            if(act.getSignalling() == null || signallingOk(act)){
+            if((act.getSignalling() == null || signallingOk(act)) && (actRight == null ||actRight.getSignalling() == null || signallingOk(actRight))){
                 act.setVehicle(null);
                 Controle.addUpdate(new TuplePosAct(position, new Update(){public void update(Case c){}}));
                 position = nextPosition();

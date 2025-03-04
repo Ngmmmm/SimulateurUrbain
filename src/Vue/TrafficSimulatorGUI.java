@@ -3,9 +3,6 @@ package Vue;
 import Modele.Case;
 import Modele.CityMap;
 import Modele.Direction;
-import Modele.Pathfinding;
-import Modele.Position;
-import Modele.Signalling.LightColor;
 import Modele.Signalling.TrafficLight;
 import Modele.Signalling.TrafficLightGroup;
 import Modele.Simulation;
@@ -39,7 +36,7 @@ public class TrafficSimulatorGUI extends JFrame {
 
         setTitle("Simulateur de gestion de trafic urbain");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600);
+        setSize(1000, 800);
         setLayout(new BorderLayout());
 
         setJMenuBar(createMenuBar());
@@ -86,47 +83,128 @@ public class TrafficSimulatorGUI extends JFrame {
         };
     } 
     //dessine la case selon sa place et ses propriétés
-    public void drawCase(Graphics g, int i, int j){
+    public void drawCase(Graphics g, int i, int j) {
         int x = j * cellSize;
         int y = i * cellSize;
         Case currentCase = cityMap.getGrid()[i][j];
-
-        // Dessiner la route si elle existe
+    
         if (currentCase.getRoad() != null) {
-            g.drawImage(Image.imgRoad, x, y, null);
-                    
-            // Dessiner le véhicule si il existe
-            if (currentCase.getVehicle() != null) {
-                g.drawImage(Image.imgCar , x, y, null);
+            Graphics2D g2d = (Graphics2D) g;
+    
+            // Déterminer l'angle de rotation en fonction de la direction
+            double angle = 0;
+            Direction[] direction = currentCase.getRoad().getDirection();
+            switch (direction[0].toString()) {
+                case "UP" -> angle = 0;
+                case "DOWN" -> angle = Math.PI;
+                case "RIGHT" -> angle = Math.PI / 2;
+                case "LEFT" -> angle = -Math.PI / 2;
             }
-
-            // Dessiner un signalement si il existe
-            if (currentCase.getSignalling() != null){
-                BufferedImage img = switch (currentCase.getSignalling().getType()){
+    
+            // Appliquer la rotation pour la route
+            g2d.translate(x + cellSize / 2, y + cellSize / 2);
+            g2d.rotate(angle);
+            g2d.drawImage(Image.imgRoad, -cellSize / 2, -cellSize / 2, cellSize, cellSize, null);
+            g2d.rotate(-angle);
+            g2d.translate(-x - cellSize / 2, -y - cellSize / 2);
+            
+            // if (isCurve(currentCase, i, j)) {
+            //     g2d.drawImage(Image.imgVirage, x, y, cellSize, cellSize, null);
+            // }
+            
+            // Dessiner le véhicule s'il existe
+            if (currentCase.getVehicle() != null) {
+                g2d.drawImage(Image.getImgCar(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
+            }
+    
+            // Dessiner un panneau s'il existe
+            if (currentCase.getSignalling() != null) {
+                BufferedImage img = switch (currentCase.getSignalling().getType()) {
                     case "TrafficLights" -> getTrafficCol((TrafficLight) currentCase.getSignalling());
                     case "Stop" -> Image.imgStop;
                     case "NoEntry" -> Image.imgNoEntry;
                     default -> null;
                 };
-                g.drawImage(img, x, y, null);
+                int size = cellSize / 2;
+    
+                // Position du panneau
+                int signalX = x;
+                int signalY = y;
+    
+                switch (direction[0].toString()) {
+                    case "UP" -> {
+                        signalX = x + cellSize - size; // En haut à droite
+                        signalY = y;
+                    }
+                    case "DOWN" -> {
+                        signalX = x; // En bas à gauche
+                        signalY = y + cellSize - size;
+                    }
+                    case "LEFT" -> {
+                        signalX = x; // À gauche en haut
+                        signalY = y;
+                    }
+                    case "RIGHT" -> {
+                        signalX = x + cellSize - size; // À droite en haut
+                        signalY = y + cellSize - size;
+                    }
+                }
+    
+                // Appliquer la même rotation que la route au panneau
+                g2d.translate(signalX + size / 2, signalY + size / 2);
+                g2d.rotate(angle);
+                g2d.drawImage(img, -size / 2, -size / 2, size, size, null);
+                g2d.rotate(-angle);
+                g2d.translate(-signalX - size / 2, -signalY - size / 2);
+
+                // Dessiner le véhicule s'il existe
+            if (currentCase.getVehicle() != null) {
+                g2d.drawImage(Image.getImgCar(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
+            }
             }
         }
-        // Dessiner le bâtiment si il existe
+        // Dessiner le bâtiment s'il existe
         else if (currentCase.getBuilding() != null) {
-            g.drawImage(Image.imgBuilding, x, y, null);
+            g.drawImage(Image.imgBuilding, x, y, cellSize, cellSize, null);
         }
- 
         // Dessiner une case vide
         else {
             g.setColor(Color.LIGHT_GRAY);
             g.fillRect(x, y, cellSize, cellSize);
         }
-                
+    
         // Dessiner les bordures
         g.setColor(Color.BLACK);
         g.drawRect(x, y, cellSize, cellSize);
-
     }
+    
+    // private boolean isCurve(Case currentCase, int i, int j) {
+    //     if (currentCase.getRoad() == null) {
+    //         return false;
+    //     }
+    
+    //     Direction[] currentDirections = currentCase.getRoad().getDirection();
+    
+    //     // Vérifier la case devant
+    //     int nextI = i, nextJ = j;
+    //     switch (currentDirections[0].toString()) {
+    //         case "UP" -> nextI--;
+    //         case "DOWN" -> nextI++;
+    //         case "LEFT" -> nextJ--;
+    //         case "RIGHT" -> nextJ++;
+    //     }
+    
+    //     // Vérifier si la case devant existe dans la grille
+    //     if (nextI < 0 || nextI >= cityMap.getGrid().length || nextJ < 0 || nextJ >= cityMap.getGrid()[0].length) {
+    //         return false;
+    //     }
+    
+    //     Case nextCase = cityMap.getGrid()[nextI][nextJ];
+    
+    //     // Vérifier si la case devant est une route et a une direction différente
+    //     return nextCase.getRoad() != null && nextCase.getRoad().getDirection()[0] != currentDirections[0];
+    // }
+    
 
     public void drawMap(Graphics g) {
         Image.loadImg();
@@ -200,36 +278,39 @@ public class TrafficSimulatorGUI extends JFrame {
 
     private void zoom(boolean zoomIn, Point cursorPosition) {
         if (zoomIn) {
-            
             if (zoomFactor < MAX_ZOOM) {
                 zoomFactor += 0.1;
             }
         } else {
-            
-            if (zoomFactor > 0.2) {
+            if (zoomFactor > 0.5) {
                 zoomFactor -= 0.1;
             }
         }
     
-        
+        // Recalculer la taille des cellules en fonction du zoom
         cellSize = (int) (40 * zoomFactor);
-        mapPanel.setPreferredSize(new Dimension(COLS * cellSize, ROWS * cellSize));
-        mapPanel.revalidate();
     
+        // Recalculer la taille du mapPanel
+        mapPanel.setPreferredSize(new Dimension(COLS * cellSize, ROWS * cellSize));
+        mapPanel.revalidate(); // Forcer la mise à jour du layout
+        mapPanel.repaint();    // Redessiner la carte
+    
+        // Ajuster la position de la vue dans le JScrollPane
         if (cursorPosition != null) {
             JScrollBar horizontal = scrollPane.getHorizontalScrollBar();
             JScrollBar vertical = scrollPane.getVerticalScrollBar();
     
-           
+            // Calculer la nouvelle position de la vue
             int newCenterX = (int) (cursorPosition.x * zoomFactor);
             int newCenterY = (int) (cursorPosition.y * zoomFactor);
     
+            // Ajuster les barres de défilement pour centrer la vue sur le point de zoom
             horizontal.setValue(Math.max(newCenterX - scrollPane.getWidth() / 2, 0));
             vertical.setValue(Math.max(newCenterY - scrollPane.getHeight() / 2, 0));
         }
-    
-       
-        mapPanel.repaint();
+
+        scrollPane.revalidate();
+        scrollPane.repaint();
     }
 
     private MouseWheelListener createMouseWheelZoomListener() {
