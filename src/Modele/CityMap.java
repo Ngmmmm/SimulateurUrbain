@@ -27,6 +27,7 @@ public class CityMap{
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 grid[i][j] = new Case();
+                grid[i][j].setPos(new Position(j, i));
             }
         }
     }
@@ -251,6 +252,31 @@ public class CityMap{
         }
         
         return vehicles;
+    }
+
+    public boolean haveBuildingNext(Case eCase){
+        if(grid[eCase.getPos().getY()-1][eCase.getPos().getX()] != null && grid[eCase.getPos().getY()-1][eCase.getPos().getX()].getBuilding() != null){
+            return true;
+        }
+        else if(grid[eCase.getPos().getY()+1][eCase.getPos().getX()] != null && grid[eCase.getPos().getY()+1][eCase.getPos().getX()].getBuilding() != null){
+            return true;
+        }
+        else if(grid[eCase.getPos().getY()][eCase.getPos().getX()-1] != null && grid[eCase.getPos().getY()][eCase.getPos().getX()-1].getBuilding() != null){
+            return true;
+        }
+        else if(grid[eCase.getPos().getY()][eCase.getPos().getX()+1]!= null && grid[eCase.getPos().getY()][eCase.getPos().getX()+1].getBuilding() != null){
+            return true;
+        }
+        else if(grid[eCase.getPos().getY()-1][eCase.getPos().getX()-1]!= null && grid[eCase.getPos().getY()-1][eCase.getPos().getX()-1].getBuilding() != null){
+            return true;
+        }
+        else if(grid[eCase.getPos().getY()-1][eCase.getPos().getX()+1] != null && grid[eCase.getPos().getY()-1][eCase.getPos().getX()+1].getBuilding() != null){
+            return true;
+        }
+        else if(grid[eCase.getPos().getY()+1][eCase.getPos().getX()-1] != null && grid[eCase.getPos().getY()+1][eCase.getPos().getX()-1].getBuilding() != null){
+            return true;
+        }
+        else return grid[eCase.getPos().getY()+1][eCase.getPos().getX()+1]!= null && grid[eCase.getPos().getY()+1][eCase.getPos().getX()+1].getBuilding() != null;
     }
 
     
