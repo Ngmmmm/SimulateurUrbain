@@ -2,10 +2,20 @@ package Vue;
 
 import Modele.Case;
 import Modele.CityMap;
+import Modele.Direction;
 import Modele.Signalling.TrafficLight;
+import Modele.Signalling.TrafficLightGroup;
+import Modele.Simulation;
+import Modele.Enregistrer.GameLoader;
+import Modele.Enregistrer.GameSaver;
+import Modele.Vehicle.Car;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import javax.swing.*;
 
 import Controle.Controle;
@@ -32,7 +42,7 @@ public class TrafficSimulatorGUI extends JFrame {
 
         setTitle("Simulateur de gestion de trafic urbain");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600);
+        setSize(1000, 800);
         setLayout(new BorderLayout());
 
         setJMenuBar(createMenuBar());
@@ -84,47 +94,128 @@ public class TrafficSimulatorGUI extends JFrame {
         };
     } 
     //dessine la case selon sa place et ses propriétés
-    public void drawCase(Graphics g, int i, int j){
+    public void drawCase(Graphics g, int i, int j) {
         int x = j * cellSize;
         int y = i * cellSize;
         Case currentCase = cityMap.getGrid()[i][j];
-
-        // Dessiner la route si elle existe
+    
         if (currentCase.getRoad() != null) {
-            g.drawImage(Image.imgRoad, x, y, null);
-                    
-            // Dessiner le véhicule si il existe
-            if (currentCase.getVehicle() != null) {
-                g.drawImage(Image.imgCar , x, y, null);
+            Graphics2D g2d = (Graphics2D) g;
+    
+            // Déterminer l'angle de rotation en fonction de la direction
+            double angle = 0;
+            Direction[] direction = currentCase.getRoad().getDirection();
+            switch (direction[0].toString()) {
+                case "UP" -> angle = 0;
+                case "DOWN" -> angle = Math.PI;
+                case "RIGHT" -> angle = Math.PI / 2;
+                case "LEFT" -> angle = -Math.PI / 2;
             }
-
-            // Dessiner un signalement si il existe
-            if (currentCase.getSignalling() != null){
-                BufferedImage img = switch (currentCase.getSignalling().getType()){
+    
+            // Appliquer la rotation pour la route
+            g2d.translate(x + cellSize / 2, y + cellSize / 2);
+            g2d.rotate(angle);
+            g2d.drawImage(Image.imgRoad, -cellSize / 2, -cellSize / 2, cellSize, cellSize, null);
+            g2d.rotate(-angle);
+            g2d.translate(-x - cellSize / 2, -y - cellSize / 2);
+            
+            // if (isCurve(currentCase, i, j)) {
+            //     g2d.drawImage(Image.imgVirage, x, y, cellSize, cellSize, null);
+            // }
+            
+            // Dessiner le véhicule s'il existe
+            if (currentCase.getVehicle() != null) {
+                g2d.drawImage(Image.getImgCar(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
+            }
+    
+            // Dessiner un panneau s'il existe
+            if (currentCase.getSignalling() != null) {
+                BufferedImage img = switch (currentCase.getSignalling().getType()) {
                     case "TrafficLights" -> getTrafficCol((TrafficLight) currentCase.getSignalling());
                     case "Stop" -> Image.imgStop;
                     case "NoEntry" -> Image.imgNoEntry;
                     default -> null;
                 };
-                g.drawImage(img, x, y, null);
+                int size = cellSize / 2;
+    
+                // Position du panneau
+                int signalX = x;
+                int signalY = y;
+    
+                switch (direction[0].toString()) {
+                    case "UP" -> {
+                        signalX = x + cellSize - size; // En haut à droite
+                        signalY = y;
+                    }
+                    case "DOWN" -> {
+                        signalX = x; // En bas à gauche
+                        signalY = y + cellSize - size;
+                    }
+                    case "LEFT" -> {
+                        signalX = x; // À gauche en haut
+                        signalY = y;
+                    }
+                    case "RIGHT" -> {
+                        signalX = x + cellSize - size; // À droite en haut
+                        signalY = y + cellSize - size;
+                    }
+                }
+    
+                // Appliquer la même rotation que la route au panneau
+                g2d.translate(signalX + size / 2, signalY + size / 2);
+                g2d.rotate(angle);
+                g2d.drawImage(img, -size / 2, -size / 2, size, size, null);
+                g2d.rotate(-angle);
+                g2d.translate(-signalX - size / 2, -signalY - size / 2);
+
+                // Dessiner le véhicule s'il existe
+            if (currentCase.getVehicle() != null) {
+                g2d.drawImage(Image.getImgCar(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
+            }
             }
         }
-        // Dessiner le bâtiment si il existe
+        // Dessiner le bâtiment s'il existe
         else if (currentCase.getBuilding() != null) {
-            g.drawImage(Image.imgBuilding, x, y, null);
+            g.drawImage(Image.imgBuilding, x, y, cellSize, cellSize, null);
         }
- 
         // Dessiner une case vide
         else {
             g.setColor(Color.LIGHT_GRAY);
             g.fillRect(x, y, cellSize, cellSize);
         }
-                
+    
         // Dessiner les bordures
         g.setColor(Color.BLACK);
         g.drawRect(x, y, cellSize, cellSize);
-
     }
+    
+    // private boolean isCurve(Case currentCase, int i, int j) {
+    //     if (currentCase.getRoad() == null) {
+    //         return false;
+    //     }
+    
+    //     Direction[] currentDirections = currentCase.getRoad().getDirection();
+    
+    //     // Vérifier la case devant
+    //     int nextI = i, nextJ = j;
+    //     switch (currentDirections[0].toString()) {
+    //         case "UP" -> nextI--;
+    //         case "DOWN" -> nextI++;
+    //         case "LEFT" -> nextJ--;
+    //         case "RIGHT" -> nextJ++;
+    //     }
+    
+    //     // Vérifier si la case devant existe dans la grille
+    //     if (nextI < 0 || nextI >= cityMap.getGrid().length || nextJ < 0 || nextJ >= cityMap.getGrid()[0].length) {
+    //         return false;
+    //     }
+    
+    //     Case nextCase = cityMap.getGrid()[nextI][nextJ];
+    
+    //     // Vérifier si la case devant est une route et a une direction différente
+    //     return nextCase.getRoad() != null && nextCase.getRoad().getDirection()[0] != currentDirections[0];
+    // }
+    
 
     public void drawMap(Graphics g) {
         Image.loadImg();
@@ -143,9 +234,12 @@ public class TrafficSimulatorGUI extends JFrame {
         JMenu fileMenu = new JMenu("Fichier");
         JMenuItem saveItem = new JMenuItem("Sauvegarder");
         JMenuItem loadItem = new JMenuItem("Charger");
+        
         JMenuItem exitItem = new JMenuItem("Quitter");
 
+        saveItem.addActionListener(e -> saveMap());
         exitItem.addActionListener(e -> System.exit(0));
+        loadItem.addActionListener(e -> loadMap()); 
 
         fileMenu.add(saveItem);
         fileMenu.add(loadItem);
@@ -195,36 +289,39 @@ public class TrafficSimulatorGUI extends JFrame {
 
     private void zoom(boolean zoomIn, Point cursorPosition) {
         if (zoomIn) {
-            
             if (zoomFactor < MAX_ZOOM) {
                 zoomFactor += 0.1;
             }
         } else {
-            
-            if (zoomFactor > 0.2) {
+            if (zoomFactor > 0.5) {
                 zoomFactor -= 0.1;
             }
         }
     
-        
+        // Recalculer la taille des cellules en fonction du zoom
         cellSize = (int) (40 * zoomFactor);
-        mapPanel.setPreferredSize(new Dimension(COLS * cellSize, ROWS * cellSize));
-        mapPanel.revalidate();
     
+        // Recalculer la taille du mapPanel
+        mapPanel.setPreferredSize(new Dimension(COLS * cellSize, ROWS * cellSize));
+        mapPanel.revalidate(); // Forcer la mise à jour du layout
+        mapPanel.repaint();    // Redessiner la carte
+    
+        // Ajuster la position de la vue dans le JScrollPane
         if (cursorPosition != null) {
             JScrollBar horizontal = scrollPane.getHorizontalScrollBar();
             JScrollBar vertical = scrollPane.getVerticalScrollBar();
     
-           
+            // Calculer la nouvelle position de la vue
             int newCenterX = (int) (cursorPosition.x * zoomFactor);
             int newCenterY = (int) (cursorPosition.y * zoomFactor);
     
+            // Ajuster les barres de défilement pour centrer la vue sur le point de zoom
             horizontal.setValue(Math.max(newCenterX - scrollPane.getWidth() / 2, 0));
             vertical.setValue(Math.max(newCenterY - scrollPane.getHeight() / 2, 0));
         }
-    
-       
-        mapPanel.repaint();
+
+        scrollPane.revalidate();
+        scrollPane.repaint();
     }
 
     private MouseWheelListener createMouseWheelZoomListener() {
@@ -264,6 +361,70 @@ public class TrafficSimulatorGUI extends JFrame {
                 lastDragPoint = e.getPoint();
             }
         };
+    }
+
+    private void saveMap() {
+        // Demander à l'utilisateur un nom de fichier pour la sauvegarde
+        String fileName = JOptionPane.showInputDialog(this, "Entrez le nom de la sauvegarde :", "Sauvegarder", JOptionPane.PLAIN_MESSAGE);
+
+        if (fileName != null && !fileName.trim().isEmpty()) {
+            // Appeler la classe GameSaver pour sauvegarder la carte
+            boolean success = GameSaver.saveGame(fileName, cityMap);
+
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Sauvegarde réussie !", "Succès", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Erreur lors de la sauvegarde.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Le nom de la sauvegarde ne peut pas être vide.", "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    /**
+     * Charge une carte à partir d'un fichier de sauvegarde.
+     */
+    private void loadMap() {
+        // Lire le fichier nom_save.txt pour obtenir la liste des sauvegardes
+        ArrayList<String> saveNames = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader("Save/nom_save.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                saveNames.add(line.trim());
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Erreur lors de la lecture des sauvegardes.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Vérifier s'il y a des sauvegardes disponibles
+        if (saveNames.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Aucune sauvegarde disponible.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Créer un JComboBox avec les noms des sauvegardes
+        JComboBox<String> saveComboBox = new JComboBox<>(saveNames.toArray(new String[0]));
+        saveComboBox.setSelectedIndex(0); // Sélectionner la première sauvegarde par défaut
+
+        // Afficher la boîte de dialogue avec le JComboBox
+        int option = JOptionPane.showConfirmDialog(this, saveComboBox, "Choisissez une sauvegarde", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+        if (option == JOptionPane.OK_OPTION) {
+            // Récupérer le nom de la sauvegarde sélectionnée
+            String selectedSave = (String) saveComboBox.getSelectedItem();
+
+            // Appeler la classe GameLoader pour charger la carte
+            CityMap loadedMap = GameLoader.loadGame(selectedSave);
+
+            if (loadedMap != null) {
+                // Mettre à jour la carte dans l'interface graphique
+                this.cityMap = loadedMap;
+                mapPanel.repaint(); // Rafraîchir l'affichage
+                JOptionPane.showMessageDialog(this, "Chargement réussi !", "Succès", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Erreur lors du chargement de la carte.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
     
