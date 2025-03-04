@@ -10,6 +10,7 @@ import Modele.Position;
 
 public class TrafficLight extends Signalling {
     private LightColor color;
+    private int idGroupe;
 
     public TrafficLight(Position pos, Direction direction, CityMap map) {
         super(pos, direction);
@@ -50,6 +51,14 @@ public class TrafficLight extends Signalling {
             color;
     }
 
+
+    public void setIDGroupe(int id) {
+        this.idGroupe = id;
+    }
+
+    public int getIDGroupe(){
+        return idGroupe;
+    }
 
     public LightColor getCol(){
         return color;

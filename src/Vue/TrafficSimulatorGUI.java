@@ -4,9 +4,18 @@ import Modele.Case;
 import Modele.CityMap;
 import Modele.Direction;
 import Modele.Signalling.TrafficLight;
+import Modele.Signalling.TrafficLightGroup;
+import Modele.Simulation;
+import Modele.Enregistrer.GameLoader;
+import Modele.Enregistrer.GameSaver;
+import Modele.Vehicle.Car;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import javax.swing.*;
 
 
@@ -214,9 +223,12 @@ public class TrafficSimulatorGUI extends JFrame {
         JMenu fileMenu = new JMenu("Fichier");
         JMenuItem saveItem = new JMenuItem("Sauvegarder");
         JMenuItem loadItem = new JMenuItem("Charger");
+        
         JMenuItem exitItem = new JMenuItem("Quitter");
 
+        saveItem.addActionListener(e -> saveMap());
         exitItem.addActionListener(e -> System.exit(0));
+        loadItem.addActionListener(e -> loadMap()); 
 
         fileMenu.add(saveItem);
         fileMenu.add(loadItem);
@@ -338,6 +350,70 @@ public class TrafficSimulatorGUI extends JFrame {
                 lastDragPoint = e.getPoint();
             }
         };
+    }
+
+    private void saveMap() {
+        // Demander à l'utilisateur un nom de fichier pour la sauvegarde
+        String fileName = JOptionPane.showInputDialog(this, "Entrez le nom de la sauvegarde :", "Sauvegarder", JOptionPane.PLAIN_MESSAGE);
+
+        if (fileName != null && !fileName.trim().isEmpty()) {
+            // Appeler la classe GameSaver pour sauvegarder la carte
+            boolean success = GameSaver.saveGame(fileName, cityMap);
+
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Sauvegarde réussie !", "Succès", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Erreur lors de la sauvegarde.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Le nom de la sauvegarde ne peut pas être vide.", "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    /**
+     * Charge une carte à partir d'un fichier de sauvegarde.
+     */
+    private void loadMap() {
+        // Lire le fichier nom_save.txt pour obtenir la liste des sauvegardes
+        ArrayList<String> saveNames = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader("Save/nom_save.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                saveNames.add(line.trim());
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Erreur lors de la lecture des sauvegardes.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Vérifier s'il y a des sauvegardes disponibles
+        if (saveNames.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Aucune sauvegarde disponible.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Créer un JComboBox avec les noms des sauvegardes
+        JComboBox<String> saveComboBox = new JComboBox<>(saveNames.toArray(new String[0]));
+        saveComboBox.setSelectedIndex(0); // Sélectionner la première sauvegarde par défaut
+
+        // Afficher la boîte de dialogue avec le JComboBox
+        int option = JOptionPane.showConfirmDialog(this, saveComboBox, "Choisissez une sauvegarde", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+        if (option == JOptionPane.OK_OPTION) {
+            // Récupérer le nom de la sauvegarde sélectionnée
+            String selectedSave = (String) saveComboBox.getSelectedItem();
+
+            // Appeler la classe GameLoader pour charger la carte
+            CityMap loadedMap = GameLoader.loadGame(selectedSave);
+
+            if (loadedMap != null) {
+                // Mettre à jour la carte dans l'interface graphique
+                this.cityMap = loadedMap;
+                mapPanel.repaint(); // Rafraîchir l'affichage
+                JOptionPane.showMessageDialog(this, "Chargement réussi !", "Succès", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Erreur lors du chargement de la carte.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
 

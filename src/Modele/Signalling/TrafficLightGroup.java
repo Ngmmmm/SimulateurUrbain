@@ -10,12 +10,16 @@ public class TrafficLightGroup {
     private int cycleTimeRed = 2;     // Durée du feu rouge (ajouté)
     private boolean isNSGreen; // Indique si les feux Nord-Sud sont verts
     private ScheduledExecutorService scheduler;
+    public static int nbGroupe = 0;
+    public int id;
 
     public TrafficLightGroup(List<TrafficLight> lights) {
         this.lights = lights;
         this.isNSGreen = true;
         this.scheduler = Executors.newScheduledThreadPool(1);
         startCycle();
+        id = ++nbGroupe;
+        setIdLights(lights);
     }
 
     private void startCycle() {
@@ -55,5 +59,12 @@ public class TrafficLightGroup {
 
     public void stop() {
         scheduler.shutdown();
+    }
+
+    private void setIdLights(List<TrafficLight> lights) {
+        for (TrafficLight light : lights) {
+            light.setIDGroupe(this.id);
+        }
+
     }
 }

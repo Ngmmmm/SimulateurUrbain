@@ -84,13 +84,6 @@ public class Controle {
         );
 
 
-        ArrayList<Position> res = Pathfinding.FindSpawnPosition(a.cityMap);
-        System.out.println("#########################");
-        for(int i = 0; i < res.size()  ; i++){
-            System.out.println(res.get(i));
-
-        }
-        System.out.println("#########################");
         
     }
 }

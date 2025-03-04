@@ -27,6 +27,16 @@ public class Direction {
         if (this == RIGHT) return "RIGHT";
         return "Unknown Direction";
     }
+
+    public static Direction fromString(String direction) {
+        switch (direction.toUpperCase()) {
+            case "UP": return UP;
+            case "DOWN": return DOWN;
+            case "RIGHT": return RIGHT;
+            case "LEFT": return LEFT;
+            default: throw new IllegalArgumentException("Direction inconnue: " + direction);
+        }
+    }
     // Trouve la direction entre deux positions
     public static Direction getDirection(Position from, Position to) {
         int dx = to.getX() - from.getX();

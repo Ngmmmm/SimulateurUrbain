@@ -22,13 +22,7 @@ public abstract class Signalling {
     }
     
     public abstract String getType();
-
-    public Direction getDirection() {
-        return direction;
-    }
-    
-
-
+    public Direction getDirection() {return direction;}
 }
 
 
