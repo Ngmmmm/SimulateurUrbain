@@ -5,6 +5,7 @@ import java.util.Arrays;
 public class Road {
     private Direction[] direction;
     private String lineType;
+    private boolean isIntersection = false;
 
     public Road(Direction[] direction, String lineType) {
         this.direction = direction;
@@ -26,6 +27,10 @@ public class Road {
     public void setLineType(String lineType) {
         this.lineType = lineType;
     }
+
+    public void setIntersection(boolean b){isIntersection = b;}
+
+    public boolean isIntersection(){return isIntersection;}
 
     @Override
     public String toString(){

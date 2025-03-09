@@ -109,7 +109,7 @@ public class TrafficSimulatorGUI extends JFrame {
                 g2d.drawImage(Image.imgVirage, x, y, cellSize, cellSize, null);
             }
 
-            if (isIntersection(currentCase)) {
+            if (currentCase.getRoad().isIntersection()) {
                 g2d.drawImage(Image.intersection, x, y, cellSize, cellSize, null);
             }
             
@@ -231,17 +231,7 @@ public class TrafficSimulatorGUI extends JFrame {
         return incomingRoads == 1 && isTurn;
     }
 
-    private boolean isIntersection(Case currentCase) {
-        if (currentCase.getRoad() == null) {
-            return false;
-        }
-        else if(currentCase.getRoad().getDirection().length > 1){
-            return true;
-        }
-        return false;
-    }
-
-    
+  
     public void drawMap(Graphics g) {
         Image.loadImg();
 
