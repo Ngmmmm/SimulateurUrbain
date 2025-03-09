@@ -20,6 +20,7 @@ public class Image {
     static BufferedImage imgCarDown;
     static BufferedImage imgCarLeft;
     static BufferedImage imgCarRight;
+    static BufferedImage intersection;
 
 
 
@@ -27,19 +28,20 @@ public class Image {
     
     public static void loadImg(){
         try {
-            imgCar = ImageIO.read(new File("car.png"));
-            imgBuilding = ImageIO.read(new File("maison.png"));
-            imgRoad = ImageIO.read(new File("road.png"));
-            imgStop = ImageIO.read(new File("stop.png"));
-            imgTrafficGreen = ImageIO.read(new File("trafficGreen.png"));
-            imgTrafficRed = ImageIO.read(new File("trafficRed.png"));
-            imgTrafficOrange = ImageIO.read(new File("trafficOrange.png"));
-            imgNoEntry = ImageIO.read(new File("noentry.png"));
-            imgVirage = ImageIO.read(new File("virage.png"));
-            imgCarUp = ImageIO.read(new File("carUp.png"));
-            imgCarDown = ImageIO.read(new File("carDown.png"));
-            imgCarLeft = ImageIO.read(new File("carLeft.png"));
-            imgCarRight = ImageIO.read(new File("carRight.png"));
+            imgCar = ImageIO.read(new File("Image/car.png"));
+            imgBuilding = ImageIO.read(new File("Image/maison.png"));
+            imgRoad = ImageIO.read(new File("Image/road.png"));
+            imgStop = ImageIO.read(new File("Image/stop.png"));
+            imgTrafficGreen = ImageIO.read(new File("Image/trafficGreen.png"));
+            imgTrafficRed = ImageIO.read(new File("Image/trafficRed.png"));
+            imgTrafficOrange = ImageIO.read(new File("Image/trafficOrange.png"));
+            imgNoEntry = ImageIO.read(new File("Image/noentry.png"));
+            imgVirage = ImageIO.read(new File("Image/virage.png"));
+            imgCarUp = ImageIO.read(new File("Image/carUp.png"));
+            imgCarDown = ImageIO.read(new File("Image/carDown.png"));
+            imgCarLeft = ImageIO.read(new File("Image/carLeft.png"));
+            imgCarRight = ImageIO.read(new File("Image/carRight.png"));
+            intersection = ImageIO.read(new File("Image/intersection.png"));
             
         } catch (Exception e) {
             System.out.println("Erreur lors du chargement des images");
