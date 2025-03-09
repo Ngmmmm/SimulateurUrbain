@@ -41,7 +41,7 @@ public class CityMap{
             if (currentRoad != null) {
                 // Fusionner les directions existantes avec les nouvelles
                 List<Direction> updatedDirections = new ArrayList<>(Arrays.asList(currentRoad.getDirection()));
-
+                currentRoad.setIntersection(true);   
                 for (Direction newDirection : d) {
                     if (!updatedDirections.contains(newDirection)) {
                         updatedDirections.add(newDirection);
