@@ -105,9 +105,13 @@ public class TrafficSimulatorGUI extends JFrame {
             g2d.rotate(-angle);
             g2d.translate(-x - cellSize / 2, -y - cellSize / 2);
             
-            // if (isCurve(currentCase, i, j)) {
-            //     g2d.drawImage(Image.imgVirage, x, y, cellSize, cellSize, null);
-            // }
+            if (isCurve(currentCase, i, j)) {
+                g2d.drawImage(Image.imgVirage, x, y, cellSize, cellSize, null);
+            }
+
+            if (isIntersection(currentCase)) {
+                g2d.drawImage(Image.intersection, x, y, cellSize, cellSize, null);
+            }
             
             // Dessiner le véhicule s'il existe
             if (currentCase.getVehicle() != null) {
@@ -175,34 +179,73 @@ public class TrafficSimulatorGUI extends JFrame {
         // g.drawRect(x, y, cellSize, cellSize);
     }
     
-    // private boolean isCurve(Case currentCase, int i, int j) {
-    //     if (currentCase.getRoad() == null) {
-    //         return false;
-    //     }
+    private boolean isCurve(Case currentCase, int i, int j) {
+        if (currentCase.getRoad() == null) {
+            return false;
+        }
     
-    //     Direction[] currentDirections = currentCase.getRoad().getDirection();
+        Direction[] directions = currentCase.getRoad().getDirection();
+        if (directions.length != 1) {
+            return false; // Un virage à sens unique a UNE SEULE direction
+        }
     
-    //     // Vérifier la case devant
-    //     int nextI = i, nextJ = j;
-    //     switch (currentDirections[0].toString()) {
-    //         case "UP" -> nextI--;
-    //         case "DOWN" -> nextI++;
-    //         case "LEFT" -> nextJ--;
-    //         case "RIGHT" -> nextJ++;
-    //     }
+        Direction currentDirection = directions[0]; // Direction de la case actuelle
+        int incomingRoads = 0;
+        boolean isTurn = false;
     
-    //     // Vérifier si la case devant existe dans la grille
-    //     if (nextI < 0 || nextI >= cityMap.getGrid().length || nextJ < 0 || nextJ >= cityMap.getGrid()[0].length) {
-    //         return false;
-    //     }
+        // Vérifier les cases adjacentes pour voir si UNE SEULE route y mène avec une direction différente
+        if (i > 0 && cityMap.getGrid()[i - 1][j].getRoad() != null) { // Vérifier au-dessus
+            Direction incomingDirection = cityMap.getGrid()[i - 1][j].getRoad().getDirection()[0];
+            if (incomingDirection == Direction.DOWN) {
+                incomingRoads++;
+                if (incomingDirection != currentDirection) {
+                    isTurn = true;
+                }
+            }
+        }
+        if (i < cityMap.getGrid().length - 1 && cityMap.getGrid()[i + 1][j].getRoad() != null) { // Vérifier en dessous
+            Direction incomingDirection = cityMap.getGrid()[i + 1][j].getRoad().getDirection()[0];
+            if (incomingDirection == Direction.UP) {
+                incomingRoads++;
+                if (incomingDirection != currentDirection) {
+                    isTurn = true;
+                }
+            }
+        }
+        if (j > 0 && cityMap.getGrid()[i][j - 1].getRoad() != null) { // Vérifier à gauche
+            Direction incomingDirection = cityMap.getGrid()[i][j - 1].getRoad().getDirection()[0];
+            if (incomingDirection == Direction.RIGHT) {
+                incomingRoads++;
+                if (incomingDirection != currentDirection) {
+                    isTurn = true;
+                }
+            }
+        }
+        if (j < cityMap.getGrid()[0].length - 1 && cityMap.getGrid()[i][j + 1].getRoad() != null) { // Vérifier à droite
+            Direction incomingDirection = cityMap.getGrid()[i][j + 1].getRoad().getDirection()[0];
+            if (incomingDirection == Direction.LEFT) {
+                incomingRoads++;
+                if (incomingDirection != currentDirection) {
+                    isTurn = true;
+                }
+            }
+        }
     
-    //     Case nextCase = cityMap.getGrid()[nextI][nextJ];
-    
-    //     // Vérifier si la case devant est une route et a une direction différente
-    //     return nextCase.getRoad() != null && nextCase.getRoad().getDirection()[0] != currentDirections[0];
-    // }
-    
+        // Un virage à sens unique doit avoir exactement UNE route qui mène vers lui, avec une direction différente
+        return incomingRoads == 1 && isTurn;
+    }
 
+    private boolean isIntersection(Case currentCase) {
+        if (currentCase.getRoad() == null) {
+            return false;
+        }
+        else if(currentCase.getRoad().getDirection().length > 1){
+            return true;
+        }
+        return false;
+    }
+
+    
     public void drawMap(Graphics g) {
         Image.loadImg();
 
@@ -211,7 +254,6 @@ public class TrafficSimulatorGUI extends JFrame {
                 drawCase(g, i, j);
             }
         }
-
     }
 
     private JMenuBar createMenuBar() {
