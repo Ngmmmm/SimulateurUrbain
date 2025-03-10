@@ -19,9 +19,9 @@ public class TrafficLightGroup {
     public TrafficLightGroup(List<TrafficLight> lights) {
         this.lights = lights;
         this.isNSGreen = true;
+        setIdLights(lights);
         startCycle();
         id = ++nbGroupe;
-        setIdLights(lights);
         Controle.lights.add(this);
     }
 
@@ -74,6 +74,12 @@ public class TrafficLightGroup {
             light.setIDGroupe(this.id);
         }
 
+    }
+
+    public void merge(TrafficLightGroup g){
+        for(TrafficLight light : g.lights){
+            add(light);
+        }
     }
 
     public void add(TrafficLight t){
