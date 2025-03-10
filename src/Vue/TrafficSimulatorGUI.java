@@ -3,6 +3,7 @@ package Vue;
 import Modele.Case;
 import Modele.CityMap;
 import Modele.Direction;
+import Modele.Position;
 import Modele.Signalling.TrafficLight;
 import Modele.Signalling.TrafficLightGroup;
 import Modele.Simulation;
@@ -66,6 +67,7 @@ public class TrafficSimulatorGUI extends JFrame {
         addListener();
 
         uiTimer = new Timer(500, createTimerListener());
+        uiTimer.setInitialDelay(0);
         uiTimer.start();
 
         setVisible(true);
@@ -290,16 +292,18 @@ public class TrafficSimulatorGUI extends JFrame {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(1, 1));
 
-        JButton routeButton = makeButton("Mettre une route/changer rotation", "route");
         JButton maisonButton = makeButton("Mettre une maison", "maison");
+        JButton routeButton = makeButton("Mettre une route/changer rotation", "route");
         JButton feuButton = makeButton("Mettre un Feu/changer de groupe", "feu");
-        JButton voitureButton = makeButton("Mettre une voiture", "maison");
+        JButton voitureButton = makeButton("Mettre une voiture", "voiture");
 
         Box box = Box.createVerticalBox();
+
+        box.add(maisonButton);
         box.add(routeButton);
         box.add(feuButton);
         box.add(voitureButton);
-        box.add(maisonButton);
+        
 
         panel.add(box);
         panel.setBorder(BorderFactory.createTitledBorder("Action Utilisateur"));
@@ -366,8 +370,11 @@ public class TrafficSimulatorGUI extends JFrame {
 
             @Override
             public void mouseClicked(MouseEvent e){
+                int x = e.getY()/cellSize;
+                int y = e.getX()/cellSize;
                 if (!Controle.timerIsRunning){
-
+                    Controle.caseUpdate.add(new Position(y, x));
+                    System.out.println(new Position(y, x));
                 }
             }
         };
@@ -500,6 +507,7 @@ public class TrafficSimulatorGUI extends JFrame {
         button.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 if (!Controle.timerIsRunning && Controle.caseUpdate != null){
+                    System.out.println(s2);
                     Controle.setChange(s2);
                 }
                 mapPanel.requestFocus();

@@ -6,11 +6,13 @@ import Modele.Signalling.TrafficLight;
 import Modele.Vehicle.Vehicle;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 public class CityMap{
     private int rows;
     private int cols;
+    LinkedList<Position> accessiblePosition;
 
     private Case[][] grid; // Grille représentant la carte
 
@@ -206,6 +208,14 @@ public class CityMap{
             }
             System.out.println();
         }
+    }
+
+    public void findAccessiblePos(Position p){
+        accessiblePosition = Pathfinding.findAllAccessiblePositions(this, p);
+    }
+
+    public LinkedList<Position> getAccessiblePosition(){
+        return accessiblePosition;
     }
 
     // Getter pour récupérer la grille

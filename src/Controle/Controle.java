@@ -2,6 +2,7 @@ package Controle;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.function.Predicate;
 
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -35,7 +36,7 @@ public class Controle {
     public static ArrayList<TrafficLightGroup> lights = new ArrayList<TrafficLightGroup>();
     static ArrayList<Position> toUpdateCar = new ArrayList<Position>();
     public static Update nextChange;
-    public static Case caseUpdate;
+    public static Stack2 caseUpdate = new Stack2();
 
     Controle(){
         initSim();
@@ -46,16 +47,16 @@ public class Controle {
                     System.out.println(timerIsRunning != ctrlTimer.isRunning());
                     if (timerIsRunning) {
                         nextChange = null;
-                        caseUpdate = null;
+                        caseUpdate.clear();
                         start();
                     }
                     else {
                         pause();
                     }
                 }
-                if(!timerIsRunning && caseUpdate != null && nextChange != null){
-                    nextChange.update(caseUpdate);
-                    caseUpdate = null;
+                if(!timerIsRunning && !caseUpdate.isEmpty() && nextChange != null){
+                    nextChange.update(cityMap, caseUpdate);
+                    caseUpdate.clear();
                     nextChange = null;
                 }
             }
@@ -81,6 +82,22 @@ public class Controle {
     public void initSim(){
         s = new Simulation();
         cityMap = s.getCityMap();
+    }
+
+    public static void removeUpdateCar(Position p){
+        toUpdateCar.removeIf(new Predicate<Position>(){
+            public boolean test(Position pos){
+                return p.equals(pos);
+            }
+        });
+    }
+
+    public static void removeLight(TrafficLight light){
+        for(TrafficLightGroup t : lights){
+            if (t.getId() == light.getIDGroupe()){
+                t.remove(light);
+            }
+        }
     }
 
     public void pause(){

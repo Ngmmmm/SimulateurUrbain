@@ -165,13 +165,14 @@ public class Simulation {
             Road road = cityMap.getRoad(randomPos);
             Direction direction = (road != null && road.getDirection().length > 0) ? road.getDirection()[0] : Direction.RIGHT; // Par défaut
     
-            LinkedList<Position> accessiblePosition = Pathfinding.findAllAccessiblePositions(cityMap, randomPos);
-            if (accessiblePosition.isEmpty()) {
+            cityMap.findAccessiblePos(randomPos);
+            LinkedList<Position> accessible = cityMap.getAccessiblePosition();
+            if (accessible.isEmpty()) {
                 essai++;
                 continue; // Essaye une autre position
             }
     
-            Position destination = accessiblePosition.get(rand.nextInt(accessiblePosition.size()));
+            Position destination = accessible.get(rand.nextInt(accessible.size()));
             Car newCar = new Car("Car" + Vehicle.nbCar, 2.0, randomPos, direction, cityMap, destination);
             cityMap.addVehicle(newCar);
             nbCar--;

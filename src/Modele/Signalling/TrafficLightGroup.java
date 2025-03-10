@@ -2,6 +2,8 @@ package Modele.Signalling;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.Predicate;
+
 import Controle.Controle;
 
 public class TrafficLightGroup {
@@ -72,5 +74,28 @@ public class TrafficLightGroup {
             light.setIDGroupe(this.id);
         }
 
+    }
+
+    public void add(TrafficLight t){
+        boolean flag = true;
+        for (TrafficLight f : lights){
+            flag &= (f != t);
+        }
+        if (flag){
+            lights.add(t);
+            t.setIDGroupe(this.id);
+        }
+
+    }
+    public void remove(TrafficLight t){
+        lights.removeIf(new Predicate<TrafficLight>(){
+            public boolean test(TrafficLight tList){
+                return t == tList;
+            }
+        });
+    }
+
+    public int getId(){
+        return id;
     }
 }

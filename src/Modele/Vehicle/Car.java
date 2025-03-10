@@ -10,6 +10,10 @@ public class Car extends Vehicle {
         super(id, speed, position, direction, 2, map, destination);
     }
 
+    public Car(String id, double speed, Position position, CityMap map, Position destination) {
+        super(id, speed, position, 2, map, destination);
+    }
+
     @Override
     public String toString() {
         return super.toString();

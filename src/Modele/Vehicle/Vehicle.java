@@ -47,6 +47,23 @@ public abstract class Vehicle {
 
     }
 
+    public Vehicle(String id, double speed, Position position, float fuelConso, CityMap map, Position destination) {
+        this.id = id;
+        this.speed = speed;
+        this.position = position;
+        this.direction = Direction.UP;
+        this.isMoving = false;
+        this.fuelConso = fuelConso;
+        this.fuel = 100;
+        this.map = map;
+        this.destination = destination;
+        nbCar++;
+        if (map != null){
+            map.addVehicle(this);
+        }
+
+    }
+
     public void start() {
         isMoving = true;
     }
@@ -220,6 +237,10 @@ public abstract class Vehicle {
         }
     
         Position prochainePos = path.pop();
+        if (position == prochainePos) {
+            Controle.addUpdateCar(position);
+            return false;
+        }
         Direction prochaineDir = Direction.getDirection(position, prochainePos);
         changeDirection(prochaineDir);
 
@@ -233,12 +254,17 @@ public abstract class Vehicle {
     }
     
     public void followAllPath() {
-        path = Pathfinding.findShortestPath(map, position, destination);
+        checkPath();
         path.pop();
         if (!path.isEmpty()) {
             followPath(path); 
         }
     }
+
+    public void checkPath(){
+        path = Pathfinding.findShortestPath(map, position, destination);
+    }
+
 
     
     public Position getDestination() {
