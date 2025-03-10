@@ -2,6 +2,7 @@ package Modele.Signalling;
 
 import java.util.*;
 import java.util.concurrent.*;
+import Controle.Controle;
 
 public class TrafficLightGroup {
     private List<TrafficLight> lights;
@@ -16,13 +17,14 @@ public class TrafficLightGroup {
     public TrafficLightGroup(List<TrafficLight> lights) {
         this.lights = lights;
         this.isNSGreen = true;
-        this.scheduler = Executors.newScheduledThreadPool(1);
         startCycle();
         id = ++nbGroupe;
         setIdLights(lights);
+        Controle.lights.add(this);
     }
 
-    private void startCycle() {
+    public void startCycle() {
+        scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(() -> {
             switchLights(LightColor.GREEN);
             sleep(cycleTimeGreen);
@@ -58,7 +60,11 @@ public class TrafficLightGroup {
     }
 
     public void stop() {
-        scheduler.shutdown();
+        scheduler.shutdownNow();
+    }
+
+    public boolean isDown(){
+        return scheduler.isShutdown();
     }
 
     private void setIdLights(List<TrafficLight> lights) {

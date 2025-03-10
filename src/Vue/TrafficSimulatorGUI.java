@@ -61,16 +61,17 @@ public class TrafficSimulatorGUI extends JFrame {
         JPanel controlPanel = createControlPanel();
         add(controlPanel, BorderLayout.SOUTH);
 
-        mapPanel.addMouseWheelListener(createMouseWheelZoomListener());
-        mapPanel.addMouseListener(createMouseDragListener());
-        mapPanel.addMouseMotionListener(createMouseMotionListener());
-        mapPanel.addKeyListener(createKeyListener());
+        add(createChangePanel(), BorderLayout.WEST);
+
+        addListener();
 
         uiTimer = new Timer(500, createTimerListener());
         uiTimer.start();
 
         setVisible(true);
+        
         mapPanel.setFocusable(true);
+        mapPanel.requestFocus();
     }
 
     private JPanel createMapPanel() {
@@ -285,6 +286,27 @@ public class TrafficSimulatorGUI extends JFrame {
         return panel;
     }
 
+    private JPanel createChangePanel(){
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(1, 1));
+
+        JButton routeButton = makeButton("Mettre une route/changer rotation", "route");
+        JButton maisonButton = makeButton("Mettre une maison", "maison");
+        JButton feuButton = makeButton("Mettre un Feu/changer de groupe", "feu");
+        JButton voitureButton = makeButton("Mettre une voiture", "maison");
+
+        Box box = Box.createVerticalBox();
+        box.add(routeButton);
+        box.add(feuButton);
+        box.add(voitureButton);
+        box.add(maisonButton);
+
+        panel.add(box);
+        panel.setBorder(BorderFactory.createTitledBorder("Action Utilisateur"));
+
+        return panel;
+    }
+
     private static final double MAX_ZOOM = 2.5;
 
     private void zoom(boolean zoomIn, Point cursorPosition) {
@@ -335,11 +357,18 @@ public class TrafficSimulatorGUI extends JFrame {
         };
     }
 
-    private MouseListener createMouseDragListener() {
+    private MouseListener createMouseListener() {
         return new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 lastDragPoint = e.getPoint();
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e){
+                if (!Controle.timerIsRunning){
+
+                }
             }
         };
     }
@@ -362,6 +391,8 @@ public class TrafficSimulatorGUI extends JFrame {
             }
         };
     }
+
+
 
     private void saveMap() {
         // Demander à l'utilisateur un nom de fichier pour la sauvegarde
@@ -455,6 +486,27 @@ public class TrafficSimulatorGUI extends JFrame {
                 }
             }
         };
+    }
+
+    private void addListener(){
+        mapPanel.addMouseWheelListener(createMouseWheelZoomListener());
+        mapPanel.addMouseListener(createMouseListener());
+        mapPanel.addMouseMotionListener(createMouseMotionListener());
+        mapPanel.addKeyListener(createKeyListener());
+    }
+
+    private JButton makeButton(String s1, String s2){
+        JButton button = new JButton(s1);
+        button.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                if (!Controle.timerIsRunning && Controle.caseUpdate != null){
+                    Controle.setChange(s2);
+                }
+                mapPanel.requestFocus();
+            }
+        });
+
+        return button;
     }
     
     public static void setUpdate(boolean b){

@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
+import Controle.SetObj.*;
 import Modele.Signalling.*;
 import Modele.Vehicle.*;
 import Modele.*;
@@ -31,7 +32,10 @@ public class Controle {
 
     static boolean needUpdate = false;
     public static boolean timerIsRunning = false;
+    public static ArrayList<TrafficLightGroup> lights = new ArrayList<TrafficLightGroup>();
     static ArrayList<Position> toUpdateCar = new ArrayList<Position>();
+    public static Update nextChange;
+    public static Case caseUpdate;
 
     Controle(){
         initSim();
@@ -41,13 +45,19 @@ public class Controle {
                 if(timerIsRunning != ctrlTimer.isRunning()){
                     System.out.println(timerIsRunning != ctrlTimer.isRunning());
                     if (timerIsRunning) {
+                        nextChange = null;
+                        caseUpdate = null;
                         start();
                     }
                     else {
                         pause();
                     }
                 }
-                System.out.println(ctrlTimer.isRunning());
+                if(!timerIsRunning && caseUpdate != null && nextChange != null){
+                    nextChange.update(caseUpdate);
+                    caseUpdate = null;
+                    nextChange = null;
+                }
             }
         });
 
@@ -76,13 +86,28 @@ public class Controle {
     public void pause(){
         ctrlTimer.stop();
         timerIsRunning = false;
+        for (TrafficLightGroup g : lights){
+            if (!g.isDown()) g.stop();
+        }
     }
 
     public void start(){
         ctrlTimer.start();
         timerIsRunning = true;
+        for(TrafficLightGroup g : lights){
+            if (g.isDown()) g.startCycle();
+        }
     }
 
+    public static void setChange(String s){
+        nextChange = switch (s){
+            case "route" -> SetRoute.set; 
+            case "feu" -> SetFeu.set;
+            case "maison" -> SetMaison.set;
+            case "voiture" -> SetVoiture.set;
+            default -> null;
+        };
+    }
 
 
     public ActionListener createActionListener(){
