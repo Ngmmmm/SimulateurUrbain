@@ -43,7 +43,7 @@ public class CityMap{
             if (currentRoad != null) {
                 // Fusionner les directions existantes avec les nouvelles
                 List<Direction> updatedDirections = new ArrayList<>(Arrays.asList(currentRoad.getDirection()));
-
+                currentRoad.setIntersection(true);   
                 for (Direction newDirection : d) {
                     if (!updatedDirections.contains(newDirection)) {
                         updatedDirections.add(newDirection);
@@ -82,7 +82,6 @@ public class CityMap{
                 // Ajouter la nouvelle direction si elle n'est pas déjà présente
                 if (newDirection != null && !Arrays.asList(currentRoad.getDirection()).contains(newDirection)) {
                     currentRoad.addDirection(newDirection);
-                    System.out.println("Direction " + newDirection + " ajoutée à la route à la position " + pos);
                 } else {
                     System.out.println("La direction " + newDirection + " est déjà présente ou est invalide.");
                 }
@@ -147,7 +146,6 @@ public class CityMap{
         if (isValidPosition(row, col) && grid[row][col].getRoad() != null) {
             Stop stopSign = new Stop(pos, dir);
             grid[row][col].setSignalling(stopSign);
-            System.out.println("Stop ajouté à la position " + pos + " avec la direction " + dir);
         } else {
             System.out.println("Impossible d'ajouter un Stop ici (position invalide ou pas de route).");
         }
@@ -181,7 +179,6 @@ public class CityMap{
         NoEntry noEntry = new NoEntry(position, oppositeDirection);
 
         grid[position.getY()][position.getX()].setSignalling(noEntry);
-        System.out.println("NoEntry placé en " + position + " direction " + oppositeDirection);
     }
 
 

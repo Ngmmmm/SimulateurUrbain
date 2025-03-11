@@ -23,7 +23,7 @@ public class Image {
     static BufferedImage imgMaison1;
     static BufferedImage imgMaison2;
     static BufferedImage imgMaison3;
-
+    static BufferedImage intersection;
 
 
 
@@ -47,6 +47,7 @@ public class Image {
             imgMaison1 = ImageIO.read(new File("img/maison1.png"));
             imgMaison2 = ImageIO.read(new File("img/maison2.png"));
             imgMaison3 = ImageIO.read(new File("img/maison3.png"));
+            intersection = ImageIO.read(new File("img/intersection.png"));
             
         } catch (Exception e) {
             System.out.println("Erreur lors du chargement des images");
@@ -63,15 +64,7 @@ public class Image {
         };
     }
 
-    public static BufferedImage getRandomBuilding(){
-        int random = (int)(Math.random() * 3);
-        return switch (random) {
-            case 0 -> imgMaison1;
-            case 1 -> imgMaison2;
-            case 2 -> imgMaison3;
-            default -> null;
-        };
-    }
+    
 
     
 }

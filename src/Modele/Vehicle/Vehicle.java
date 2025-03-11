@@ -188,7 +188,6 @@ public abstract class Vehicle {
         if(signal != null){
             if(signal.getDirection().toString().equals(direction.toString())){
                 if(signal instanceof TrafficLight trafficLights){
-                    System.out.println("FEUDANSLACASDE");
                     if (trafficLights.getColor().equals("RED") || trafficLights.getColor().equals("ORANGE")){
                         return false;
                     }
