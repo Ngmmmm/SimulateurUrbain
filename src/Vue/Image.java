@@ -20,6 +20,10 @@ public class Image {
     static BufferedImage imgCarDown;
     static BufferedImage imgCarLeft;
     static BufferedImage imgCarRight;
+    static BufferedImage imgMaison1;
+    static BufferedImage imgMaison2;
+    static BufferedImage imgMaison3;
+
 
 
 
@@ -28,7 +32,7 @@ public class Image {
     public static void loadImg(){
         try {
             imgCar = ImageIO.read(new File("car.png"));
-            imgBuilding = ImageIO.read(new File("maison.png"));
+            imgBuilding = ImageIO.read(new File("maison1.png"));
             imgRoad = ImageIO.read(new File("road.png"));
             imgStop = ImageIO.read(new File("stop.png"));
             imgTrafficGreen = ImageIO.read(new File("trafficGreen.png"));
@@ -40,6 +44,9 @@ public class Image {
             imgCarDown = ImageIO.read(new File("carDown.png"));
             imgCarLeft = ImageIO.read(new File("carLeft.png"));
             imgCarRight = ImageIO.read(new File("carRight.png"));
+            imgMaison1 = ImageIO.read(new File("maison1.png"));
+            imgMaison2 = ImageIO.read(new File("maison2.png"));
+            imgMaison3 = ImageIO.read(new File("maison3.png"));
             
         } catch (Exception e) {
             System.out.println("Erreur lors du chargement des images");
@@ -52,6 +59,16 @@ public class Image {
             case "DOWN" -> imgCarDown;
             case "LEFT" -> imgCarLeft;
             case "RIGHT" -> imgCarRight;
+            default -> null;
+        };
+    }
+
+    public static BufferedImage getRandomBuilding(){
+        int random = (int)(Math.random() * 3);
+        return switch (random) {
+            case 0 -> imgMaison1;
+            case 1 -> imgMaison2;
+            case 2 -> imgMaison3;
             default -> null;
         };
     }
