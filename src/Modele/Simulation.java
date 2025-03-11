@@ -16,7 +16,6 @@ public class Simulation {
         initializeMap();
         cityMap.updateAllEdges();
         spawnRandomCars();
-        afficherCarte();
     }
 
     private void initializeMap() {
@@ -174,13 +173,6 @@ public class Simulation {
             Car newCar = new Car("Car" + Vehicle.nbCar, 2.0, randomPos, direction, cityMap, destination);
             cityMap.addVehicle(newCar);
             nbCar--;
-    
-            System.out.println("Nouvelle voiture ajoutée :");
-            System.out.println("ID: " + newCar.getId());
-            System.out.println("Vitesse: " + newCar.getSpeed());
-            System.out.println("Position: " + newCar.getPosition());
-            System.out.println("Direction: " + newCar.getDirection());
-            System.out.println("-------------------------------");
         }
     }
     

@@ -40,7 +40,6 @@ public class TrafficLightGroup {
                 light.setColor(isNSGreen ? getOppositeState(newState) : newState);
             }
         }
-        System.out.println("Switched lights to " + newState + " (NSGreen: " + isNSGreen + ")");
     }
 
     private LightColor getOppositeState(LightColor state) {
