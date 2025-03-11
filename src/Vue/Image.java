@@ -20,6 +20,10 @@ public class Image {
     static BufferedImage imgCarDown;
     static BufferedImage imgCarLeft;
     static BufferedImage imgCarRight;
+    static BufferedImage imgMaison1;
+    static BufferedImage imgMaison2;
+    static BufferedImage imgMaison3;
+    static BufferedImage intersection;
 
 
 
@@ -43,6 +47,7 @@ public class Image {
             imgMaison1 = ImageIO.read(new File("img/maison1.png"));
             imgMaison2 = ImageIO.read(new File("img/maison2.png"));
             imgMaison3 = ImageIO.read(new File("img/maison3.png"));
+            intersection = ImageIO.read(new File("img/intersection.png"));
             
         } catch (Exception e) {
             System.out.println("Erreur lors du chargement des images");
