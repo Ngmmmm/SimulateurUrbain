@@ -27,19 +27,22 @@ public class Image {
     
     public static void loadImg(){
         try {
-            imgCar = ImageIO.read(new File("car.png"));
-            imgBuilding = ImageIO.read(new File("maison1.png"));
-            imgRoad = ImageIO.read(new File("road.png"));
-            imgStop = ImageIO.read(new File("stop.png"));
-            imgTrafficGreen = ImageIO.read(new File("trafficGreen.png"));
-            imgTrafficRed = ImageIO.read(new File("trafficRed.png"));
-            imgTrafficOrange = ImageIO.read(new File("trafficOrange.png"));
-            imgNoEntry = ImageIO.read(new File("noentry.png"));
-            imgVirage = ImageIO.read(new File("virage.png"));
-            imgCarUp = ImageIO.read(new File("carUp.png"));
-            imgCarDown = ImageIO.read(new File("carDown.png"));
-            imgCarLeft = ImageIO.read(new File("carLeft.png"));
-            imgCarRight = ImageIO.read(new File("carRight.png"));
+            imgCar = ImageIO.read(new File("img/car.png"));
+            imgBuilding = ImageIO.read(new File("img/maison1.png"));
+            imgRoad = ImageIO.read(new File("img/road.png"));
+            imgStop = ImageIO.read(new File("img/stop.png"));
+            imgTrafficGreen = ImageIO.read(new File("img/trafficGreen.png"));
+            imgTrafficRed = ImageIO.read(new File("img/trafficRed.png"));
+            imgTrafficOrange = ImageIO.read(new File("img/trafficOrange.png"));
+            imgNoEntry = ImageIO.read(new File("img/noentry.png"));
+            imgVirage = ImageIO.read(new File("img/virage.png"));
+            imgCarUp = ImageIO.read(new File("img/carUp.png"));
+            imgCarDown = ImageIO.read(new File("img/carDown.png"));
+            imgCarLeft = ImageIO.read(new File("img/carLeft.png"));
+            imgCarRight = ImageIO.read(new File("img/carRight.png"));
+            imgMaison1 = ImageIO.read(new File("img/maison1.png"));
+            imgMaison2 = ImageIO.read(new File("img/maison2.png"));
+            imgMaison3 = ImageIO.read(new File("img/maison3.png"));
             
         } catch (Exception e) {
             System.out.println("Erreur lors du chargement des images");
