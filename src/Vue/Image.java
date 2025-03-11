@@ -20,10 +20,6 @@ public class Image {
     static BufferedImage imgCarDown;
     static BufferedImage imgCarLeft;
     static BufferedImage imgCarRight;
-    static BufferedImage imgMaison1;
-    static BufferedImage imgMaison2;
-    static BufferedImage imgMaison3;
-
 
 
 
@@ -63,15 +59,7 @@ public class Image {
         };
     }
 
-    public static BufferedImage getRandomBuilding(){
-        int random = (int)(Math.random() * 3);
-        return switch (random) {
-            case 0 -> imgMaison1;
-            case 1 -> imgMaison2;
-            case 2 -> imgMaison3;
-            default -> null;
-        };
-    }
+    
 
     
 }
