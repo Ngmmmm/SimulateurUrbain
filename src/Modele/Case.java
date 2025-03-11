@@ -25,16 +25,17 @@ public class Case{
         this.vehicle = null;
         this.signalling = null;
         this.pos = null;
-        if(type.equals("Building")){
-            this.building = new Building();
-            this.road = null;
-        }
-        else if (type.equals("Road")){
-            //this.road = new Road();
-            this.building = null;
-        }else{
-            this.road = null;
-            this.building = null;
+        switch (type) {
+            case "Building" -> {
+                this.building = new Building();
+                this.road = null;
+            }
+            case "Road" -> //this.road = new Road();
+                this.building = null;
+            default -> {
+                this.road = null;
+                this.building = null;
+            }
         }
 
     }
@@ -122,6 +123,7 @@ public class Case{
         System.out.println(this.building);
         return (this.vehicle == null && this.building == null);
     }
+
 
 
 

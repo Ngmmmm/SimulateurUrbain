@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import javax.swing.Timer;
 
 import Controle.*;
+import Modele.Simulation;
 
 
 public abstract class Vehicle {
@@ -222,6 +223,7 @@ public abstract class Vehicle {
     private void followPath(ArrayList<Position> path, int index) {
         if (index >= path.size()) {
             this.getCase(position).setVehicle(null);
+            Simulation.spawnRandomCars(1);
             return; // Arrêt si on a atteint la destination
         }
     
