@@ -3,9 +3,7 @@ package Vue;
 import Modele.Case;
 import Modele.CityMap;
 import Modele.Direction;
-import Modele.Signalling.TrafficLight;
-import Modele.Signalling.TrafficLightGroup;
-import Modele.Simulation;
+import Modele.Position;
 import Modele.Enregistrer.GameLoader;
 import Modele.Enregistrer.GameSaver;
 import Modele.Vehicle.Car;
@@ -17,6 +15,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.*;
+
+import Controle.Controle;
+
 
 
 public class TrafficSimulatorGUI extends JFrame {
@@ -30,6 +31,9 @@ public class TrafficSimulatorGUI extends JFrame {
 
     private CityMap cityMap; // Référence à la carte de la ville
     private Point lastDragPoint; // Ajoutez cette ligne pour déclarer lastDragPoint
+
+    private static boolean needUpdate;
+    private Timer uiTimer;
 
     public TrafficSimulatorGUI(CityMap cityMap) {
         this.cityMap = cityMap;
@@ -55,11 +59,18 @@ public class TrafficSimulatorGUI extends JFrame {
         JPanel controlPanel = createControlPanel();
         add(controlPanel, BorderLayout.SOUTH);
 
-        mapPanel.addMouseWheelListener(createMouseWheelZoomListener());
-        mapPanel.addMouseListener(createMouseDragListener());
-        mapPanel.addMouseMotionListener(createMouseMotionListener());
+        add(createChangePanel(), BorderLayout.WEST);
+
+        addListener();
+
+        uiTimer = new Timer(500, createTimerListener());
+        uiTimer.setInitialDelay(0);
+        uiTimer.start();
 
         setVisible(true);
+        
+        mapPanel.setFocusable(true);
+        mapPanel.requestFocus();
     }
 
     private JPanel createMapPanel() {
@@ -313,6 +324,29 @@ public class TrafficSimulatorGUI extends JFrame {
         return panel;
     }
 
+    private JPanel createChangePanel(){
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(1, 1));
+
+        JButton maisonButton = makeButton("Mettre une maison", "maison");
+        JButton routeButton = makeButton("Mettre une route/changer rotation", "route");
+        JButton feuButton = makeButton("Mettre un Feu/changer de groupe", "feu");
+        JButton voitureButton = makeButton("Mettre une voiture", "voiture");
+
+        Box box = Box.createVerticalBox();
+
+        box.add(maisonButton);
+        box.add(routeButton);
+        box.add(feuButton);
+        box.add(voitureButton);
+        
+
+        panel.add(box);
+        panel.setBorder(BorderFactory.createTitledBorder("Action Utilisateur"));
+
+        return panel;
+    }
+
     private static final double MAX_ZOOM = 2.5;
 
     private void zoom(boolean zoomIn, Point cursorPosition) {
@@ -363,11 +397,21 @@ public class TrafficSimulatorGUI extends JFrame {
         };
     }
 
-    private MouseListener createMouseDragListener() {
+    private MouseListener createMouseListener() {
         return new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 lastDragPoint = e.getPoint();
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e){
+                int x = e.getY()/cellSize;
+                int y = e.getX()/cellSize;
+                if (!Controle.timerIsRunning){
+                    Controle.caseUpdate.add(new Position(y, x));
+                    System.out.println(new Position(y, x));
+                }
             }
         };
     }
@@ -390,6 +434,8 @@ public class TrafficSimulatorGUI extends JFrame {
             }
         };
     }
+
+
 
     private void saveMap() {
         // Demander à l'utilisateur un nom de fichier pour la sauvegarde
@@ -453,6 +499,70 @@ public class TrafficSimulatorGUI extends JFrame {
                 JOptionPane.showMessageDialog(this, "Erreur lors du chargement de la carte.", "Erreur", JOptionPane.ERROR_MESSAGE);
             }
         }
+    }
+
+    
+    private KeyListener createKeyListener(){
+        return new KeyAdapter(){
+            public void keyPressed(KeyEvent e){
+                switch(e.getKeyChar()){
+                    case 'p' : {
+                        if (uiTimer.isRunning()){
+                            uiTimer.stop();
+                            Controle.timerIsRunning = false;
+                        }else{
+                            uiTimer.start();
+                            Controle.timerIsRunning = true;
+                        }
+                    }
+                }
+            }
+        };
+    }
+
+    private ActionListener createTimerListener(){
+        return new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                if (needUpdate){
+                    mapPanel.repaint();
+                    needUpdate = false;
+                }
+            }
+        };
+    }
+
+    private void addListener(){
+        mapPanel.addMouseWheelListener(createMouseWheelZoomListener());
+        mapPanel.addMouseListener(createMouseListener());
+        mapPanel.addMouseMotionListener(createMouseMotionListener());
+        mapPanel.addKeyListener(createKeyListener());
+    }
+
+    private JButton makeButton(String s1, String s2){
+        JButton button = new JButton(s1);
+        button.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                if (!Controle.timerIsRunning && Controle.caseUpdate != null){
+                    System.out.println(s2);
+                    Controle.setChange(s2);
+                }
+                mapPanel.requestFocus();
+            }
+        });
+
+        return button;
+    }
+    
+    public static void setUpdate(boolean b){
+        needUpdate = b;
+    }
+
+    public void pause(){
+        uiTimer.stop();
+    }
+
+    public void start(){
+        uiTimer.start();
     }
 
 

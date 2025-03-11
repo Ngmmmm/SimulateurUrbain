@@ -2,6 +2,9 @@ package Modele.Signalling;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.Predicate;
+
+import Controle.Controle;
 
 public class TrafficLightGroup {
     private List<TrafficLight> lights;
@@ -16,13 +19,14 @@ public class TrafficLightGroup {
     public TrafficLightGroup(List<TrafficLight> lights) {
         this.lights = lights;
         this.isNSGreen = true;
-        this.scheduler = Executors.newScheduledThreadPool(1);
+        setIdLights(lights);
         startCycle();
         id = ++nbGroupe;
-        setIdLights(lights);
+        Controle.lights.add(this);
     }
 
-    private void startCycle() {
+    public void startCycle() {
+        scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(() -> {
             switchLights(LightColor.GREEN);
             sleep(cycleTimeGreen);
@@ -57,7 +61,11 @@ public class TrafficLightGroup {
     }
 
     public void stop() {
-        scheduler.shutdown();
+        scheduler.shutdownNow();
+    }
+
+    public boolean isDown(){
+        return scheduler.isShutdown();
     }
 
     private void setIdLights(List<TrafficLight> lights) {
@@ -65,5 +73,34 @@ public class TrafficLightGroup {
             light.setIDGroupe(this.id);
         }
 
+    }
+
+    public void merge(TrafficLightGroup g){
+        for(TrafficLight light : g.lights){
+            add(light);
+        }
+    }
+
+    public void add(TrafficLight t){
+        boolean flag = true;
+        for (TrafficLight f : lights){
+            flag &= (f != t);
+        }
+        if (flag){
+            lights.add(t);
+            t.setIDGroupe(this.id);
+        }
+
+    }
+    public void remove(TrafficLight t){
+        lights.removeIf(new Predicate<TrafficLight>(){
+            public boolean test(TrafficLight tList){
+                return t == tList;
+            }
+        });
+    }
+
+    public int getId(){
+        return id;
     }
 }

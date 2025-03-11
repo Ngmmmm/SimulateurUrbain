@@ -1,6 +1,6 @@
 package Modele;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Pathfinding {
 
@@ -8,7 +8,7 @@ public class Pathfinding {
         // Empêcher l'instanciation de la classe statique
     }
 
-    public static ArrayList<Position> findShortestPath(CityMap cityMap, Position start, Position goal) {
+    public static LinkedList<Position> findShortestPath(CityMap cityMap, Position start, Position goal) {
         int rows = cityMap.getGrid().length;
         int cols = cityMap.getGrid()[0].length;
     
@@ -62,11 +62,11 @@ public class Pathfinding {
         }
     
         // Aucun chemin trouvé
-        return new ArrayList<>();
+        return new LinkedList<>();
     }
 
-    private static ArrayList<Position> reconstructPath(Position[][] previous, Position goal) {
-        ArrayList<Position> path = new ArrayList<>();
+    private static LinkedList<Position> reconstructPath(Position[][] previous, Position goal) {
+        LinkedList<Position> path = new LinkedList<>();
         Position current = goal;
 
         while (current != null) {
@@ -77,7 +77,7 @@ public class Pathfinding {
     }
 
     
-    public static ArrayList<Position> findAllAccessiblePositions(CityMap cityMap, Position start) {
+    public static LinkedList<Position> findAllAccessiblePositions(CityMap cityMap, Position start) {
         int rows = cityMap.getGrid().length;
         int cols = cityMap.getGrid()[0].length;
     
@@ -125,7 +125,7 @@ public class Pathfinding {
         }
     
         // Collecter toutes les positions accessibles
-        ArrayList<Position> accessiblePositions = new ArrayList<>();
+        LinkedList<Position> accessiblePositions = new LinkedList<>();
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 if (distances[i][j] != Double.MAX_VALUE) {
@@ -138,8 +138,8 @@ public class Pathfinding {
     }
 
 
-    public static ArrayList<Position> FindSpawnPosition(CityMap map){
-        ArrayList<Position> resultat = new ArrayList<>();
+    public static LinkedList<Position> FindSpawnPosition(CityMap map){
+        LinkedList<Position> resultat = new LinkedList<>();
         int rows = map.getRows();
         int cols = map.getCols();
 
