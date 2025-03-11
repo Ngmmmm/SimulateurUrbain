@@ -272,17 +272,21 @@ public class CityMap{
         return vehicles;
     }
     //! REFAIRE
+    public boolean inRange(Case ecase){
+        return ecase.getPos().getX() > 0 && ecase.getPos().getY() > 0 && ecase.getPos().getX() < 50 && ecase.getPos().getY() < 50;
+    }
+
     public boolean haveBuildingNext(Case eCase){
-        if(grid[eCase.getPos().getY()-1][eCase.getPos().getX()] != null && grid[eCase.getPos().getY()-1][eCase.getPos().getX()].getBuilding() != null){
+        if(inRange(eCase) && grid[eCase.getPos().getY()-1][eCase.getPos().getX()] != null && grid[eCase.getPos().getY()-1][eCase.getPos().getX()].getBuilding() != null){
             return true;
         }
-        else if(grid[eCase.getPos().getY()+1][eCase.getPos().getX()] != null && grid[eCase.getPos().getY()+1][eCase.getPos().getX()].getBuilding() != null){
+        else if(inRange(eCase) && grid[eCase.getPos().getY()+1][eCase.getPos().getX()] != null && grid[eCase.getPos().getY()+1][eCase.getPos().getX()].getBuilding() != null){
             return true;
         }
-        else if(grid[eCase.getPos().getY()][eCase.getPos().getX()-1] != null && grid[eCase.getPos().getY()][eCase.getPos().getX()-1].getBuilding() != null){
+        else if(inRange(eCase) && grid[eCase.getPos().getY()][eCase.getPos().getX()-1] != null && grid[eCase.getPos().getY()][eCase.getPos().getX()-1].getBuilding() != null){
             return true;
         }
-        else{ return (grid[eCase.getPos().getY()][eCase.getPos().getX()+1]!= null && grid[eCase.getPos().getY()][eCase.getPos().getX()+1].getBuilding() != null);}
+        else{ return (inRange(eCase) && grid[eCase.getPos().getY()][eCase.getPos().getX()+1]!= null && grid[eCase.getPos().getY()][eCase.getPos().getX()+1].getBuilding() != null);}
     
     }
 

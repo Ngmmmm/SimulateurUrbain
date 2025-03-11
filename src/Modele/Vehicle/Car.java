@@ -6,11 +6,11 @@ import Modele.Position;
 
 public class Car extends Vehicle {
     
-    public Car(String id, double speed, Position position, Direction direction, CityMap map, Position destination) {
+    public Car(String id, int speed, Position position, Direction direction, CityMap map, Position destination) {
         super(id, speed, position, direction, 2, map, destination);
     }
 
-    public Car(String id, double speed, Position position, CityMap map, Position destination) {
+    public Car(String id, int speed, Position position, CityMap map, Position destination) {
         super(id, speed, position, 2, map, destination);
     }
 

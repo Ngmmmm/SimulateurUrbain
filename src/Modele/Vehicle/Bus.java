@@ -6,7 +6,7 @@ import Modele.Position;
 
 public class Bus extends Vehicle {
 
-    public Bus(String id, double speed, Position position, Direction direction, CityMap map, Position destination) {
+    public Bus(String id, int speed, Position position, Direction direction, CityMap map, Position destination) {
         super(id, speed, position, direction, 4, map, destination);
     }
 

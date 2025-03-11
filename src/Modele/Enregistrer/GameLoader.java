@@ -1,18 +1,18 @@
 package Modele.Enregistrer;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import Modele.*;
 import Modele.Signalling.*;
 import Modele.Vehicle.Bus;
 import Modele.Vehicle.Car;
 import Modele.Vehicle.Truck;
 import Modele.Vehicle.Vehicle;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GameLoader {
 
@@ -75,7 +75,7 @@ public class GameLoader {
                     int x = Integer.parseInt(positionData[0]);
                     int y = Integer.parseInt(positionData[1]);
                     Direction direction = Direction.fromString(vehicleData[2]);
-                    double speed = Double.parseDouble(vehicleData[3]);
+                    int speed = Integer.parseInt(vehicleData[3]);
                     String[] destinationData = vehicleData[4].split(",");
                     int destX = Integer.parseInt(destinationData[0]);
                     int destY = Integer.parseInt(destinationData[1]);
@@ -182,7 +182,7 @@ public class GameLoader {
         }
     }
 
-    private static Vehicle createVehicle(String type, String id, double speed, Position position, Direction direction, Position destination, CityMap map) {
+    private static Vehicle createVehicle(String type, String id, int speed, Position position, Direction direction, Position destination, CityMap map) {
     switch (type) {
         case "Car":
             return new Car(id,speed, position, direction, map, destination);
