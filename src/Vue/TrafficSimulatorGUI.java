@@ -4,12 +4,9 @@ import Modele.Case;
 import Modele.CityMap;
 import Modele.Direction;
 import Modele.Position;
-import Modele.Signalling.TrafficLight;
-import Modele.Signalling.TrafficLightGroup;
-import Modele.Simulation;
 import Modele.Enregistrer.GameLoader;
 import Modele.Enregistrer.GameSaver;
-import Modele.Vehicle.Car;
+import Modele.Signalling.TrafficLight;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -187,9 +184,9 @@ public class TrafficSimulatorGUI extends JFrame {
             g.fillRect(x, y, cellSize, cellSize);
         }
     
-        // Dessiner les bordures
-        g.setColor(Color.BLACK);
-        g.drawRect(x, y, cellSize, cellSize);
+        // // Dessiner les bordures
+        // g.setColor(Color.BLACK);
+        // g.drawRect(x, y, cellSize, cellSize);
     }
     
     // private boolean isCurve(Case currentCase, int i, int j) {

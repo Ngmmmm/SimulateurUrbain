@@ -1,17 +1,17 @@
 package Modele.Vehicle;
 
+import Controle.*;
 import Modele.Case;
 import Modele.CityMap;
 import Modele.Direction;
 import Modele.Pathfinding;
 import Modele.Position;
 import Modele.Signalling.*;
+import Modele.Simulation;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import javax.swing.Timer;
-
-import Controle.*;
 
 
 public abstract class Vehicle {
@@ -233,6 +233,7 @@ public abstract class Vehicle {
     public boolean followPath(LinkedList<Position> path) {
         if (path.isEmpty()) {
             this.getCase(position).setVehicle(null);
+            Simulation.spawnRandomCars(1);
             return false; // Arrêt si on a atteint la destination
         }
     

@@ -10,13 +10,13 @@ import java.util.List;
 import java.util.Random;
 
 public class Simulation {
-    private CityMap cityMap;
+    private static CityMap cityMap;
 
     public Simulation() {
-        this.cityMap = new CityMap(50, 50);
+        cityMap = new CityMap(50, 50);
         initializeMap();
         cityMap.updateAllEdges();
-        spawnRandomCars();
+        spawnRandomCars(10);
         afficherCarte();
     }
 
@@ -143,7 +143,7 @@ public class Simulation {
 
     }
 
-    public void spawnRandomCars() {
+    public static void spawnRandomCars(int nbCarSpawn) {
         Random rand = new Random();
         LinkedList<Position> spawnPositions = Pathfinding.FindSpawnPosition(cityMap);
     
@@ -152,7 +152,7 @@ public class Simulation {
             return;
         }
     
-        int nbCar = 10;
+        int nbCar = nbCarSpawn;
         int essai = 0;
         while (nbCar > 0 && essai < 50) {
             Position randomPos = spawnPositions.get(rand.nextInt(spawnPositions.size()));
@@ -173,6 +173,9 @@ public class Simulation {
             }
     
             Position destination = accessible.get(rand.nextInt(accessible.size()));
+            while(!cityMap.haveBuildingNext(cityMap.getGrid()[destination.getY()][destination.getX()])){
+                destination = accessible.get(rand.nextInt(accessible.size()));
+            }
             Car newCar = new Car("Car" + Vehicle.nbCar, 2.0, randomPos, direction, cityMap, destination);
             cityMap.addVehicle(newCar);
             nbCar--;
