@@ -3,9 +3,12 @@ package Vue;
 import Modele.Case;
 import Modele.CityMap;
 import Modele.Direction;
+import Modele.Signalling.TrafficLight;
+import Modele.Signalling.TrafficLightGroup;
+import Modele.Simulation;
 import Modele.Enregistrer.GameLoader;
 import Modele.Enregistrer.GameSaver;
-import Modele.Signalling.TrafficLight;
+import Modele.Vehicle.Car;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -105,6 +108,13 @@ public class TrafficSimulatorGUI extends JFrame {
             g2d.rotate(-angle);
             g2d.translate(-x - cellSize / 2, -y - cellSize / 2);
             
+            if (isCurve(currentCase, i, j)) {
+                g2d.drawImage(Image.imgVirage, x, y, cellSize, cellSize, null);
+            }
+
+            if (currentCase.getRoad().isIntersection()) {
+                g2d.drawImage(Image.intersection, x, y, cellSize, cellSize, null);
+            }
             if (isCurve(currentCase, i, j)) {
                 g2d.drawImage(Image.imgVirage, x, y, cellSize, cellSize, null);
             }
