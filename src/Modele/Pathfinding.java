@@ -1,9 +1,13 @@
 package Modele;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.PriorityQueue;
 
 public class Pathfinding {
 
+    
     private Pathfinding() {
         // Empêcher l'instanciation de la classe statique
     }
@@ -12,57 +16,74 @@ public class Pathfinding {
         int rows = cityMap.getGrid().length;
         int cols = cityMap.getGrid()[0].length;
     
-        boolean[][] visited = new boolean[rows][cols]; // Marqueur des cases visitées
-        double[][] distances = new double[rows][cols]; // Distance minimale trouvée
-        Position[][] previous = new Position[rows][cols]; // Pour reconstituer le chemin
+        boolean[][] visited = new boolean[rows][cols]; // Cases visitées
+        double[][] distances = new double[rows][cols]; // Distances minimales
+        Position[][] previous = new Position[rows][cols]; // Chemin pour reconstituer
     
-        // Initialisation
+        // Initialisation des distances
         for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                distances[i][j] = Double.MAX_VALUE;
-            }
+            Arrays.fill(distances[i], Double.MAX_VALUE);
         }
         distances[start.getY()][start.getX()] = 0;
     
-        // Tas min pour les positions à explorer
-        MinHeap openSet = new MinHeap(distances);
-        openSet.insert(start);
+        // File de priorité (Dijkstra)
+        PriorityQueue<Position> openSet = new PriorityQueue<>(Comparator.comparingDouble(p -> distances[p.getY()][p.getX()]));
+        openSet.add(start);
     
         while (!openSet.isEmpty()) {
-            // Retirer la position avec la plus petite distance
-            Position current = openSet.extractMin();
+            Position current = openSet.poll(); // Extraction du min
     
-            // Si on atteint la destination
             if (current.equals(goal)) {
                 return reconstructPath(previous, goal);
             }
-    
-            visited[current.getY()][current.getX()] = true;
-    
-            // Explorer les voisins valides
+
+            int x = current.getX(), y = current.getY();
+            if (visited[y][x]) continue; // Si déjà visité, on passe
+            visited[y][x] = true;
+
             Road road = cityMap.getRoad(current);
             if (road != null) {
                 for (Direction direction : road.getDirection()) {
                     Position neighbor = direction.move(current);
-    
+
                     if (!cityMap.isValidPosition(neighbor.getY(), neighbor.getX()) ||
                         visited[neighbor.getY()][neighbor.getX()] ||
                         cityMap.getRoad(neighbor) == null) {
                         continue;
                     }
-    
-                    double newDist = distances[current.getY()][current.getX()] + 1;
+
+                    Road neighborRoad = cityMap.getRoad(neighbor);
+                    double baseWeight = neighborRoad.getWeight(); // Poids de la route
+                    double trafficFactor = neighborRoad.getTrafficFactor(); // Congestion
+                    double delay = 0;
+
+                    // Gestion des feux rouges
+                    if (neighborRoad.hasTrafficLight()) {
+                        delay += neighborRoad.getTrafficLightDelay();
+                    }
+
+                    // Gestion des stops
+                    if (neighborRoad.hasStopSign()) {
+                        delay += 1; // Supposons 1 unité de temps pour un stop
+                    }
+
+                    // Réduction de l’impact du trafic si route à double voie
+                    if (neighborRoad.isDoubleLane()) {
+                        trafficFactor *= 0.5; // Réduction de moitié
+                    }
+
+                    double newDist = distances[y][x] + (baseWeight * trafficFactor) + delay;
+
                     if (newDist < distances[neighbor.getY()][neighbor.getX()]) {
                         distances[neighbor.getY()][neighbor.getX()] = newDist;
                         previous[neighbor.getY()][neighbor.getX()] = current;
-                        openSet.insert(neighbor);
+                        openSet.add(neighbor);
                     }
                 }
             }
         }
-    
-        // Aucun chemin trouvé
-        return new LinkedList<>();
+
+        return new LinkedList<>(); // Aucun chemin trouvé
     }
 
     private static LinkedList<Position> reconstructPath(Position[][] previous, Position goal) {
@@ -70,13 +91,15 @@ public class Pathfinding {
         Position current = goal;
 
         while (current != null) {
-            path.add(0, current);
+            path.addFirst(current);
             current = previous[current.getY()][current.getX()];
         }
         return path;
     }
 
-    
+
+
+
     public static LinkedList<Position> findAllAccessiblePositions(CityMap cityMap, Position start) {
         int rows = cityMap.getGrid().length;
         int cols = cityMap.getGrid()[0].length;
@@ -84,23 +107,24 @@ public class Pathfinding {
         boolean[][] visited = new boolean[rows][cols]; // Marqueur des cases visitées
         double[][] distances = new double[rows][cols]; // Distance minimale trouvée
     
-        // Initialisation
+        // Initialisation des distances à l'infini
         for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                distances[i][j] = Double.MAX_VALUE;
-            }
+            Arrays.fill(distances[i], Double.MAX_VALUE);
         }
         distances[start.getY()][start.getX()] = 0;
     
-        // Tas min pour les positions à explorer
-        MinHeap openSet = new MinHeap(distances);
-        openSet.insert(start);
+        // PriorityQueue pour explorer les positions avec la plus petite distance en premier
+        PriorityQueue<Position> openSet = new PriorityQueue<>(Comparator.comparingDouble(p -> distances[p.getY()][p.getX()]));
+        openSet.add(start);
     
         while (!openSet.isEmpty()) {
-            // Retirer la position avec la plus petite distance
-            Position current = openSet.extractMin();
+            // Extraire la position avec la plus petite distance
+            Position current = openSet.poll();
     
-            // Marquer la position comme visitée
+            // Si déjà visité, on passe
+            if (visited[current.getY()][current.getX()]) {
+                continue;
+            }
             visited[current.getY()][current.getX()] = true;
     
             // Explorer les voisins valides
@@ -118,7 +142,7 @@ public class Pathfinding {
                     double newDist = distances[current.getY()][current.getX()] + 1;
                     if (newDist < distances[neighbor.getY()][neighbor.getX()]) {
                         distances[neighbor.getY()][neighbor.getX()] = newDist;
-                        openSet.insert(neighbor);
+                        openSet.add(neighbor);
                     }
                 }
             }
@@ -136,6 +160,7 @@ public class Pathfinding {
     
         return accessiblePositions;
     }
+    
 
 
     public static LinkedList<Position> FindSpawnPosition(CityMap map){

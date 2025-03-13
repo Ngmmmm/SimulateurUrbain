@@ -39,22 +39,30 @@ public class CityMap{
         int col = pos.getX();
         if (isValidPosition(row, col)) {
             Road currentRoad = grid[row][col].getRoad();
-
+    
             if (currentRoad != null) {
                 // Fusionner les directions existantes avec les nouvelles
                 List<Direction> updatedDirections = new ArrayList<>(Arrays.asList(currentRoad.getDirection()));
-                currentRoad.setIntersection(true);   
+                currentRoad.setIntersection(true);
                 for (Direction newDirection : d) {
                     if (!updatedDirections.contains(newDirection)) {
                         updatedDirections.add(newDirection);
                     }
                 }
-
-                // Mettre à jour la route existante avec les directions fusionnées
+    
+                // Mise à jour des paramètres de la route
                 currentRoad.setDirection(updatedDirections.toArray(new Direction[0]));
+                currentRoad.setDoubleLane(ligne == "Pointillé");
+
+
+    
             } else {
-                // Créer une nouvelle route avec les directions données
-                grid[row][col].setRoad(new Road(d, ligne));
+                // Créer une nouvelle route avec les directions et paramètres donnés
+                Road newRoad = new Road(d, ligne);
+
+                newRoad.setDoubleLane(ligne == "Pointillé");
+
+                grid[row][col].setRoad(newRoad);
             }
         }
     }
@@ -146,6 +154,7 @@ public class CityMap{
         if (isValidPosition(row, col) && grid[row][col].getRoad() != null) {
             Stop stopSign = new Stop(pos, dir);
             grid[row][col].setSignalling(stopSign);
+            grid[row][col].getRoad().setStopSign(true);
         } else {
             System.out.println("Impossible d'ajouter un Stop ici (position invalide ou pas de route).");
         }
@@ -156,8 +165,9 @@ public class CityMap{
         int row = pos.getY();
         int col = pos.getX();
         
-        if (isValidPosition(row, col)) {
+        if (isValidPosition(row, col) && grid[row][col].getRoad() != null) {
             grid[row][col].setSignalling(trafficLight);
+            grid[row][col].getRoad().setTrafficLight(true);
         }
     }
 
