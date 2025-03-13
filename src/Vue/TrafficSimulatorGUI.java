@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import javax.swing.*;
 
 import Controle.Controle;
+import Modele.Signalling.TrafficLight;
 
 
 
