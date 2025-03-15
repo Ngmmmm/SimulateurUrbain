@@ -281,20 +281,19 @@ public class CityMap{
         
         return vehicles;
     }
-    //! REFAIRE
-    public boolean haveBuildingNext(Case eCase){
-        if(grid[eCase.getPos().getY()-1][eCase.getPos().getX()] != null && grid[eCase.getPos().getY()-1][eCase.getPos().getX()].getBuilding() != null){
-            return true;
-        }
-        else if(grid[eCase.getPos().getY()+1][eCase.getPos().getX()] != null && grid[eCase.getPos().getY()+1][eCase.getPos().getX()].getBuilding() != null){
-            return true;
-        }
-        else if(grid[eCase.getPos().getY()][eCase.getPos().getX()-1] != null && grid[eCase.getPos().getY()][eCase.getPos().getX()-1].getBuilding() != null){
-            return true;
-        }
-        else{ return (grid[eCase.getPos().getY()][eCase.getPos().getX()+1]!= null && grid[eCase.getPos().getY()][eCase.getPos().getX()+1].getBuilding() != null);}
+    public boolean haveBuildingNext(Case eCase, int gridWidth, int gridHeight) {
+        Position pos = eCase.getPos();
     
+        for (Position adjacent : pos.posAutour4(gridWidth, gridHeight)) {
+            Case adjacentCase = grid[adjacent.getY()][adjacent.getX()];
+            if (adjacentCase != null && adjacentCase.getBuilding() != null) {
+                return true;
+            }
+        }
+        return false;
     }
+
+
 
     
 }               
