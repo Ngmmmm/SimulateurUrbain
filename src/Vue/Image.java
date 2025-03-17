@@ -70,7 +70,7 @@ public class Image {
             System.out.println("Erreur lors du chargement des images");
         }
     }
-    //! redimensionner les images en fonctions et changer legerement la vitesse 
+    
     public static BufferedImage getImgCar(Direction dir){
         return switch (dir.toString()) {
             case "UP" -> imgCarUp;
