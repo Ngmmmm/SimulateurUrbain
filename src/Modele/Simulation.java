@@ -2,7 +2,9 @@ package Modele;
 
 import Modele.Signalling.TrafficLight;
 import Modele.Signalling.TrafficLightGroup;
+import Modele.Vehicle.Bus;
 import Modele.Vehicle.Car;
+import Modele.Vehicle.Truck;
 import Modele.Vehicle.Vehicle;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -176,8 +178,22 @@ public class Simulation {
             while(!cityMap.haveBuildingNext(cityMap.getGrid()[destination.getY()][destination.getX()])){
                 destination = accessible.get(rand.nextInt(accessible.size()));
             }
-            Car newCar = new Car("Car" + Vehicle.nbCar, 2.0, randomPos, direction, cityMap, destination);
-            cityMap.addVehicle(newCar);
+            Random rand2 = new Random();
+            int nb = rand2.nextInt(3);
+            switch (nb) {
+                case 0 -> {
+                    Car newCar = new Car("Car" + Vehicle.nbCar, 0, randomPos, direction, cityMap, destination);
+                    cityMap.addVehicle(newCar);
+                }
+                case 1 -> {
+                    Truck newTruck = new Truck("Truck" + Vehicle.nbCar, 2, randomPos, direction, cityMap, destination);
+                    cityMap.addVehicle(newTruck);
+                }
+                default -> {
+                    Bus newBus = new Bus("Bus" + Vehicle.nbCar, 3, randomPos, direction, cityMap, destination);
+                    cityMap.addVehicle(newBus);
+                }
+            }
             nbCar--;
         }
     }

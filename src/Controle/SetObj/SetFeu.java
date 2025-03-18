@@ -6,6 +6,7 @@ import Modele.Stack2;
 import Modele.Signalling.LightColor;
 import Modele.Signalling.TrafficLight;
 import Modele.Signalling.TrafficLightGroup;
+import Vue.TrafficSimulatorGUI;
 import Modele.CityMap;
 import Modele.Position;
 
@@ -61,6 +62,7 @@ public class SetFeu implements Update {
             }
         }
         Controle.addUpdate();
+        TrafficSimulatorGUI.setUpdate(true);
 
     }
     

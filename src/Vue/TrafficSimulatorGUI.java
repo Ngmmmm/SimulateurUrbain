@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import javax.swing.*;
 
 import Controle.Controle;
+import Modele.Signalling.TrafficLight;
+import Modele.Vehicle.Bus;
+import Modele.Vehicle.Truck;
 
 
 
@@ -33,6 +36,7 @@ public class TrafficSimulatorGUI extends JFrame {
     private Point lastDragPoint; // Ajoutez cette ligne pour déclarer lastDragPoint
 
     private static boolean needUpdate;
+    private static boolean pause = false;
     private Timer uiTimer;
 
     public TrafficSimulatorGUI(CityMap cityMap) {
@@ -136,7 +140,15 @@ public class TrafficSimulatorGUI extends JFrame {
             
             // Dessiner le véhicule s'il existe
             if (currentCase.getVehicle() != null) {
-                g2d.drawImage(Image.getImgCar(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
+                if(currentCase.getVehicle() instanceof Car){
+                    g2d.drawImage(Image.getImgCar(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
+                }
+                else if (currentCase.getVehicle() instanceof Bus){
+                    g2d.drawImage(Image.getImgBus(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
+                }
+                else if (currentCase.getVehicle() instanceof Truck){
+                    g2d.drawImage(Image.getImgCamion(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
+                }
             }
     
             // Dessiner un panneau s'il existe
@@ -180,9 +192,17 @@ public class TrafficSimulatorGUI extends JFrame {
                 g2d.translate(-signalX - size / 2, -signalY - size / 2);
 
                 // Dessiner le véhicule s'il existe
-            if (currentCase.getVehicle() != null) {
-                g2d.drawImage(Image.getImgCar(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
-            }
+                if (currentCase.getVehicle() != null) {
+                    if(currentCase.getVehicle() instanceof Car){
+                        g2d.drawImage(Image.getImgCar(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
+                    }
+                    else if (currentCase.getVehicle() instanceof Bus){
+                        g2d.drawImage(Image.getImgBus(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
+                    }
+                    else if (currentCase.getVehicle() instanceof Truck){
+                        g2d.drawImage(Image.getImgCamion(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
+                    }
+                }
             }
         }
         // Dessiner le bâtiment s'il existe
@@ -326,12 +346,14 @@ public class TrafficSimulatorGUI extends JFrame {
 
     private JPanel createChangePanel(){
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(1, 1));
+        panel.setLayout(new GridLayout(2, 1));
 
         JButton maisonButton = makeButton("Mettre une maison", "maison");
         JButton routeButton = makeButton("Mettre une route/changer rotation", "route");
         JButton feuButton = makeButton("Mettre un Feu/changer de groupe", "feu");
         JButton voitureButton = makeButton("Mettre une voiture", "voiture");
+
+        JTextArea instruct = new JTextArea("Pour ajouter/retirer des objets:\n-Mettre en pause la simulation en cliquant\n sur P\n-appuyer sur les cases à modifier\n-appuyer sur le changement à effectuer");
 
         Box box = Box.createVerticalBox();
 
@@ -339,9 +361,13 @@ public class TrafficSimulatorGUI extends JFrame {
         box.add(routeButton);
         box.add(feuButton);
         box.add(voitureButton);
+
+        Box box2 = Box.createVerticalBox();
+        box2.add(instruct);
         
 
         panel.add(box);
+        panel.add(box2);
         panel.setBorder(BorderFactory.createTitledBorder("Action Utilisateur"));
 
         return panel;
@@ -408,9 +434,8 @@ public class TrafficSimulatorGUI extends JFrame {
             public void mouseClicked(MouseEvent e){
                 int x = e.getY()/cellSize;
                 int y = e.getX()/cellSize;
-                if (!Controle.timerIsRunning){
+                if (pause){
                     Controle.caseUpdate.add(new Position(y, x));
-                    System.out.println(new Position(y, x));
                 }
             }
         };
@@ -507,12 +532,10 @@ public class TrafficSimulatorGUI extends JFrame {
             public void keyPressed(KeyEvent e){
                 switch(e.getKeyChar()){
                     case 'p' : {
-                        if (uiTimer.isRunning()){
-                            uiTimer.stop();
-                            Controle.timerIsRunning = false;
+                        if (!TrafficSimulatorGUI.pause){
+                            TrafficSimulatorGUI.pause();
                         }else{
-                            uiTimer.start();
-                            Controle.timerIsRunning = true;
+                            TrafficSimulatorGUI.start();
                         }
                     }
                 }
@@ -542,8 +565,7 @@ public class TrafficSimulatorGUI extends JFrame {
         JButton button = new JButton(s1);
         button.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                if (!Controle.timerIsRunning && Controle.caseUpdate != null){
-                    System.out.println(s2);
+                if (pause && Controle.caseUpdate != null){
                     Controle.setChange(s2);
                 }
                 mapPanel.requestFocus();
@@ -557,12 +579,16 @@ public class TrafficSimulatorGUI extends JFrame {
         needUpdate = b;
     }
 
-    public void pause(){
-        uiTimer.stop();
+    public static boolean getPause(){
+        return pause;
     }
 
-    public void start(){
-        uiTimer.start();
+    public static void pause(){
+        pause = true;
+    }
+
+    public static void start(){
+        pause = false;
     }
 
 

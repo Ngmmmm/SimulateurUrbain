@@ -8,6 +8,8 @@ import javax.imageio.ImageIO;
 public class Image {
 
     static BufferedImage imgCar;
+    static BufferedImage imgCamionUp;
+    static BufferedImage imgBusUp;
     static BufferedImage imgBuilding;
     static BufferedImage imgRoad;
     static BufferedImage imgStop;
@@ -24,6 +26,12 @@ public class Image {
     static BufferedImage imgMaison2;
     static BufferedImage imgMaison3;
     static BufferedImage intersection;
+    static BufferedImage imgCamionLeft;
+    static BufferedImage imgCamionRight;
+    static BufferedImage imgCamionDown;
+    static BufferedImage imgBusDown;
+    static BufferedImage imgBusRight;
+    static BufferedImage imgBusLeft;
 
 
 
@@ -48,18 +56,47 @@ public class Image {
             imgMaison2 = ImageIO.read(new File("img/maison2.png"));
             imgMaison3 = ImageIO.read(new File("img/maison3.png"));
             intersection = ImageIO.read(new File("img/intersection.png"));
+            imgBusUp = ImageIO.read(new File("img/busUp.png"));
+            imgCamionUp = ImageIO.read(new File("img/camionUp.PNG"));
+            imgBusDown = ImageIO.read(new File("img/busDown.PNG"));
+            imgBusLeft = ImageIO.read(new File("img/busLeft.PNG"));
+            imgBusRight = ImageIO.read(new File("img/busRight.PNG"));
+            imgCamionDown = ImageIO.read(new File("img/camionDown.PNG"));
+            imgCamionLeft = ImageIO.read(new File("img/camionLeft.PNG"));
+            imgCamionRight = ImageIO.read(new File("img/camionRight.PNG"));
+
             
         } catch (Exception e) {
             System.out.println("Erreur lors du chargement des images");
         }
     }
-
+    
     public static BufferedImage getImgCar(Direction dir){
         return switch (dir.toString()) {
             case "UP" -> imgCarUp;
             case "DOWN" -> imgCarDown;
             case "LEFT" -> imgCarLeft;
             case "RIGHT" -> imgCarRight;
+            default -> null;
+        };
+    }
+
+    public static BufferedImage getImgBus(Direction dir){
+        return switch (dir.toString()) {
+            case "UP" -> imgBusUp;
+            case "DOWN" -> imgBusDown;
+            case "LEFT" -> imgBusLeft;
+            case "RIGHT" -> imgBusRight;
+            default -> null;
+        };
+    }
+
+    public static BufferedImage getImgCamion(Direction dir){
+        return switch (dir.toString()) {
+            case "UP" -> imgCamionUp;
+            case "DOWN" -> imgCamionDown;
+            case "LEFT" -> imgCamionLeft;
+            case "RIGHT" -> imgCamionRight;
             default -> null;
         };
     }
