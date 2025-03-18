@@ -19,6 +19,7 @@ import javax.swing.*;
 import Controle.Controle;
 import Modele.Signalling.TrafficLight;
 import Modele.Vehicle.Bus;
+import Modele.Vehicle.Car;
 import Modele.Vehicle.Truck;
 
 

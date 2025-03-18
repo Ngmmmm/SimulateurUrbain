@@ -281,10 +281,10 @@ public class CityMap{
         
         return vehicles;
     }
-    public boolean haveBuildingNext(Case eCase, int gridWidth, int gridHeight) {
+    public boolean haveBuildingNext(Case eCase) {
         Position pos = eCase.getPos();
     
-        for (Position adjacent : pos.posAutour4(gridWidth, gridHeight)) {
+        for (Position adjacent : pos.posAutour4(this.cols,this.rows)) {
             Case adjacentCase = grid[adjacent.getY()][adjacent.getX()];
             if (adjacentCase != null && adjacentCase.getBuilding() != null) {
                 return true;
