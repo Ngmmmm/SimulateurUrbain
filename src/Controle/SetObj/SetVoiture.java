@@ -7,6 +7,11 @@ import Modele.Position;
 import Modele.Stack2;
 import Modele.Vehicle.Car;
 import Modele.Vehicle.Vehicle;
+import Vue.TrafficSimulatorGUI;
+import Modele.Direction;
+
+
+
 import java.util.Random;
 
 
@@ -26,6 +31,7 @@ public class SetVoiture implements Update {
                 voiture.checkPath();
                 Controle.addUpdateCar(c.getA());
                 Controle.addUpdate();
+                TrafficSimulatorGUI.setUpdate(true);
             }
         };
         

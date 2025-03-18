@@ -1,6 +1,7 @@
 package Controle.SetObj;
 
 import Modele.Stack2;
+import Vue.TrafficSimulatorGUI;
 import Modele.Position;
 import Modele.Road;
 import Modele.CityMap;
@@ -36,6 +37,7 @@ public class SetRoute implements Update {
             toChange.setRoad(new Road(dir, "Continue"));
         }
         Controle.addUpdate();
+        TrafficSimulatorGUI.setUpdate(true);
 
     }
 
