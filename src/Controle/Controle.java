@@ -43,9 +43,8 @@ public class Controle {
         ctrlTimer = new Timer(1000, createActionListener());
         t2 = new Timer(500, new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                if(timerIsRunning != ctrlTimer.isRunning()){
-                    System.out.println(timerIsRunning != ctrlTimer.isRunning());
-                    if (timerIsRunning) {
+                if(!TrafficSimulatorGUI.getPause() != ctrlTimer.isRunning()){
+                    if (!TrafficSimulatorGUI.getPause()) {
                         nextChange = null;
                         caseUpdate.clear();
                         start();
@@ -54,7 +53,7 @@ public class Controle {
                         pause();
                     }
                 }
-                if(!timerIsRunning && !caseUpdate.isEmpty() && nextChange != null){
+                if(TrafficSimulatorGUI.getPause() && !caseUpdate.isEmpty() && nextChange != null){
                     nextChange.update(cityMap, caseUpdate);
                     caseUpdate.clear();
                     nextChange = null;
@@ -102,7 +101,6 @@ public class Controle {
 
     public void pause(){
         ctrlTimer.stop();
-        timerIsRunning = false;
         for (TrafficLightGroup g : lights){
             if (!g.isDown()) g.stop();
         }
@@ -110,7 +108,6 @@ public class Controle {
 
     public void start(){
         ctrlTimer.start();
-        timerIsRunning = true;
         for(TrafficLightGroup g : lights){
             if (g.isDown()) g.startCycle();
         }
