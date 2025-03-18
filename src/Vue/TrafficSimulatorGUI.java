@@ -6,7 +6,7 @@ import Modele.Direction;
 import Modele.Position;
 import Modele.Enregistrer.GameLoader;
 import Modele.Enregistrer.GameSaver;
-import Modele.Vehicle.Car;
+import Modele.Signalling.TrafficLight;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
