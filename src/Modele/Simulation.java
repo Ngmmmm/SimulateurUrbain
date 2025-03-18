@@ -182,7 +182,7 @@ public class Simulation {
             int nb = rand2.nextInt(3);
             switch (nb) {
                 case 0 -> {
-                    Car newCar = new Car("Car" + Vehicle.nbCar, 1, randomPos, direction, cityMap, destination);
+                    Car newCar = new Car("Car" + Vehicle.nbCar, 0, randomPos, direction, cityMap, destination);
                     cityMap.addVehicle(newCar);
                 }
                 case 1 -> {
