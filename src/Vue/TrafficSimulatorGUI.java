@@ -18,6 +18,8 @@ import javax.swing.*;
 
 import Controle.Controle;
 import Modele.Signalling.TrafficLight;
+import Modele.Vehicle.Bus;
+import Modele.Vehicle.Truck;
 
 
 
@@ -138,7 +140,15 @@ public class TrafficSimulatorGUI extends JFrame {
             
             // Dessiner le véhicule s'il existe
             if (currentCase.getVehicle() != null) {
-                g2d.drawImage(Image.getImgCar(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
+                if(currentCase.getVehicle() instanceof Car){
+                    g2d.drawImage(Image.getImgCar(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
+                }
+                else if (currentCase.getVehicle() instanceof Bus){
+                    g2d.drawImage(Image.getImgBus(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
+                }
+                else if (currentCase.getVehicle() instanceof Truck){
+                    g2d.drawImage(Image.getImgCamion(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
+                }
             }
     
             // Dessiner un panneau s'il existe
@@ -182,9 +192,17 @@ public class TrafficSimulatorGUI extends JFrame {
                 g2d.translate(-signalX - size / 2, -signalY - size / 2);
 
                 // Dessiner le véhicule s'il existe
-            if (currentCase.getVehicle() != null) {
-                g2d.drawImage(Image.getImgCar(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
-            }
+                if (currentCase.getVehicle() != null) {
+                    if(currentCase.getVehicle() instanceof Car){
+                        g2d.drawImage(Image.getImgCar(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
+                    }
+                    else if (currentCase.getVehicle() instanceof Bus){
+                        g2d.drawImage(Image.getImgBus(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
+                    }
+                    else if (currentCase.getVehicle() instanceof Truck){
+                        g2d.drawImage(Image.getImgCamion(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
+                    }
+                }
             }
         }
         // Dessiner le bâtiment s'il existe

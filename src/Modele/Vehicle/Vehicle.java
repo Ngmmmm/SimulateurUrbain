@@ -16,7 +16,7 @@ import javax.swing.Timer;
 
 public abstract class Vehicle {
     protected String id;
-    protected double speed;
+    protected int speed;
     protected Position position;
     protected Direction direction;
     protected boolean isMoving;
@@ -28,8 +28,9 @@ public abstract class Vehicle {
     public boolean stopOk;
     public static int nbCar = 0;
     public LinkedList<Position> path;
+    boolean move;
 
-    public Vehicle(String id, double speed, Position position, Direction direction, float fuelConso, CityMap map, Position destination) {
+    public Vehicle(String id, int speed, Position position, Direction direction, float fuelConso, CityMap map, Position destination) {
         this.id = id;
         this.speed = speed;
         this.position = position;
@@ -47,7 +48,7 @@ public abstract class Vehicle {
 
     }
 
-    public Vehicle(String id, double speed, Position position, float fuelConso, CityMap map, Position destination) {
+    public Vehicle(String id, int speed, Position position, float fuelConso, CityMap map, Position destination) {
         this.id = id;
         this.speed = speed;
         this.position = position;
@@ -120,7 +121,7 @@ public abstract class Vehicle {
     public Position getPosition() {return this.position;}
     public Direction getDirection() {return this.direction;}
     public boolean isMoving() {return this.isMoving;}
-    public void setSpeed(double speed) {this.speed = speed;}
+    public void setSpeed(int speed) {this.speed = speed;}
 
 
     @Override
@@ -230,6 +231,7 @@ public abstract class Vehicle {
 
 
     public boolean followPath(LinkedList<Position> path) {
+        move = false;
         if (path.isEmpty()) {
             this.getCase(position).setVehicle(null);
             Simulation.spawnRandomCars(1);
@@ -243,13 +245,18 @@ public abstract class Vehicle {
         }
         Direction prochaineDir = Direction.getDirection(position, prochainePos);
         changeDirection(prochaineDir);
+        Timer timer = new Timer(this.speed*500, (ActionEvent e) -> {
+            move = move();
+            if(!move){
+                path.push(prochainePos);
+            }
+            Controle.addUpdateCar(position);
+        });
 
-        boolean b = move();
-        if(!b){
-            path.push(prochainePos);
-        }
-        Controle.addUpdateCar(position);
-        return b;
+        timer.setRepeats(false); 
+        timer.start();
+
+        return move;
     
     }
     

@@ -40,7 +40,7 @@ public class Controle {
 
     Controle(){
         initSim();
-        ctrlTimer = new Timer(1000, createActionListener());
+        ctrlTimer = new Timer(500, createActionListener());
         t2 = new Timer(500, new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 if(!TrafficSimulatorGUI.getPause() != ctrlTimer.isRunning()){
