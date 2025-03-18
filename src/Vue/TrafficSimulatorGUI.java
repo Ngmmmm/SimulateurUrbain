@@ -40,6 +40,9 @@ public class TrafficSimulatorGUI extends JFrame {
     private static boolean pause = false;
     private Timer uiTimer;
 
+    private boolean highlightMode = false; // Mode de surbrillance
+    private Point highlightedCell = null; // Case en surbrillance
+
     public TrafficSimulatorGUI(CityMap cityMap) {
         this.cityMap = cityMap;
 
@@ -76,6 +79,33 @@ public class TrafficSimulatorGUI extends JFrame {
         
         mapPanel.setFocusable(true);
         mapPanel.requestFocus();
+
+        mapPanel.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_P) {
+                    highlightMode = !highlightMode;
+                    mapPanel.repaint();
+                }
+            }
+        });
+
+        mapPanel.addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                if (highlightMode) {
+                    int x = e.getX() / cellSize;
+                    int y = e.getY() / cellSize;
+                    highlightedCell = new Point(x, y);
+                    mapPanel.repaint();
+                } else {
+                    highlightedCell = null;
+                }
+            }
+        });
+
+        mapPanel.setFocusable(true); // Permettre au panel de recevoir les événements clavier
+
     }
 
     private JPanel createMapPanel() {
@@ -219,6 +249,11 @@ public class TrafficSimulatorGUI extends JFrame {
         // // Dessiner les bordures
         // g.setColor(Color.BLACK);
         // g.drawRect(x, y, cellSize, cellSize);
+
+        if (highlightMode && highlightedCell != null && highlightedCell.x == j && highlightedCell.y == i) {
+            g.setColor(new Color(255, 255, 0, 100)); // Jaune
+            g.fillRect(x, y, cellSize, cellSize);
+        }
     }
     
     private boolean isCurve(Case currentCase, int i, int j) {
