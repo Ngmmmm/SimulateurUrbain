@@ -3,6 +3,7 @@ package Controle.SetObj;
 import Controle.Controle;
 
 import Modele.Stack2;
+import Modele.Statistique;
 import Modele.Signalling.LightColor;
 import Modele.Signalling.TrafficLight;
 import Modele.Signalling.TrafficLightGroup;
@@ -18,7 +19,7 @@ public class SetFeu implements Update {
     
     public static final SetFeu set = new SetFeu();
 
-    public void update(CityMap map, Stack2 c){
+    public void update(CityMap map, Stack2 c, Statistique stats){
         Case toChangeA = CityMap.getCase(map.getGrid(), c.getA());
         if(toChangeA.getBuilding() != null){
             return ;

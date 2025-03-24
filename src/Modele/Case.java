@@ -119,8 +119,6 @@ public class Case{
     }
 
     public boolean isEmpty(){
-        System.out.print(this.vehicle);
-        System.out.println(this.building);
         return (this.vehicle == null && this.building == null);
     }
 

@@ -8,6 +8,8 @@ import Modele.Pathfinding;
 import Modele.Position;
 import Modele.Signalling.*;
 import Modele.Simulation;
+import Modele.Statistique;
+
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
@@ -29,8 +31,9 @@ public abstract class Vehicle {
     public static int nbCar = 0;
     public LinkedList<Position> path;
     boolean move;
+    protected int temps = 0;
 
-    public Vehicle(String id, int speed, Position position, Direction direction, float fuelConso, CityMap map, Position destination) {
+    public Vehicle(String id, int speed, Position position, Direction direction, float fuelConso, CityMap map, Position destination, Statistique stats) {
         this.id = id;
         this.speed = speed;
         this.position = position;
@@ -44,11 +47,12 @@ public abstract class Vehicle {
         if (map != null){
             map.addVehicle(this);
         }
-        followAllPath();
+        stats.addVoiture();
+        followAllPath(stats);
 
     }
 
-    public Vehicle(String id, int speed, Position position, float fuelConso, CityMap map, Position destination) {
+    public Vehicle(String id, int speed, Position position, float fuelConso, CityMap map, Position destination, Statistique stats) {
         this.id = id;
         this.speed = speed;
         this.position = position;
@@ -62,6 +66,7 @@ public abstract class Vehicle {
         if (map != null){
             map.addVehicle(this);
         }
+        stats.addVoiture();
 
     }
 
@@ -230,11 +235,14 @@ public abstract class Vehicle {
 
 
 
-    public boolean followPath(LinkedList<Position> path) {
+    public boolean followPath(LinkedList<Position> path, Statistique stats) {
+        temps++;
         move = false;
+        stats.isMoving();
         if (path.isEmpty()) {
             this.getCase(position).setVehicle(null);
-            Simulation.spawnRandomCars(1);
+            Simulation.spawnRandomCars(1, stats);
+            stats.delVoiture(temps);
             return false; // Arrêt si on a atteint la destination
         }
     
@@ -260,11 +268,11 @@ public abstract class Vehicle {
     
     }
     
-    public void followAllPath() {
+    public void followAllPath(Statistique stats) {
         checkPath();
         path.pop();
         if (!path.isEmpty()) {
-            followPath(path); 
+            followPath(path, stats); 
         }
     }
 
@@ -277,5 +285,6 @@ public abstract class Vehicle {
     public Position getDestination() {
         return destination;
     }
+
 
 }

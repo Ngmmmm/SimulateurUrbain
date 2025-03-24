@@ -253,8 +253,6 @@ public class CityMap{
 
     public static Case getCase(Case[][] grid, Position pos){
         if(pos.getX() >= 0 && pos.getY() >= 0 && pos.getX() < 50 && pos.getY() < 50){
-            System.out.print(pos.getX());
-            System.out.println(pos.getY());
             return grid[pos.getY()][pos.getX()];
         }else{
             return null;
