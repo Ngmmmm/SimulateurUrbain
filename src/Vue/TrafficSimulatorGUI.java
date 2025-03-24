@@ -43,6 +43,8 @@ public class TrafficSimulatorGUI extends JFrame {
     private boolean highlightMode = false; // Mode de surbrillance
     private Point highlightedCell = null; // Case en surbrillance
 
+    private Point selectedCell = null; // Case sélectionnée (en rouge)
+
     public TrafficSimulatorGUI(CityMap cityMap) {
         this.cityMap = cityMap;
 
@@ -250,8 +252,15 @@ public class TrafficSimulatorGUI extends JFrame {
         // g.setColor(Color.BLACK);
         // g.drawRect(x, y, cellSize, cellSize);
 
+        // Dessiner le surlignage rouge si c'est la case sélectionnée
+        if (selectedCell != null && selectedCell.x == j && selectedCell.y == i) {
+            g.setColor(new Color(255, 0, 0, 100)); // Rouge transparent
+            g.fillRect(x, y, cellSize, cellSize);
+        }
+
+        // Dessiner le surlignage jaune pour le mode highlight
         if (highlightMode && highlightedCell != null && highlightedCell.x == j && highlightedCell.y == i) {
-            g.setColor(new Color(255, 255, 0, 100)); // Jaune
+            g.setColor(new Color(255, 255, 0, 100)); // Jaune transparent
             g.fillRect(x, y, cellSize, cellSize);
         }
     }
@@ -465,13 +474,17 @@ public class TrafficSimulatorGUI extends JFrame {
             public void mousePressed(MouseEvent e) {
                 lastDragPoint = e.getPoint();
             }
-
+    
             @Override
             public void mouseClicked(MouseEvent e){
                 int x = e.getY()/cellSize;
                 int y = e.getX()/cellSize;
                 if (pause){
                     Controle.caseUpdate.add(new Position(y, x));
+                }
+                if (highlightMode) {
+                    selectedCell = new Point(y, x); // Stocker la case sélectionnée
+                    mapPanel.repaint();
                 }
             }
         };
@@ -603,11 +616,12 @@ public class TrafficSimulatorGUI extends JFrame {
             public void actionPerformed(ActionEvent e){
                 if (pause && Controle.caseUpdate != null){
                     Controle.setChange(s2);
+                    selectedCell = null; // Effacer la sélection quand un bouton est pressé
+                    mapPanel.repaint();
                 }
                 mapPanel.requestFocus();
             }
         });
-
         return button;
     }
     
