@@ -1,6 +1,6 @@
 package Modele.Vehicle;
 
-import Controle.*;
+import Controle.Controle;
 import Modele.Case;
 import Modele.CityMap;
 import Modele.Direction;
@@ -194,7 +194,7 @@ public abstract class Vehicle {
                     }
                 }else if(signal instanceof Stop){
                     if(checkCaseForSignalling() != null){
-                            Timer timer = new Timer(2000, (ActionEvent e) -> {
+                            Timer timer = new Timer(200*Controle.speed, (ActionEvent e) -> {
                                 this.stopOk = getCase(checkCaseForSignalling()).isEmpty();
                             });
                     
@@ -245,7 +245,8 @@ public abstract class Vehicle {
         }
         Direction prochaineDir = Direction.getDirection(position, prochainePos);
         changeDirection(prochaineDir);
-        Timer timer = new Timer(this.speed*500, (ActionEvent e) -> {
+        Timer timer = new Timer(this.speed*50*Controle.speed, (ActionEvent e) -> {
+            System.out.println(Controle.speed);
             move = move();
             if(!move){
                 path.push(prochainePos);

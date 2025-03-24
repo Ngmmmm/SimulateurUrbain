@@ -28,8 +28,9 @@ public class Controle {
     TrafficLight feu;
     TrafficLightGroup groupe1; 
 
-    Timer ctrlTimer;
-    Timer t2;
+    static Timer ctrlTimer;
+    static Timer t2;
+    public static int speed = 10;
 
     static boolean needUpdate = false;
     public static boolean timerIsRunning = false;
@@ -40,14 +41,15 @@ public class Controle {
 
     Controle(){
         initSim();
-        ctrlTimer = new Timer(500, createActionListener());
-        t2 = new Timer(500, new ActionListener(){
+        ctrlTimer = new Timer(50*speed, createActionListener());
+        t2 = new Timer(50*speed, new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 if(!TrafficSimulatorGUI.getPause() != ctrlTimer.isRunning()){
                     if (!TrafficSimulatorGUI.getPause()) {
                         nextChange = null;
                         caseUpdate.clear();
                         start();
+                        
                     }
                     else {
                         pause();
@@ -144,6 +146,22 @@ public class Controle {
         };
     }
 
+    public static void modifySpeed(){
+        ctrlTimer.setDelay(speed*10);
+        t2.setDelay(speed*10);
+        if (ctrlTimer.isRunning() && t2.isRunning()){
+            ctrlTimer.stop();  // Arrêter le timer en cours
+            t2.stop();
+        }
+        ctrlTimer.setDelay(50*speed); // Modifier l'intervalle
+        t2.setDelay(50*speed);
+        ctrlTimer.start(); // Redémarrer avec le nouveau délai
+        t2.start();
+        for(int i = 0; i< lights.size();i++){
+            lights.get(i).reset();
+        }
+    }   
+
 
 
     public static void main(String[] args) {
@@ -172,3 +190,5 @@ public class Controle {
 
     }
 }
+
+
