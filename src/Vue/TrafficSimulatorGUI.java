@@ -388,6 +388,26 @@ public class TrafficSimulatorGUI extends JFrame {
         JButton routeButton = makeButton("Mettre une route/changer rotation", "route");
         JButton feuButton = makeButton("Mettre un Feu/changer de groupe", "feu");
         JButton voitureButton = makeButton("Mettre une voiture", "voiture");
+        JButton moreSpeed = new JButton("Augmenter la vitesse");
+        JButton lessSpeed = new JButton("Diminuer la vitesse");
+        moreSpeed.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                if(Controle.speed > 2){
+                    Controle.speed -= 1;
+                    Controle.modifySpeed();
+                }
+                
+
+            }
+        });
+        lessSpeed.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                if(Controle.speed < 20)
+                    Controle.speed += 1;
+                    Controle.modifySpeed();
+            }
+        });
+
 
         JTextArea instruct = new JTextArea("Pour ajouter/retirer des objets:\n-Mettre en pause la simulation en cliquant\n sur P\n-appuyer sur les cases à modifier\n-appuyer sur le changement à effectuer");
 
@@ -397,6 +417,8 @@ public class TrafficSimulatorGUI extends JFrame {
         box.add(routeButton);
         box.add(feuButton);
         box.add(voitureButton);
+        box.add(moreSpeed);
+        box.add(lessSpeed);
 
         Box box2 = Box.createVerticalBox();
         box2.add(instruct);
