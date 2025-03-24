@@ -267,6 +267,10 @@ public class CityMap{
 
     public void update(){} // pour remplir l'implémentation en attendant
 
+    public boolean isCarOnPosition(Position pos){
+        return grid[pos.getY()][pos.getX()].getVehicle() != null;
+    }
+
     public List<Vehicle> getAllVehicles() {
         List<Vehicle> vehicles = new ArrayList<>();
         
