@@ -225,22 +225,19 @@ public abstract class Vehicle {
                 return true;
             }
         }
-        /* 
-        if (getCase(nextPosition()).getVehicle() != null){
-            LinkedList<Position> temp = Pathfinding.findShortestPathWhitCar(map, position, destination);
-            if (temp == null){
-                return false;
-            }
-            path = temp;
-            if((act.getSignalling() == null || signallingOk(act)) && (actRight == null ||actRight.getSignalling() == null || signallingOk(actRight))){
-                act.setVehicle(null);
-                Controle.addUpdate();
-                position = nextPosition();
-                map.getGrid()[position.getY()][position.getX()].setVehicle(this);
-                return true;
-            }
+        
+        if (getCase(nextPosition()).getVehicle() != null) {
+            LinkedList<Position> temp = Pathfinding.findShortestPath(map, position, destination);
+            if (temp != null && !temp.isEmpty()) { // Vérification ajoutée
+                path = temp;
 
-        }*/
+                return true;
+
+            } else {
+                System.out.println("Erreur: Impossible de recalculer un chemin !");
+            }
+        }
+        
         return false;
     }
 
