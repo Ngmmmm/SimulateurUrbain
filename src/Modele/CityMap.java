@@ -168,6 +168,18 @@ public class CityMap{
         if (isValidPosition(row, col) && grid[row][col].getRoad() != null) {
             grid[row][col].setSignalling(trafficLight);
             grid[row][col].getRoad().setTrafficLight(true);
+            
+            if ( grid[row][col].getRoad().getDirection().length > 1 ){
+                Position nextPos = grid[row][col].getRoad().getDirection()[1].move(pos);
+                Road r = grid[nextPos.getY()][nextPos.getX()].getRoad();
+                System.out.println(r.getDirection()[0]);
+                /* 
+                while (r != null && r.getDirection()[0] == grid[row][col].getRoad().getDirection()[0]) {
+                    r.setTrafficLight(true);
+                    nextPos = grid[row][col].getRoad().getDirection()[1].move(nextPos);
+
+                }*/
+            }
         }
     }
 

@@ -225,7 +225,7 @@ public abstract class Vehicle {
                 return true;
             }
         }
-
+        /* 
         if (getCase(nextPosition()).getVehicle() != null){
             LinkedList<Position> temp = Pathfinding.findShortestPathWhitCar(map, position, destination);
             if (temp == null){
@@ -240,7 +240,7 @@ public abstract class Vehicle {
                 return true;
             }
 
-        }
+        }*/
         return false;
     }
 
