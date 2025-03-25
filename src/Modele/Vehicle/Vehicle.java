@@ -9,7 +9,6 @@ import Modele.Position;
 import Modele.Signalling.*;
 import Modele.Simulation;
 import Modele.Statistique;
-
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
@@ -225,6 +224,22 @@ public abstract class Vehicle {
                 map.getGrid()[position.getY()][position.getX()].setVehicle(this);
                 return true;
             }
+        }
+
+        if (getCase(nextPosition()).getVehicle() != null){
+            LinkedList<Position> temp = Pathfinding.findShortestPathWhitCar(map, position, destination);
+            if (temp == null){
+                return false;
+            }
+            path = temp;
+            if((act.getSignalling() == null || signallingOk(act)) && (actRight == null ||actRight.getSignalling() == null || signallingOk(actRight))){
+                act.setVehicle(null);
+                Controle.addUpdate();
+                position = nextPosition();
+                map.getGrid()[position.getY()][position.getX()].setVehicle(this);
+                return true;
+            }
+
         }
         return false;
     }
