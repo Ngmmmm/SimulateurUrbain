@@ -226,7 +226,7 @@ public abstract class Vehicle {
             }
         }
         
-        if (getCase(nextPosition()).getVehicle() != null) {
+        if (getCase(nextPosition()) != null && getCase(nextPosition()).getVehicle() != null) {
             LinkedList<Position> temp = Pathfinding.findShortestPath(map, position, destination);
             if (temp != null && !temp.isEmpty()) { // Vérification ajoutée
                 path = temp;
