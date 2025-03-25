@@ -21,6 +21,7 @@ public class Controle {
 
 
     Simulation s;
+    Statistique stats;
     CityMap cityMap; 
     Direction dir;
     Car car;
@@ -56,7 +57,7 @@ public class Controle {
                     }
                 }
                 if(TrafficSimulatorGUI.getPause() && !caseUpdate.isEmpty() && nextChange != null){
-                    nextChange.update(cityMap, caseUpdate);
+                    nextChange.update(cityMap, caseUpdate, stats);
                     caseUpdate.clear();
                     nextChange = null;
                 }
@@ -81,7 +82,8 @@ public class Controle {
     }
 
     public void initSim(){
-        s = new Simulation();
+        stats = new Statistique();
+        s = new Simulation(stats);
         cityMap = s.getCityMap();
     }
 
@@ -137,7 +139,7 @@ public class Controle {
                 toUpdateCar.clear();
                 for(Position p : iter){
                     tmpCar = CityMap.getCase(cityMap.getGrid(), p).getVehicle();
-                    needUpdate |=tmpCar.followPath(tmpCar.path);
+                    needUpdate |=tmpCar.followPath(tmpCar.path, stats);
                 }
                 if (needUpdate){
                     TrafficSimulatorGUI.setUpdate(true);
@@ -172,19 +174,13 @@ public class Controle {
 
 
         
-
-        LinkedList<Position> pos = Pathfinding.findShortestPath(a.cityMap, new Position(0,2), new Position(45,41) );
-        for(int i = 0; i < pos.size()  ; i++){
-            System.out.println(pos.get(i));
-
-        }
         // System.out.println(car.getPosition().getX() +"," + car.getPosition().getY());
         // car.suivreCheminComplet();
         // System.out.println(car.getPosition().getX() +"," + car.getPosition().getY());
         
         // Lancer l'interface graphique
         SwingUtilities.invokeLater(() -> {
-                new TrafficSimulatorGUI(a.cityMap);
+                new TrafficSimulatorGUI(a.cityMap, a.stats);
             }
         );
 
