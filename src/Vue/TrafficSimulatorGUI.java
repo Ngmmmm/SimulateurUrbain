@@ -45,6 +45,8 @@ public class TrafficSimulatorGUI extends JFrame {
 
     private Point selectedCell = null; // Case sélectionnée (en rouge)
 
+    private boolean imagesLoaded = false; // Pour ne charger les images qu'une fois
+
     public TrafficSimulatorGUI(CityMap cityMap) {
         this.cityMap = cityMap;
 
@@ -87,6 +89,7 @@ public class TrafficSimulatorGUI extends JFrame {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_P) {
                     highlightMode = !highlightMode;
+                    selectedCell = null;
                     mapPanel.repaint();
                 }
             }
@@ -323,10 +326,21 @@ public class TrafficSimulatorGUI extends JFrame {
 
   
     public void drawMap(Graphics g) {
-        Image.loadImg();
-
-        for (int i = 0; i < ROWS; i++) {
-            for (int j = 0; j < COLS; j++) {
+        // Charger les images une seule fois
+        if (!imagesLoaded) {
+            Image.loadImg();
+            imagesLoaded = true;
+        }
+    
+        // Dessiner seulement la partie visible pour améliorer les performances
+        Rectangle visibleRect = mapPanel.getVisibleRect();
+        int startCol = Math.max(0, visibleRect.x / cellSize - 1);
+        int startRow = Math.max(0, visibleRect.y / cellSize - 1);
+        int endCol = Math.min(COLS, (visibleRect.x + visibleRect.width) / cellSize + 1);
+        int endRow = Math.min(ROWS, (visibleRect.y + visibleRect.height) / cellSize + 1);
+    
+        for (int i = startRow; i < endRow; i++) {
+            for (int j = startCol; j < endCol; j++) {
                 drawCase(g, i, j);
             }
         }
