@@ -1,6 +1,7 @@
 package Controle.SetObj;
 
 import Modele.Stack2;
+import Modele.Statistique;
 import Vue.TrafficSimulatorGUI;
 import Modele.Position;
 import Modele.Road;
@@ -14,7 +15,7 @@ public class SetRoute implements Update {
     
     public static final SetRoute set = new SetRoute();
 
-    public void update(CityMap map, Stack2 c){
+    public void update(CityMap map, Stack2 c, Statistique stats){
         Case toChange = CityMap.getCase(map.getGrid(), c.getA());
         if (toChange.getRoad() != null){
             Direction[] newDir = new Direction[toChange.getRoad().getDirection().length];

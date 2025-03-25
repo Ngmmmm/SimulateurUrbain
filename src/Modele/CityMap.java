@@ -253,8 +253,6 @@ public class CityMap{
 
     public static Case getCase(Case[][] grid, Position pos){
         if(pos.getX() >= 0 && pos.getY() >= 0 && pos.getX() < 50 && pos.getY() < 50){
-            System.out.print(pos.getX());
-            System.out.println(pos.getY());
             return grid[pos.getY()][pos.getX()];
         }else{
             return null;
@@ -266,6 +264,10 @@ public class CityMap{
     public int getCols(){return cols;}
 
     public void update(){} // pour remplir l'implémentation en attendant
+
+    public boolean isCarOnPosition(Position pos){
+        return grid[pos.getY()][pos.getX()].getVehicle() != null;
+    }
 
     public List<Vehicle> getAllVehicles() {
         List<Vehicle> vehicles = new ArrayList<>();

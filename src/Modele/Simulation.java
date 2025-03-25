@@ -14,15 +14,15 @@ import java.util.Random;
 public class Simulation {
     private static CityMap cityMap;
 
-    public Simulation() {
+    public Simulation(Statistique stats) {
         cityMap = new CityMap(50, 50);
-        initializeMap();
+        initializeMap(stats);
         cityMap.updateAllEdges();
-        spawnRandomCars(10);
+        spawnRandomCars(10, stats);
         afficherCarte();
     }
 
-    private void initializeMap() {
+    private void initializeMap(Statistique stats) {
 
         // Routes principales horizontales (Avenues)
         for (int i = 0; i < 50; i++) {
@@ -145,7 +145,7 @@ public class Simulation {
 
     }
 
-    public static void spawnRandomCars(int nbCarSpawn) {
+    public static void spawnRandomCars(int nbCarSpawn, Statistique stats) {
         Random rand = new Random();
         LinkedList<Position> spawnPositions = Pathfinding.FindSpawnPosition(cityMap);
     
@@ -182,15 +182,15 @@ public class Simulation {
             int nb = rand2.nextInt(3);
             switch (nb) {
                 case 0 -> {
-                    Car newCar = new Car("Car" + Vehicle.nbCar, 0, randomPos, direction, cityMap, destination);
+                    Car newCar = new Car("Car" + Vehicle.nbCar, 0, randomPos, direction, cityMap, destination, stats);
                     cityMap.addVehicle(newCar);
                 }
                 case 1 -> {
-                    Truck newTruck = new Truck("Truck" + Vehicle.nbCar, 2, randomPos, direction, cityMap, destination);
+                    Truck newTruck = new Truck("Truck" + Vehicle.nbCar, 2, randomPos, direction, cityMap, destination, stats);
                     cityMap.addVehicle(newTruck);
                 }
                 default -> {
-                    Bus newBus = new Bus("Bus" + Vehicle.nbCar, 3, randomPos, direction, cityMap, destination);
+                    Bus newBus = new Bus("Bus" + Vehicle.nbCar, 3, randomPos, direction, cityMap, destination, stats);
                     cityMap.addVehicle(newBus);
                 }
             }

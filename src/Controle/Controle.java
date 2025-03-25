@@ -21,6 +21,7 @@ public class Controle {
 
 
     Simulation s;
+    Statistique stats;
     CityMap cityMap; 
     Direction dir;
     Car car;
@@ -28,8 +29,9 @@ public class Controle {
     TrafficLight feu;
     TrafficLightGroup groupe1; 
 
-    Timer ctrlTimer;
-    Timer t2;
+    static Timer ctrlTimer;
+    static Timer t2;
+    public static int speed = 10;
 
     static boolean needUpdate = false;
     public static boolean timerIsRunning = false;
@@ -40,21 +42,22 @@ public class Controle {
 
     Controle(){
         initSim();
-        ctrlTimer = new Timer(500, createActionListener());
-        t2 = new Timer(500, new ActionListener(){
+        ctrlTimer = new Timer(50*speed, createActionListener());
+        t2 = new Timer(50*speed, new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 if(!TrafficSimulatorGUI.getPause() != ctrlTimer.isRunning()){
                     if (!TrafficSimulatorGUI.getPause()) {
                         nextChange = null;
                         caseUpdate.clear();
                         start();
+                        
                     }
                     else {
                         pause();
                     }
                 }
                 if(TrafficSimulatorGUI.getPause() && !caseUpdate.isEmpty() && nextChange != null){
-                    nextChange.update(cityMap, caseUpdate);
+                    nextChange.update(cityMap, caseUpdate, stats);
                     caseUpdate.clear();
                     nextChange = null;
                 }
@@ -79,7 +82,8 @@ public class Controle {
     }
 
     public void initSim(){
-        s = new Simulation();
+        stats = new Statistique();
+        s = new Simulation(stats);
         cityMap = s.getCityMap();
     }
 
@@ -135,7 +139,7 @@ public class Controle {
                 toUpdateCar.clear();
                 for(Position p : iter){
                     tmpCar = CityMap.getCase(cityMap.getGrid(), p).getVehicle();
-                    needUpdate |=tmpCar.followPath(tmpCar.path);
+                    needUpdate |=tmpCar.followPath(tmpCar.path, stats);
                 }
                 if (needUpdate){
                     TrafficSimulatorGUI.setUpdate(true);
@@ -143,6 +147,22 @@ public class Controle {
             }
         };
     }
+
+    public static void modifySpeed(){
+        ctrlTimer.setDelay(speed*10);
+        t2.setDelay(speed*10);
+        if (ctrlTimer.isRunning() && t2.isRunning()){
+            ctrlTimer.stop();  // Arrêter le timer en cours
+            t2.stop();
+        }
+        ctrlTimer.setDelay(50*speed); // Modifier l'intervalle
+        t2.setDelay(50*speed);
+        ctrlTimer.start(); // Redémarrer avec le nouveau délai
+        t2.start();
+        for(int i = 0; i< lights.size();i++){
+            lights.get(i).reset();
+        }
+    }   
 
 
 
@@ -154,21 +174,17 @@ public class Controle {
 
 
         
-
-        LinkedList<Position> pos = Pathfinding.findShortestPath(a.cityMap, new Position(0,2), new Position(45,41) );
-        for(int i = 0; i < pos.size()  ; i++){
-            System.out.println(pos.get(i));
-
-        }
         // System.out.println(car.getPosition().getX() +"," + car.getPosition().getY());
         // car.suivreCheminComplet();
         // System.out.println(car.getPosition().getX() +"," + car.getPosition().getY());
         
         // Lancer l'interface graphique
         SwingUtilities.invokeLater(() -> {
-                new TrafficSimulatorGUI(a.cityMap);
+                new TrafficSimulatorGUI(a.cityMap, a.stats);
             }
         );
 
     }
 }
+
+

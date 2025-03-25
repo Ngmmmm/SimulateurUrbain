@@ -4,6 +4,7 @@ import Modele.Case;
 import Modele.CityMap;
 import Modele.Direction;
 import Modele.Position;
+import Modele.Statistique;
 import Modele.Enregistrer.GameLoader;
 import Modele.Enregistrer.GameSaver;
 import Modele.Signalling.TrafficLight;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import javax.swing.*;
 
 import Controle.Controle;
+import Controle.UpdateStats;
 import Modele.Signalling.TrafficLight;
 import Modele.Vehicle.Bus;
 import Modele.Vehicle.Car;
@@ -29,6 +31,7 @@ public class TrafficSimulatorGUI extends JFrame {
     private static final int ROWS = 50;
     private static final int COLS = 50;
     private JPanel mapPanel;
+    private JPanel controlPanel;
     private JScrollPane scrollPane;
     private int cellSize = 100;
     private double zoomFactor = 1.0;
@@ -39,6 +42,7 @@ public class TrafficSimulatorGUI extends JFrame {
     private static boolean needUpdate;
     private static boolean pause = false;
     private Timer uiTimer;
+    private Statistique stats;
 
     private boolean highlightMode = false; // Mode de surbrillance
     private Point highlightedCell = null; // Case en surbrillance
@@ -47,8 +51,9 @@ public class TrafficSimulatorGUI extends JFrame {
 
     private boolean imagesLoaded = false; // Pour ne charger les images qu'une fois
 
-    public TrafficSimulatorGUI(CityMap cityMap) {
+    public TrafficSimulatorGUI(CityMap cityMap, Statistique stats) {
         this.cityMap = cityMap;
+        this.stats = stats;
 
         setTitle("Simulateur de gestion de trafic urbain");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -68,7 +73,7 @@ public class TrafficSimulatorGUI extends JFrame {
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         add(scrollPane, BorderLayout.CENTER);
 
-        JPanel controlPanel = createControlPanel();
+        controlPanel = createControlPanel();
         add(controlPanel, BorderLayout.SOUTH);
 
         add(createChangePanel(), BorderLayout.WEST);
@@ -391,13 +396,13 @@ public class TrafficSimulatorGUI extends JFrame {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(1, 3));
 
-        JLabel avgTimeLabel = new JLabel("Temps moyen: 0s");
+        JLabel avgTimeLabel = new JLabel("Temps de trajet moyen: 0u");
         JLabel congestionLabel = new JLabel("Embouteillages: 0%");
-        JLabel fuelLabel = new JLabel("Consommation: 0L");
+        JLabel nbVoitureLabel = new JLabel("Nombre de Voiture: 0");
 
+        panel.add(nbVoitureLabel);
         panel.add(avgTimeLabel);
         panel.add(congestionLabel);
-        panel.add(fuelLabel);
 
         panel.setBorder(BorderFactory.createTitledBorder("Statistiques en temps réel"));
         return panel;
@@ -411,6 +416,26 @@ public class TrafficSimulatorGUI extends JFrame {
         JButton routeButton = makeButton("Mettre une route/changer rotation", "route");
         JButton feuButton = makeButton("Mettre un Feu/changer de groupe", "feu");
         JButton voitureButton = makeButton("Mettre une voiture", "voiture");
+        JButton moreSpeed = new JButton("Augmenter la vitesse");
+        JButton lessSpeed = new JButton("Diminuer la vitesse");
+        moreSpeed.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                if(Controle.speed > 2){
+                    Controle.speed -= 1;
+                    Controle.modifySpeed();
+                }
+                
+
+            }
+        });
+        lessSpeed.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                if(Controle.speed < 20)
+                    Controle.speed += 1;
+                    Controle.modifySpeed();
+            }
+        });
+
 
         JTextArea instruct = new JTextArea("Pour ajouter/retirer des objets:\n-Mettre en pause la simulation en cliquant\n sur P\n-appuyer sur les cases à modifier\n-appuyer sur le changement à effectuer");
 
@@ -420,6 +445,8 @@ public class TrafficSimulatorGUI extends JFrame {
         box.add(routeButton);
         box.add(feuButton);
         box.add(voitureButton);
+        box.add(moreSpeed);
+        box.add(lessSpeed);
 
         Box box2 = Box.createVerticalBox();
         box2.add(instruct);
@@ -576,7 +603,7 @@ public class TrafficSimulatorGUI extends JFrame {
             String selectedSave = (String) saveComboBox.getSelectedItem();
 
             // Appeler la classe GameLoader pour charger la carte
-            CityMap loadedMap = GameLoader.loadGame(selectedSave);
+            CityMap loadedMap = GameLoader.loadGame(selectedSave, stats);
 
             if (loadedMap != null) {
                 // Mettre à jour la carte dans l'interface graphique
@@ -610,6 +637,11 @@ public class TrafficSimulatorGUI extends JFrame {
         return new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 if (needUpdate){
+                    if (controlPanel != null){
+                        UpdateStats.update(controlPanel.getComponents(), stats);
+                        controlPanel.repaint();
+                        stats.resetMoved();
+                    }
                     mapPanel.repaint();
                     needUpdate = false;
                 }
