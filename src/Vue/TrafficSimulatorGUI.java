@@ -47,6 +47,10 @@ public class TrafficSimulatorGUI extends JFrame {
     private boolean highlightMode = false; // Mode de surbrillance
     private Point highlightedCell = null; // Case en surbrillance
 
+    private Point selectedCell = null; // Case sélectionnée (en rouge)
+
+    private boolean imagesLoaded = false; // Pour ne charger les images qu'une fois
+
     public TrafficSimulatorGUI(CityMap cityMap, Statistique stats) {
         this.cityMap = cityMap;
         this.stats = stats;
@@ -90,6 +94,7 @@ public class TrafficSimulatorGUI extends JFrame {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_P) {
                     highlightMode = !highlightMode;
+                    selectedCell = null;
                     mapPanel.repaint();
                 }
             }
@@ -255,8 +260,15 @@ public class TrafficSimulatorGUI extends JFrame {
         // g.setColor(Color.BLACK);
         // g.drawRect(x, y, cellSize, cellSize);
 
+        // Dessiner le surlignage rouge si c'est la case sélectionnée
+        if (selectedCell != null && selectedCell.x == j && selectedCell.y == i) {
+            g.setColor(new Color(255, 0, 0, 100)); // Rouge transparent
+            g.fillRect(x, y, cellSize, cellSize);
+        }
+
+        // Dessiner le surlignage jaune pour le mode highlight
         if (highlightMode && highlightedCell != null && highlightedCell.x == j && highlightedCell.y == i) {
-            g.setColor(new Color(255, 255, 0, 100)); // Jaune
+            g.setColor(new Color(255, 255, 0, 100)); // Jaune transparent
             g.fillRect(x, y, cellSize, cellSize);
         }
     }
@@ -319,10 +331,21 @@ public class TrafficSimulatorGUI extends JFrame {
 
   
     public void drawMap(Graphics g) {
-        Image.loadImg();
-
-        for (int i = 0; i < ROWS; i++) {
-            for (int j = 0; j < COLS; j++) {
+        // Charger les images une seule fois
+        if (!imagesLoaded) {
+            Image.loadImg();
+            imagesLoaded = true;
+        }
+    
+        // Dessiner seulement la partie visible pour améliorer les performances
+        Rectangle visibleRect = mapPanel.getVisibleRect();
+        int startCol = Math.max(0, visibleRect.x / cellSize - 1);
+        int startRow = Math.max(0, visibleRect.y / cellSize - 1);
+        int endCol = Math.min(COLS, (visibleRect.x + visibleRect.width) / cellSize + 1);
+        int endRow = Math.min(ROWS, (visibleRect.y + visibleRect.height) / cellSize + 1);
+    
+        for (int i = startRow; i < endRow; i++) {
+            for (int j = startCol; j < endCol; j++) {
                 drawCase(g, i, j);
             }
         }
@@ -492,13 +515,17 @@ public class TrafficSimulatorGUI extends JFrame {
             public void mousePressed(MouseEvent e) {
                 lastDragPoint = e.getPoint();
             }
-
+    
             @Override
             public void mouseClicked(MouseEvent e){
                 int x = e.getY()/cellSize;
                 int y = e.getX()/cellSize;
                 if (pause){
                     Controle.caseUpdate.add(new Position(y, x));
+                }
+                if (highlightMode) {
+                    selectedCell = new Point(y, x); // Stocker la case sélectionnée
+                    mapPanel.repaint();
                 }
             }
         };
@@ -635,11 +662,12 @@ public class TrafficSimulatorGUI extends JFrame {
             public void actionPerformed(ActionEvent e){
                 if (pause && Controle.caseUpdate != null){
                     Controle.setChange(s2);
+                    selectedCell = null; // Effacer la sélection quand un bouton est pressé
+                    mapPanel.repaint();
                 }
                 mapPanel.requestFocus();
             }
         });
-
         return button;
     }
     
