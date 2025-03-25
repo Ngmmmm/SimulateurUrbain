@@ -9,7 +9,6 @@ import Modele.Position;
 import Modele.Signalling.*;
 import Modele.Simulation;
 import Modele.Statistique;
-
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
@@ -238,7 +237,6 @@ public abstract class Vehicle {
     public boolean followPath(LinkedList<Position> path, Statistique stats) {
         temps++;
         move = false;
-        stats.isMoving();
         if (path.isEmpty()) {
             this.getCase(position).setVehicle(null);
             Simulation.spawnRandomCars(1, stats);
@@ -258,6 +256,8 @@ public abstract class Vehicle {
             move = move();
             if(!move){
                 path.push(prochainePos);
+            }else{
+                stats.isMoving();
             }
             Controle.addUpdateCar(position);
         });
