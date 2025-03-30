@@ -434,8 +434,13 @@ public class TrafficSimulatorGUI extends JFrame {
         });
 
 
-        JTextArea instruct = new JTextArea("Pour ajouter/retirer des objets:\n-Mettre en pause la simulation en cliquant\n sur P\n-appuyer sur les cases à modifier\n-appuyer sur le changement à effectuer");
-
+        // Remplacer JTextArea par un JLabel pour le texte statique
+        JLabel instruct = new JLabel("<html>Pour ajouter/retirer des objets:<br>-Mettre en pause la simulation en cliquant<br>sur P<br>-appuyer sur les cases à modifier<br>-appuyer sur le changement à effectuer</html>");
+        instruct.setFont(new Font("Arial", Font.PLAIN, 14));
+        instruct.setForeground(Color.BLACK);
+        instruct.setHorizontalAlignment(SwingConstants.CENTER);
+        instruct.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        instruct.setPreferredSize(new Dimension(300, 100));
         Box box = Box.createVerticalBox();
 
         box.add(maisonButton);
