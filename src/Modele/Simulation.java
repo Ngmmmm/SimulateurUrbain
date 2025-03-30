@@ -19,7 +19,6 @@ public class Simulation {
         initializeMap(stats);
         cityMap.updateAllEdges();
         spawnRandomCars(10, stats);
-        afficherCarte();
     }
 
     private void initializeMap(Statistique stats) {
@@ -200,22 +199,5 @@ public class Simulation {
     
     public CityMap getCityMap() {
         return this.cityMap;
-    }
-
-    public void afficherCarte() {
-        for (int y = 0; y < 50; y++) {
-            for (int x = 0; x < 50; x++) {
-                Road road = cityMap.getRoad(new Position(x, y));
-    
-                if (road == null) {
-                    System.out.print(" "); // Building
-                } else if (road.getDirection().length > 1) {
-                    System.out.print("O"); // Intersection
-                } else {
-                    System.out.print("."); // Route simple
-                }
-            }
-            System.out.println();
-        }
     }
 }

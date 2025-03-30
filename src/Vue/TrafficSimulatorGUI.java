@@ -4,6 +4,7 @@ import Modele.Case;
 import Modele.CityMap;
 import Modele.Direction;
 import Modele.Position;
+import Modele.Stack2;
 import Modele.Statistique;
 import Modele.Enregistrer.GameLoader;
 import Modele.Enregistrer.GameSaver;
@@ -44,12 +45,10 @@ public class TrafficSimulatorGUI extends JFrame {
     private Timer uiTimer;
     private Statistique stats;
 
-    private boolean highlightMode = false; // Mode de surbrillance
-    private Point highlightedCell = null; // Case en surbrillance
+    private Point highlightedCell = null; // Case en surbrillance (jaune)
+    private Stack2 selectedCells = new Stack2();
 
-    private Point selectedCell = null; // Case sélectionnée (en rouge)
-
-    private boolean imagesLoaded = false; // Pour ne charger les images qu'une fois
+    private boolean imagesLoaded = false;
 
     public TrafficSimulatorGUI(CityMap cityMap, Statistique stats) {
         this.cityMap = cityMap;
@@ -89,27 +88,17 @@ public class TrafficSimulatorGUI extends JFrame {
         mapPanel.setFocusable(true);
         mapPanel.requestFocus();
 
-        mapPanel.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_P) {
-                    highlightMode = !highlightMode;
-                    selectedCell = null;
-                    mapPanel.repaint();
-                }
-            }
-        });
-
         mapPanel.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
-                if (highlightMode) {
+                if (TrafficSimulatorGUI.getPause()) {
                     int x = e.getX() / cellSize;
                     int y = e.getY() / cellSize;
                     highlightedCell = new Point(x, y);
                     mapPanel.repaint();
                 } else {
                     highlightedCell = null;
+                    Controle.caseUpdate.clear();
                 }
             }
         });
@@ -255,19 +244,27 @@ public class TrafficSimulatorGUI extends JFrame {
             g.setColor(Color.LIGHT_GRAY);
             g.fillRect(x, y, cellSize, cellSize);
         }
-    
-        // // Dessiner les bordures
-        // g.setColor(Color.BLACK);
-        // g.drawRect(x, y, cellSize, cellSize);
 
-        // Dessiner le surlignage rouge si c'est la case sélectionnée
-        if (selectedCell != null && selectedCell.x == j && selectedCell.y == i) {
-            g.setColor(new Color(255, 0, 0, 100)); // Rouge transparent
-            g.fillRect(x, y, cellSize, cellSize);
+        // Dessiner les surlignages
+        if (!selectedCells.isEmpty()) {
+            Position posA = selectedCells.getA();
+            Position posB = selectedCells.getB();
+            
+            // Case rouge (la plus récente)
+            if (posA != null && posA.getX() == j && posA.getY() == i) {
+                g.setColor(new Color(255, 0, 0, 100));
+                g.fillRect(x, y, cellSize, cellSize);
+            }
+            
+            // Case bleue (la précédente)
+            if (posB != null && posB.getX() == j && posB.getY() == i) {
+                g.setColor(new Color(0, 0, 255, 100));
+                g.fillRect(x, y, cellSize, cellSize);
+            }
         }
 
         // Dessiner le surlignage jaune pour le mode highlight
-        if (highlightMode && highlightedCell != null && highlightedCell.x == j && highlightedCell.y == i) {
+        if (TrafficSimulatorGUI.getPause() && highlightedCell != null && highlightedCell.x == j && highlightedCell.y == i) {
             g.setColor(new Color(255, 255, 0, 100)); // Jaune transparent
             g.fillRect(x, y, cellSize, cellSize);
         }
@@ -512,21 +509,14 @@ public class TrafficSimulatorGUI extends JFrame {
     private MouseListener createMouseListener() {
         return new MouseAdapter() {
             @Override
-            public void mousePressed(MouseEvent e) {
-                lastDragPoint = e.getPoint();
-            }
-    
-            @Override
             public void mouseClicked(MouseEvent e){
                 int x = e.getY()/cellSize;
                 int y = e.getX()/cellSize;
                 if (pause){
                     Controle.caseUpdate.add(new Position(y, x));
+                    selectedCells.add(new Position(y, x)); // Ajoutez la position à la pile
                 }
-                if (highlightMode) {
-                    selectedCell = new Point(y, x); // Stocker la case sélectionnée
-                    mapPanel.repaint();
-                }
+                mapPanel.repaint();
             }
         };
     }
@@ -626,6 +616,8 @@ public class TrafficSimulatorGUI extends JFrame {
                             TrafficSimulatorGUI.pause();
                         }else{
                             TrafficSimulatorGUI.start();
+                            selectedCells.clear();
+                            mapPanel.repaint();
                         }
                     }
                 }
@@ -660,9 +652,9 @@ public class TrafficSimulatorGUI extends JFrame {
         JButton button = new JButton(s1);
         button.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                if (pause && Controle.caseUpdate != null){
+                if (pause && !Controle.caseUpdate.isEmpty()){
                     Controle.setChange(s2);
-                    selectedCell = null; // Effacer la sélection quand un bouton est pressé
+                    selectedCells.clear(); // Effacer les sélections
                     mapPanel.repaint();
                 }
                 mapPanel.requestFocus();
