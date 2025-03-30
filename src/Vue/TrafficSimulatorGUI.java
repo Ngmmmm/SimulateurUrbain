@@ -15,6 +15,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Hashtable;
+
 import javax.swing.*;
 
 import Controle.Controle;
@@ -115,7 +117,7 @@ public class TrafficSimulatorGUI extends JFrame {
         });
 
         mapPanel.setFocusable(true); // Permettre au panel de recevoir les événements clavier
-
+        maxDezoom();
     }
 
     private JPanel createMapPanel() {
@@ -416,24 +418,23 @@ public class TrafficSimulatorGUI extends JFrame {
         JButton routeButton = makeButton("Mettre une route/changer rotation", "route");
         JButton feuButton = makeButton("Mettre un Feu/changer de groupe", "feu");
         JButton voitureButton = makeButton("Mettre une voiture", "voiture");
-        JButton moreSpeed = new JButton("Augmenter la vitesse");
-        JButton lessSpeed = new JButton("Diminuer la vitesse");
-        moreSpeed.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-                if(Controle.speed > 2){
-                    Controle.speed -= 1;
-                    Controle.modifySpeed();
-                }
-                
+        JLabel speedLabel = new JLabel("Speed", JLabel.CENTER); // Centré au-dessus du slider
+        JSlider speedSlider = new JSlider(JSlider.HORIZONTAL, 2, 20, Controle.speed);
+        speedSlider.setMajorTickSpacing(2);
+        speedSlider.setMinorTickSpacing(1);
+        speedSlider.setPaintTicks(true);
+        speedSlider.setPaintLabels(true);
+        speedSlider.setInverted(true); 
 
-            }
-        });
-        lessSpeed.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-                if(Controle.speed < 20)
-                    Controle.speed += 1;
-                    Controle.modifySpeed();
-            }
+        
+        Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
+        labelTable.put(20, new JLabel("-")); 
+        labelTable.put(2, new JLabel("+"));  
+        speedSlider.setLabelTable(labelTable);
+
+        speedSlider.addChangeListener(e -> {
+            Controle.speed = speedSlider.getValue();
+            Controle.modifySpeed();
         });
 
 
@@ -445,8 +446,8 @@ public class TrafficSimulatorGUI extends JFrame {
         box.add(routeButton);
         box.add(feuButton);
         box.add(voitureButton);
-        box.add(moreSpeed);
-        box.add(lessSpeed);
+        box.add(speedLabel);
+        box.add(speedSlider);
 
         Box box2 = Box.createVerticalBox();
         box2.add(instruct);
@@ -685,6 +686,12 @@ public class TrafficSimulatorGUI extends JFrame {
 
     public static void start(){
         pause = false;
+    }
+
+    public void maxDezoom(){
+        for(int i = 0; i<6; i++){
+            zoom(false, null);
+        }
     }
 
 
