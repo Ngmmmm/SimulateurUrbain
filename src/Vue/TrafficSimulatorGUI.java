@@ -59,7 +59,7 @@ public class TrafficSimulatorGUI extends JFrame {
 
         setTitle("Simulateur de gestion de trafic urbain");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1000, 800);
+        setSize(1200, 800);
         setLayout(new BorderLayout());
 
         setJMenuBar(createMenuBar());
