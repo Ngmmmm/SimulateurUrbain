@@ -399,10 +399,13 @@ public class TrafficSimulatorGUI extends JFrame {
         JLabel avgTimeLabel = new JLabel("Temps de trajet moyen: 0u");
         JLabel congestionLabel = new JLabel("Embouteillages: 0%");
         JLabel nbVoitureLabel = new JLabel("Nombre de Voiture: 0");
+        JLabel tempsArret = new JLabel("Temps à l'arret moyen: 0");
+
 
         panel.add(nbVoitureLabel);
         panel.add(avgTimeLabel);
         panel.add(congestionLabel);
+        panel.add(tempsArret);
 
         panel.setBorder(BorderFactory.createTitledBorder("Statistiques en temps réel"));
         return panel;

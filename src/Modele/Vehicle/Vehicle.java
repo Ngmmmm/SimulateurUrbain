@@ -31,6 +31,7 @@ public abstract class Vehicle {
     public LinkedList<Position> path;
     boolean move;
     protected int temps = 0;
+    protected int timeStanding = 0;
 
     public Vehicle(String id, int speed, Position position, Direction direction, float fuelConso, CityMap map, Position destination, Statistique stats) {
         this.id = id;
@@ -222,6 +223,7 @@ public abstract class Vehicle {
                 Controle.addUpdate();
                 position = nextPosition();
                 map.getGrid()[position.getY()][position.getX()].setVehicle(this);
+                map.getGrid()[position.getY()][position.getX()].addPassage();
                 return true;
             }
         }
@@ -269,8 +271,11 @@ public abstract class Vehicle {
             move = move();
             if(!move){
                 path.push(prochainePos);
+                timeStanding++;
             }else{
                 stats.isMoving();
+                stats.addArret(timeStanding);
+                timeStanding = 0;
             }
             Controle.addUpdateCar(position);
         });
