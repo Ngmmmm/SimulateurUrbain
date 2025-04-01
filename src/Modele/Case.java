@@ -123,9 +123,17 @@ public class Case{
         return (this.vehicle == null && this.building == null);
     }
 
+
     public void addPassage(){
         nbPassage++;
+
+    public boolean haveVehicle(){
+        return (this.vehicle != null);
     }
+    public boolean haveBuilding(){
+        return (this.building != null);
+    }
+
 
 
 
