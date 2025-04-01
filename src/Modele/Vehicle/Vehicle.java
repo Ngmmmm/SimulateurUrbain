@@ -216,7 +216,7 @@ public abstract class Vehicle {
     public boolean move(){
         Case act = getCase(position);
         Case actRight = getCase(rightPos());
-        if (nextCaseIsValid()){
+        if (nextCaseIsValid() && checkPrio()){
             if((act.getSignalling() == null || signallingOk(act)) && (actRight == null ||actRight.getSignalling() == null || signallingOk(actRight))){
                 act.setVehicle(null);
                 Controle.addUpdate();
@@ -298,6 +298,19 @@ public abstract class Vehicle {
     
     public Position getDestination() {
         return destination;
+    }
+
+
+    public boolean checkPrio(){
+        Case right = getCase(rightPos());
+        if(right != null && right.haveBuilding()){
+            Case prio = getCase(checkCaseForSignalling());
+            return !prio.haveVehicle();
+        }else{
+            return true;
+        }
+        
+
     }
 
 
