@@ -11,6 +11,7 @@ public class Case{
     private Road road;
     private Signalling signalling;
     private Position pos;
+    private int nbPassage = 0;
 
     public Case(){
         this.vehicle = null;
@@ -122,12 +123,17 @@ public class Case{
         return (this.vehicle == null && this.building == null);
     }
 
+
+    public void addPassage(){
+        nbPassage++;
+
     public boolean haveVehicle(){
         return (this.vehicle != null);
     }
     public boolean haveBuilding(){
         return (this.building != null);
     }
+
 
 
 

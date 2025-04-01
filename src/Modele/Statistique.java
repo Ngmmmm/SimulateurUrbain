@@ -5,11 +5,14 @@ public class Statistique {
     int hasMoved = 0;
     int tempsMoyen = 0;
     int tempsEchantillon = 0;
+    int tempsArret = 0;
+    int nbArret = 0;
 
 
     public void addVoiture(){
         nbVoiture++;
     }
+
 
     public void delVoiture(int temps){
         nbVoiture--;
@@ -29,13 +32,23 @@ public class Statistique {
         return nbVoiture;
     }
 
+    public void addArret(int temps){
+        if (temps != 0){
+            tempsArret += temps;
+            nbArret++;
+        }
+    }
+
 
     public int getTemps(){
         return (tempsEchantillon != 0)?tempsMoyen/tempsEchantillon : 0;
     }
 
     public String getEmbouteillage(){
-        System.out.println(hasMoved);
         return (nbVoiture != 0)? String.valueOf((nbVoiture - hasMoved)*100 / nbVoiture) : "0";
+    }
+
+    public String getArret(){
+        return (nbArret != 0)? String.valueOf(tempsArret / nbArret) : "0";
     }
 }

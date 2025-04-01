@@ -12,7 +12,7 @@ public class UpdateStats {
         for(Component c : comps){
             if (c instanceof JLabel){
                 JLabel label = (JLabel) c;
-                if (label.getText().contains("Temps")){
+                if (label.getText().contains("trajet")){
                     label.setText("Temps de trajet moyen: " + stat.getTemps() + "u");
                 }
                 if (label.getText().contains("Embouteillages")){
@@ -20,6 +20,9 @@ public class UpdateStats {
                 }
                 if(label.getText().contains("Nombre")){
                     label.setText("Nombre de Voiture: " + stat.getVoiture());
+                }
+                if(label.getText().contains("arret")){
+                    label.setText("Temps à l'arret moyen: " + stat.getArret() + "u");
                 }
             }
         }
