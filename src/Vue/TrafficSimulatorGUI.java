@@ -295,9 +295,7 @@ public class TrafficSimulatorGUI extends JFrame {
                 }
             }
         }
-    
-        // Un virage à sens unique doit avoir exactement UNE route qui mène vers lui, avec une direction différente
-        return incomingRoads == 1 && isTurn;
+        return incomingRoads == 1 && isTurn; // exactement UNE route qui mène vers lui, avec une direction différente
     }
 
   
@@ -482,7 +480,7 @@ public class TrafficSimulatorGUI extends JFrame {
                 int y = e.getX()/cellSize;
                 if (pause){
                     Controle.caseUpdate.add(new Position(y, x));
-                    selectedCells.add(new Position(y, x)); // Ajoutez la position à la pile
+                    selectedCells.add(new Position(y, x));
                 }
                 mapPanel.repaint();
             }
@@ -509,12 +507,10 @@ public class TrafficSimulatorGUI extends JFrame {
     }
 
     private void saveMap() {
-        // Demander à l'utilisateur un nom de fichier pour la sauvegarde
         String fileName = JOptionPane.showInputDialog(this, "Entrez le nom de la sauvegarde :", "Sauvegarder", JOptionPane.PLAIN_MESSAGE);
 
         if (fileName != null && !fileName.trim().isEmpty()) {
-            // Appeler la classe GameSaver pour sauvegarder la carte
-            boolean success = GameSaver.saveGame(fileName, cityMap);
+            boolean success = GameSaver.saveGame(fileName, cityMap); // Appeler la classe GameSaver pour sauvegarder la carte
 
             if (success) {
                 JOptionPane.showMessageDialog(this, "Sauvegarde réussie !", "Succès", JOptionPane.INFORMATION_MESSAGE);
@@ -526,7 +522,7 @@ public class TrafficSimulatorGUI extends JFrame {
         }
     }
 
-    //Charge une carte à partir d'un fichier de sauvegarde.
+    // Charge une carte à partir d'un fichier de sauvegarde.
     private void loadMap() {
         // Lire le fichier nom_save.txt pour obtenir la liste des sauvegardes
         ArrayList<String> saveNames = new ArrayList<>();
@@ -539,8 +535,6 @@ public class TrafficSimulatorGUI extends JFrame {
             JOptionPane.showMessageDialog(this, "Erreur lors de la lecture des sauvegardes.", "Erreur", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
-        // Vérifier s'il y a des sauvegardes disponibles
         if (saveNames.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Aucune sauvegarde disponible.", "Erreur", JOptionPane.ERROR_MESSAGE);
             return;
@@ -550,19 +544,14 @@ public class TrafficSimulatorGUI extends JFrame {
         JComboBox<String> saveComboBox = new JComboBox<>(saveNames.toArray(new String[0]));
         saveComboBox.setSelectedIndex(0); // Sélectionner la première sauvegarde par défaut
 
-        // Afficher la boîte de dialogue avec le JComboBox
         int option = JOptionPane.showConfirmDialog(this, saveComboBox, "Choisissez une sauvegarde", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
         if (option == JOptionPane.OK_OPTION) {
-            // Récupérer le nom de la sauvegarde sélectionnée
             String selectedSave = (String) saveComboBox.getSelectedItem();
-
-            // Appeler la classe GameLoader pour charger la carte
-            CityMap loadedMap = GameLoader.loadGame(selectedSave, stats);
+            CityMap loadedMap = GameLoader.loadGame(selectedSave, stats); // Appeler la classe GameLoader pour charger la carte
 
             if (loadedMap != null) {
-                // Mettre à jour la carte dans l'interface graphique
-                this.cityMap = loadedMap;
+                this.cityMap = loadedMap; // Mettre à jour la carte dans l'interface graphique
                 mapPanel.repaint(); // Rafraîchir l'affichage
                 JOptionPane.showMessageDialog(this, "Chargement réussi !", "Succès", JOptionPane.INFORMATION_MESSAGE);
             } else {
