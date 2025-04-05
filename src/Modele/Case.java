@@ -126,7 +126,7 @@ public class Case{
 
     public void addPassage(){
         nbPassage++;
-
+    }
     public boolean haveVehicle(){
         return (this.vehicle != null);
     }
