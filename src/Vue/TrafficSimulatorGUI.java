@@ -1,14 +1,8 @@
 package Vue;
 
-import Modele.Case;
-import Modele.CityMap;
-import Modele.Direction;
-import Modele.Position;
-import Modele.Stack2;
-import Modele.Statistique;
+import Modele.*;
 import Modele.Enregistrer.GameLoader;
 import Modele.Enregistrer.GameSaver;
-import Modele.Signalling.TrafficLight;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -17,17 +11,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
-
 import javax.swing.*;
-
 import Controle.Controle;
 import Controle.UpdateStats;
 import Modele.Signalling.TrafficLight;
-import Modele.Vehicle.Bus;
-import Modele.Vehicle.Car;
-import Modele.Vehicle.Truck;
-
-
+import Modele.Vehicle.*;
 
 public class TrafficSimulatorGUI extends JFrame {
 
@@ -39,15 +27,15 @@ public class TrafficSimulatorGUI extends JFrame {
     private int cellSize = 100;
     private double zoomFactor = 1.0;
 
-    private CityMap cityMap; // Référence à la carte de la ville
-    private Point lastDragPoint; // Ajoutez cette ligne pour déclarer lastDragPoint
+    private CityMap cityMap;
+    private Point lastDragPoint;
 
     private static boolean needUpdate;
     private static boolean pause = false;
     private Timer uiTimer;
     private Statistique stats;
 
-    private Point highlightedCell = null; // Case en surbrillance (jaune)
+    private Point highlightedCell = null; // Surbrillance jaune
     private Stack2 selectedCells = new Stack2();
 
     private boolean imagesLoaded = false;
@@ -60,7 +48,6 @@ public class TrafficSimulatorGUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1200, 800);
         setLayout(new BorderLayout());
-
         setJMenuBar(createMenuBar());
         setLocationRelativeTo(null);
 
@@ -76,9 +63,7 @@ public class TrafficSimulatorGUI extends JFrame {
 
         controlPanel = createControlPanel();
         add(controlPanel, BorderLayout.SOUTH);
-
         add(createChangePanel(), BorderLayout.WEST);
-
         addListener();
 
         uiTimer = new Timer(500, createTimerListener());
@@ -105,7 +90,7 @@ public class TrafficSimulatorGUI extends JFrame {
             }
         });
 
-        mapPanel.setFocusable(true); // Permettre au panel de recevoir les événements clavier
+        mapPanel.setFocusable(true);
         maxDezoom();
     }
 
@@ -128,149 +113,136 @@ public class TrafficSimulatorGUI extends JFrame {
             case GREEN -> Image.imgTrafficGreen;
             default -> null;
         };
-    } 
-    //dessine la case selon sa place et ses propriétés
+    }
+
     public void drawCase(Graphics g, int i, int j) {
         int x = j * cellSize;
         int y = i * cellSize;
         Case currentCase = cityMap.getGrid()[i][j];
     
         if (currentCase.getRoad() != null) {
-            Graphics2D g2d = (Graphics2D) g;
-    
-            // Déterminer l'angle de rotation en fonction de la direction
-            double angle = 0;
-            Direction[] direction = currentCase.getRoad().getDirection();
-            switch (direction[0].toString()) {
-                case "UP" -> angle = 0;
-                case "DOWN" -> angle = Math.PI;
-                case "RIGHT" -> angle = Math.PI / 2;
-                case "LEFT" -> angle = -Math.PI / 2;
-            }
-    
-            // Appliquer la rotation pour la route
-            g2d.translate(x + cellSize / 2, y + cellSize / 2);
-            g2d.rotate(angle);
-            g2d.drawImage(Image.imgRoad, -cellSize / 2, -cellSize / 2, cellSize, cellSize, null);
-            g2d.rotate(-angle);
-            g2d.translate(-x - cellSize / 2, -y - cellSize / 2);
-            
-            if (isCurve(currentCase, i, j)) {
-                g2d.drawImage(Image.imgVirage, x, y, cellSize, cellSize, null);
-            }
-
-            if (currentCase.getRoad().isIntersection()) {
-                g2d.drawImage(Image.intersection, x, y, cellSize, cellSize, null);
-            }
-            if (isCurve(currentCase, i, j)) {
-                g2d.drawImage(Image.imgVirage, x, y, cellSize, cellSize, null);
-            }
-
-            if (currentCase.getRoad().isIntersection()) {
-                g2d.drawImage(Image.intersection, x, y, cellSize, cellSize, null);
-            }
-            
-            // Dessiner le véhicule s'il existe
-            if (currentCase.getVehicle() != null) {
-                if(currentCase.getVehicle() instanceof Car){
-                    g2d.drawImage(Image.getImgCar(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
-                }
-                else if (currentCase.getVehicle() instanceof Bus){
-                    g2d.drawImage(Image.getImgBus(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
-                }
-                else if (currentCase.getVehicle() instanceof Truck){
-                    g2d.drawImage(Image.getImgCamion(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
-                }
-            }
-    
-            // Dessiner un panneau s'il existe
-            if (currentCase.getSignalling() != null) {
-                BufferedImage img = switch (currentCase.getSignalling().getType()) {
-                    case "TrafficLights" -> getTrafficCol((TrafficLight) currentCase.getSignalling());
-                    case "Stop" -> Image.imgStop;
-                    case "NoEntry" -> Image.imgNoEntry;
-                    default -> null;
-                };
-                int size = cellSize / 2;
-    
-                // Position du panneau
-                int signalX = x;
-                int signalY = y;
-    
-                switch (direction[0].toString()) {
-                    case "UP" -> {
-                        signalX = x + cellSize - size; // En haut à droite
-                        signalY = y;
-                    }
-                    case "DOWN" -> {
-                        signalX = x; // En bas à gauche
-                        signalY = y + cellSize - size;
-                    }
-                    case "LEFT" -> {
-                        signalX = x; // À gauche en haut
-                        signalY = y;
-                    }
-                    case "RIGHT" -> {
-                        signalX = x + cellSize - size; // À droite en haut
-                        signalY = y + cellSize - size;
-                    }
-                }
-    
-                // Appliquer la même rotation que la route au panneau
-                g2d.translate(signalX + size / 2, signalY + size / 2);
-                g2d.rotate(angle);
-                g2d.drawImage(img, -size / 2, -size / 2, size, size, null);
-                g2d.rotate(-angle);
-                g2d.translate(-signalX - size / 2, -signalY - size / 2);
-
-                // Dessiner le véhicule s'il existe
-                if (currentCase.getVehicle() != null) {
-                    if(currentCase.getVehicle() instanceof Car){
-                        g2d.drawImage(Image.getImgCar(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
-                    }
-                    else if (currentCase.getVehicle() instanceof Bus){
-                        g2d.drawImage(Image.getImgBus(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
-                    }
-                    else if (currentCase.getVehicle() instanceof Truck){
-                        g2d.drawImage(Image.getImgCamion(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
-                    }
-                }
-            }
-        }
-        // Dessiner le bâtiment s'il existe
-        else if (currentCase.getBuilding() != null) {
+            drawRoad(g, currentCase, x, y, i, j);
+        } else if (currentCase.getBuilding() != null) {
             g.drawImage(Image.imgBuilding, x, y, cellSize, cellSize, null);
-        }
-        // Dessiner une case vide
-        else {
+        } else {
             g.setColor(Color.LIGHT_GRAY);
             g.fillRect(x, y, cellSize, cellSize);
         }
-
-        // Dessiner les surlignages
-        if (!selectedCells.isEmpty()) {
-            Position posA = selectedCells.getA();
-            Position posB = selectedCells.getB();
-            
-            // Case rouge (la plus récente)
-            if (posA != null && posA.getX() == j && posA.getY() == i) {
-                g.setColor(new Color(255, 0, 0, 100));
-                g.fillRect(x, y, cellSize, cellSize);
+    
+        drawSelectionHighlights(g, x, y, i, j);
+        drawHighlightMode(g, x, y, i, j);
+    }
+    
+    private void drawRoad(Graphics g, Case currentCase, int x, int y, int i, int j) {
+        Graphics2D g2d = (Graphics2D) g;
+        Direction[] direction = currentCase.getRoad().getDirection();
+        double angle = getRotationAngle(direction[0]);
+    
+        g2d.translate(x + cellSize / 2, y + cellSize / 2);
+        g2d.rotate(angle);
+        g2d.drawImage(Image.imgRoad, -cellSize / 2, -cellSize / 2, cellSize, cellSize, null);
+        g2d.rotate(-angle);
+        g2d.translate(-x - cellSize / 2, -y - cellSize / 2);
+    
+        if (isCurve(currentCase, i, j)) {
+            g2d.drawImage(Image.imgVirage, x, y, cellSize, cellSize, null);
+        }
+    
+        if (currentCase.getRoad().isIntersection()) {
+            g2d.drawImage(Image.intersection, x, y, cellSize, cellSize, null);
+        }
+    
+        drawVehicle(g2d, currentCase, x, y);
+        drawSignalling(g2d, currentCase, x, y, direction[0], angle);
+    }
+    
+    private void drawVehicle(Graphics2D g2d, Case currentCase, int x, int y) {
+        if (currentCase.getVehicle() == null) return;
+    
+        if (currentCase.getVehicle() instanceof Car) {
+            g2d.drawImage(Image.getImgCar(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
+        } else if (currentCase.getVehicle() instanceof Bus) {
+            g2d.drawImage(Image.getImgBus(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
+        } else if (currentCase.getVehicle() instanceof Truck) {
+            g2d.drawImage(Image.getImgCamion(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
+        }
+    }
+    
+    private void drawSignalling(Graphics2D g2d, Case currentCase, int x, int y, Direction direction, double angle) {
+        if (currentCase.getSignalling() == null) return;
+    
+        BufferedImage img = switch (currentCase.getSignalling().getType()) {
+            case "TrafficLights" -> getTrafficCol((TrafficLight) currentCase.getSignalling());
+            case "Stop" -> Image.imgStop;
+            case "NoEntry" -> Image.imgNoEntry;
+            default -> null;
+        };
+    
+        if (img == null) return;
+    
+        int size = cellSize / 2;
+        int signalX = x, signalY = y;
+    
+        switch (direction.toString()) {
+            case "UP" -> {
+                signalX = x + cellSize - size;
+                signalY = y;
             }
-            
-            // Case bleue (la précédente)
-            if (posB != null && posB.getX() == j && posB.getY() == i) {
-                g.setColor(new Color(0, 0, 255, 100));
-                g.fillRect(x, y, cellSize, cellSize);
+            case "DOWN" -> {
+                signalX = x;
+                signalY = y + cellSize - size;
+            }
+            case "LEFT" -> {
+                signalX = x;
+                signalY = y;
+            }
+            case "RIGHT" -> {
+                signalX = x + cellSize - size;
+                signalY = y + cellSize - size;
             }
         }
-
-        // Dessiner le surlignage jaune pour le mode highlight
-        if (TrafficSimulatorGUI.getPause() && highlightedCell != null && highlightedCell.x == j && highlightedCell.y == i) {
-            g.setColor(new Color(255, 255, 0, 100)); // Jaune transparent
+    
+        g2d.translate(signalX + size / 2, signalY + size / 2);
+        g2d.rotate(angle);
+        g2d.drawImage(img, -size / 2, -size / 2, size, size, null);
+        g2d.rotate(-angle);
+        g2d.translate(-signalX - size / 2, -signalY - size / 2);
+    }
+    
+    private void drawSelectionHighlights(Graphics g, int x, int y, int i, int j) {
+        if (selectedCells.isEmpty()) return;
+    
+        Position posA = selectedCells.getA();
+        Position posB = selectedCells.getB();
+    
+        if (posA != null && posA.getX() == j && posA.getY() == i) {
+            g.setColor(new Color(255, 0, 0, 100));
+            g.fillRect(x, y, cellSize, cellSize);
+        }
+    
+        if (posB != null && posB.getX() == j && posB.getY() == i) {
+            g.setColor(new Color(0, 0, 255, 100));
             g.fillRect(x, y, cellSize, cellSize);
         }
     }
+    
+    private void drawHighlightMode(Graphics g, int x, int y, int i, int j) {
+        if (TrafficSimulatorGUI.getPause() && highlightedCell != null && highlightedCell.x == j && highlightedCell.y == i) {
+            g.setColor(new Color(255, 255, 0, 100));
+            g.fillRect(x, y, cellSize, cellSize);
+        }
+    }
+    
+    private double getRotationAngle(Direction dir) {
+        return switch (dir.toString()) {
+            case "UP" -> 0;
+            case "DOWN" -> Math.PI;
+            case "RIGHT" -> Math.PI / 2;
+            case "LEFT" -> -Math.PI / 2;
+            default -> 0;
+        };
+    }
+    
     
     private boolean isCurve(Case currentCase, int i, int j) {
         if (currentCase.getRoad() == null) {
@@ -282,7 +254,7 @@ public class TrafficSimulatorGUI extends JFrame {
             return false; // Un virage à sens unique a UNE SEULE direction
         }
     
-        Direction currentDirection = directions[0]; // Direction de la case actuelle
+        Direction currentDirection = directions[0];
         int incomingRoads = 0;
         boolean isTurn = false;
     
@@ -356,7 +328,6 @@ public class TrafficSimulatorGUI extends JFrame {
         JMenu fileMenu = new JMenu("Fichier");
         JMenuItem saveItem = new JMenuItem("Sauvegarder");
         JMenuItem loadItem = new JMenuItem("Charger");
-        
         JMenuItem exitItem = new JMenuItem("Quitter");
 
         saveItem.addActionListener(e -> saveMap());
@@ -400,7 +371,6 @@ public class TrafficSimulatorGUI extends JFrame {
         JLabel nbVoitureLabel = new JLabel("Nombre de Voiture: 0");
         JLabel tempsArret = new JLabel("Temps à l'arret moyen: 0");
 
-
         panel.add(nbVoitureLabel);
         panel.add(avgTimeLabel);
         panel.add(congestionLabel);
@@ -426,7 +396,6 @@ public class TrafficSimulatorGUI extends JFrame {
         speedSlider.setPaintLabels(true);
         speedSlider.setInverted(true); 
 
-        
         Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
         labelTable.put(20, new JLabel("-")); 
         labelTable.put(2, new JLabel("+"));  
@@ -437,9 +406,7 @@ public class TrafficSimulatorGUI extends JFrame {
             Controle.modifySpeed();
         });
 
-
-        // Remplacer JTextArea par un JLabel pour le texte statique
-        JLabel instruct = new JLabel("<html>Pour ajouter/retirer des objets:<br>-Mettre en pause la simulation en cliquant<br>sur P<br>-appuyer sur les cases à modifier<br>-appuyer sur le changement à effectuer</html>");
+        JLabel instruct = new JLabel("<html>Pour ajouter/retirer des objets:<br>- Mettre en pause la simulation en cliquant<br>sur P<br>- Appuyer sur les cases à modifier<br>- Appuyer sur le changement à effectuer</html>");
         instruct.setFont(new Font("Arial", Font.PLAIN, 14));
         instruct.setForeground(Color.BLACK);
         instruct.setHorizontalAlignment(SwingConstants.CENTER);
@@ -456,8 +423,6 @@ public class TrafficSimulatorGUI extends JFrame {
 
         Box box2 = Box.createVerticalBox();
         box2.add(instruct);
-        
-
         panel.add(box);
         panel.add(box2);
         panel.setBorder(BorderFactory.createTitledBorder("Action Utilisateur"));
@@ -478,28 +443,22 @@ public class TrafficSimulatorGUI extends JFrame {
             }
         }
     
-        // Recalculer la taille des cellules en fonction du zoom
         cellSize = (int) (40 * zoomFactor);
     
-        // Recalculer la taille du mapPanel
         mapPanel.setPreferredSize(new Dimension(COLS * cellSize, ROWS * cellSize));
-        mapPanel.revalidate(); // Forcer la mise à jour du layout
-        mapPanel.repaint();    // Redessiner la carte
+        mapPanel.revalidate();
+        mapPanel.repaint();
     
-        // Ajuster la position de la vue dans le JScrollPane
         if (cursorPosition != null) {
             JScrollBar horizontal = scrollPane.getHorizontalScrollBar();
             JScrollBar vertical = scrollPane.getVerticalScrollBar();
     
-            // Calculer la nouvelle position de la vue
             int newCenterX = (int) (cursorPosition.x * zoomFactor);
             int newCenterY = (int) (cursorPosition.y * zoomFactor);
     
-            // Ajuster les barres de défilement pour centrer la vue sur le point de zoom
             horizontal.setValue(Math.max(newCenterX - scrollPane.getWidth() / 2, 0));
             vertical.setValue(Math.max(newCenterY - scrollPane.getHeight() / 2, 0));
         }
-
         scrollPane.revalidate();
         scrollPane.repaint();
     }
@@ -549,8 +508,6 @@ public class TrafficSimulatorGUI extends JFrame {
         };
     }
 
-
-
     private void saveMap() {
         // Demander à l'utilisateur un nom de fichier pour la sauvegarde
         String fileName = JOptionPane.showInputDialog(this, "Entrez le nom de la sauvegarde :", "Sauvegarder", JOptionPane.PLAIN_MESSAGE);
@@ -568,9 +525,8 @@ public class TrafficSimulatorGUI extends JFrame {
             JOptionPane.showMessageDialog(this, "Le nom de la sauvegarde ne peut pas être vide.", "Erreur", JOptionPane.ERROR_MESSAGE);
         }
     }
-    /**
-     * Charge une carte à partir d'un fichier de sauvegarde.
-     */
+
+    //Charge une carte à partir d'un fichier de sauvegarde.
     private void loadMap() {
         // Lire le fichier nom_save.txt pour obtenir la liste des sauvegardes
         ArrayList<String> saveNames = new ArrayList<>();
@@ -615,7 +571,6 @@ public class TrafficSimulatorGUI extends JFrame {
         }
     }
 
-    
     private KeyListener createKeyListener(){
         return new KeyAdapter(){
             public void keyPressed(KeyEvent e){
@@ -663,7 +618,7 @@ public class TrafficSimulatorGUI extends JFrame {
             public void actionPerformed(ActionEvent e){
                 if (pause && !Controle.caseUpdate.isEmpty()){
                     Controle.setChange(s2);
-                    selectedCells.clear(); // Effacer les sélections
+                    selectedCells.clear();
                     mapPanel.repaint();
                 }
                 mapPanel.requestFocus();
@@ -672,27 +627,14 @@ public class TrafficSimulatorGUI extends JFrame {
         return button;
     }
     
-    public static void setUpdate(boolean b){
-        needUpdate = b;
-    }
-
-    public static boolean getPause(){
-        return pause;
-    }
-
-    public static void pause(){
-        pause = true;
-    }
-
-    public static void start(){
-        pause = false;
-    }
-
+    public static void setUpdate(boolean b){needUpdate = b;}
+    public static boolean getPause(){return pause;}
+    public static void pause(){pause = true;}
+    public static void start(){pause = false;}
+    
     public void maxDezoom(){
         for(int i = 0; i<6; i++){
             zoom(false, null);
         }
     }
-
-
 }
