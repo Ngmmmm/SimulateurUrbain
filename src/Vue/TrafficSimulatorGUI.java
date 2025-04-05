@@ -22,8 +22,8 @@ public class TrafficSimulatorGUI extends JFrame {
     private static final int ROWS = 50;
     private static final int COLS = 50;
     private JPanel mapPanel;
-    private JPanel controlPanel;
-    private JScrollPane scrollPane;
+    private final JPanel controlPanel;
+    private final JScrollPane scrollPane;
     private int cellSize = 100;
     private double zoomFactor = 1.0;
 
@@ -32,11 +32,11 @@ public class TrafficSimulatorGUI extends JFrame {
 
     private static boolean needUpdate;
     private static boolean pause = false;
-    private Timer uiTimer;
-    private Statistique stats;
+    private final Timer uiTimer;
+    private final Statistique stats;
 
     private Point highlightedCell = null; // Surbrillance jaune
-    private Stack2 selectedCells = new Stack2();
+    private final Stack2 selectedCells = new Stack2();
 
     private boolean imagesLoaded = false;
 
