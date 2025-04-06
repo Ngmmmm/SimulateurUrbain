@@ -5,6 +5,7 @@ import Modele.Enregistrer.GameLoader;
 import Modele.Enregistrer.GameSaver;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -144,8 +145,30 @@ public class TrafficSimulatorGUI extends JFrame {
         g2d.rotate(-angle);
         g2d.translate(-x - cellSize / 2, -y - cellSize / 2);
     
-        if (isCurve(currentCase, i, j)) {
-            g2d.drawImage(Image.imgVirage, x, y, cellSize, cellSize, null);
+        Direction[] curveDirections = getCurveDirections(currentCase, i, j);
+        if (curveDirections != null) {
+            Direction entry = curveDirections[0];
+            Direction exit = curveDirections[1];
+            
+            // Calculer l'angle de rotation en fonction des directions
+            double rotationAngle = getRotationAngle(entry, exit);
+            
+            // Appliquer la transformation
+            AffineTransform oldTransform = g2d.getTransform();
+            AffineTransform at = new AffineTransform();
+            
+            // Translation au centre de la cellule
+            at.translate(x + cellSize/2, y + cellSize/2);
+            // Rotation
+            at.rotate(rotationAngle);
+            // Translation de retour pour que l'image soit centrée
+            at.translate(-cellSize/2, -cellSize/2);
+            
+            g2d.setTransform(at);
+            g2d.drawImage(Image.imgVirage, 0, 0, cellSize, cellSize, null);
+            
+            // Restaurer la transformation originale
+            g2d.setTransform(oldTransform);
         }
     
         if (currentCase.getRoad().isIntersection()) {
@@ -154,6 +177,21 @@ public class TrafficSimulatorGUI extends JFrame {
     
         drawVehicle(g2d, currentCase, x, y);
         drawSignalling(g2d, currentCase, x, y, direction[0], angle);
+    }
+    private double getRotationAngle(Direction entry, Direction exit) {
+        // Détermine l'angle en fonction de la combinaison entrée/sortie
+        if ((entry == Direction.UP && exit == Direction.LEFT) || 
+            (entry == Direction.RIGHT && exit == Direction.DOWN)) {
+            return 0; // 0 degrés
+        } else if ((entry == Direction.DOWN && exit == Direction.LEFT) || 
+                   (entry == Direction.RIGHT && exit == Direction.UP)) {
+            return Math.PI/2; // 90 degrés
+        } else if ((entry == Direction.DOWN && exit == Direction.RIGHT) || 
+                    (entry == Direction.LEFT && exit == Direction.UP)) {
+            return Math.PI; // 180 degrés
+        } else {
+            return 3*Math.PI/2; // 270 degrés
+        }
     }
     
     private void drawVehicle(Graphics2D g2d, Case currentCase, int x, int y) {
@@ -244,13 +282,13 @@ public class TrafficSimulatorGUI extends JFrame {
     }
     
     
-    private boolean isCurve(Case currentCase, int i, int j) {
+    private Direction[] getCurveDirections(Case currentCase, int i, int j) {
         if (currentCase.getRoad() == null || currentCase.getRoad().getDirection().length != 1) {
-            return false;
+            return null;
         }
     
         Direction currentDirection = currentCase.getRoad().getDirection()[0];
-        int incomingRoads = 0;
+        Direction incomingDirection = null;
         boolean isTurn = false;
     
         // Directions à vérifier pour chaque position relative (deltaX, deltaY, direction entrante attendue)
@@ -269,17 +307,21 @@ public class TrafficSimulatorGUI extends JFrame {
                 newY >= 0 && newY < cityMap.getGrid()[0].length && 
                 cityMap.getGrid()[newX][newY].getRoad() != null) {
                 
-                Direction incomingDirection = cityMap.getGrid()[newX][newY].getRoad().getDirection()[0];
-                if (incomingDirection.ordinal() == dir[2]) {
-                    incomingRoads++;
-                    if (incomingDirection != currentDirection) {
-                        isTurn = true;
+                Direction neighborDirection = cityMap.getGrid()[newX][newY].getRoad().getDirection()[0];
+                if (neighborDirection.ordinal() == dir[2]) {
+                    if (incomingDirection != null) { // Plus d'une route entrante
+                        return null;
                     }
+                    incomingDirection = neighborDirection;
+                    isTurn = (neighborDirection != currentDirection);
                 }
             }
         }
     
-        return incomingRoads == 1 && isTurn; // exactement UNE route qui mène vers lui, avec une direction différente
+        if (incomingDirection != null && isTurn) {
+            return new Direction[]{incomingDirection, currentDirection};
+        }
+        return null;
     }
 
   
