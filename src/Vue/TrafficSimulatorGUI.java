@@ -253,28 +253,24 @@ public class TrafficSimulatorGUI extends JFrame {
         int incomingRoads = 0;
         boolean isTurn = false;
     
-        // Tableau des directions à vérifier: {deltaX, deltaY, directionEntranteAttendue}
-        Object[][] directionsToCheck = {
-            {0, -1, Direction.RIGHT},    // Gauche
-            {0, 1, Direction.LEFT},      // Droite
-            {-1, 0, Direction.DOWN},     // Haut
-            {1, 0, Direction.UP}         // Bas
+        // Directions à vérifier pour chaque position relative (deltaX, deltaY, direction entrante attendue)
+        int[][] directionsToCheck = {
+            {0, -1, Direction.RIGHT.ordinal()},    // Gauche
+            {0, 1, Direction.LEFT.ordinal()},      // Droite
+            {-1, 0, Direction.DOWN.ordinal()},     // Haut
+            {1, 0, Direction.UP.ordinal()}         // Bas
         };
     
-        for (Object[] dir : directionsToCheck) {
-            int deltaX = (int) dir[0];
-            int deltaY = (int) dir[1];
-            Direction expectedDirection = (Direction) dir[2];
-            
-            int newX = i + deltaX;
-            int newY = j + deltaY;
+        for (int[] dir : directionsToCheck) {
+            int newX = i + dir[0];
+            int newY = j + dir[1];
             
             if (newX >= 0 && newX < cityMap.getGrid().length && 
                 newY >= 0 && newY < cityMap.getGrid()[0].length && 
                 cityMap.getGrid()[newX][newY].getRoad() != null) {
                 
                 Direction incomingDirection = cityMap.getGrid()[newX][newY].getRoad().getDirection()[0];
-                if (incomingDirection == expectedDirection) {
+                if (incomingDirection.ordinal() == dir[2]) {
                     incomingRoads++;
                     if (incomingDirection != currentDirection) {
                         isTurn = true;
