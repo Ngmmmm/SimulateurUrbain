@@ -245,56 +245,44 @@ public class TrafficSimulatorGUI extends JFrame {
     
     
     private boolean isCurve(Case currentCase, int i, int j) {
-        if (currentCase.getRoad() == null) {
+        if (currentCase.getRoad() == null || currentCase.getRoad().getDirection().length != 1) {
             return false;
         }
     
-        Direction[] directions = currentCase.getRoad().getDirection();
-        if (directions.length != 1) {
-            return false; // Un virage à sens unique a UNE SEULE direction
-        }
-    
-        Direction currentDirection = directions[0];
+        Direction currentDirection = currentCase.getRoad().getDirection()[0];
         int incomingRoads = 0;
         boolean isTurn = false;
     
-        // Vérifier les cases adjacentes pour voir si UNE SEULE route y mène avec une direction différente
-        if (i > 0 && cityMap.getGrid()[i - 1][j].getRoad() != null) { // Vérifier au-dessus
-            Direction incomingDirection = cityMap.getGrid()[i - 1][j].getRoad().getDirection()[0];
-            if (incomingDirection == Direction.DOWN) {
-                incomingRoads++;
-                if (incomingDirection != currentDirection) {
-                    isTurn = true;
+        // Tableau des directions à vérifier: {deltaX, deltaY, directionEntranteAttendue}
+        Object[][] directionsToCheck = {
+            {0, -1, Direction.RIGHT},    // Gauche
+            {0, 1, Direction.LEFT},      // Droite
+            {-1, 0, Direction.DOWN},     // Haut
+            {1, 0, Direction.UP}         // Bas
+        };
+    
+        for (Object[] dir : directionsToCheck) {
+            int deltaX = (int) dir[0];
+            int deltaY = (int) dir[1];
+            Direction expectedDirection = (Direction) dir[2];
+            
+            int newX = i + deltaX;
+            int newY = j + deltaY;
+            
+            if (newX >= 0 && newX < cityMap.getGrid().length && 
+                newY >= 0 && newY < cityMap.getGrid()[0].length && 
+                cityMap.getGrid()[newX][newY].getRoad() != null) {
+                
+                Direction incomingDirection = cityMap.getGrid()[newX][newY].getRoad().getDirection()[0];
+                if (incomingDirection == expectedDirection) {
+                    incomingRoads++;
+                    if (incomingDirection != currentDirection) {
+                        isTurn = true;
+                    }
                 }
             }
         }
-        if (i < cityMap.getGrid().length - 1 && cityMap.getGrid()[i + 1][j].getRoad() != null) { // Vérifier en dessous
-            Direction incomingDirection = cityMap.getGrid()[i + 1][j].getRoad().getDirection()[0];
-            if (incomingDirection == Direction.UP) {
-                incomingRoads++;
-                if (incomingDirection != currentDirection) {
-                    isTurn = true;
-                }
-            }
-        }
-        if (j > 0 && cityMap.getGrid()[i][j - 1].getRoad() != null) { // Vérifier à gauche
-            Direction incomingDirection = cityMap.getGrid()[i][j - 1].getRoad().getDirection()[0];
-            if (incomingDirection == Direction.RIGHT) {
-                incomingRoads++;
-                if (incomingDirection != currentDirection) {
-                    isTurn = true;
-                }
-            }
-        }
-        if (j < cityMap.getGrid()[0].length - 1 && cityMap.getGrid()[i][j + 1].getRoad() != null) { // Vérifier à droite
-            Direction incomingDirection = cityMap.getGrid()[i][j + 1].getRoad().getDirection()[0];
-            if (incomingDirection == Direction.LEFT) {
-                incomingRoads++;
-                if (incomingDirection != currentDirection) {
-                    isTurn = true;
-                }
-            }
-        }
+    
         return incomingRoads == 1 && isTurn; // exactement UNE route qui mène vers lui, avec une direction différente
     }
 
