@@ -13,7 +13,14 @@ import Controle.Controle;
 
 public class SetRoute implements Update {
     
-    public static final SetRoute set = new SetRoute();
+    Controle ctrl;
+    TrafficSimulatorGUI gui;
+
+    public SetRoute(Controle ctrl, TrafficSimulatorGUI gui){
+        this.ctrl = ctrl;
+        this.gui = gui;
+    }
+    public static SetRoute set;
 
     public void update(CityMap map, Stack2 c, Statistique stats){
         Case toChange = CityMap.getCase(map.getGrid(), c.getA());
@@ -37,8 +44,8 @@ public class SetRoute implements Update {
             dir[0] = Direction.UP;
             toChange.setRoad(new Road(dir, "Continue"));
         }
-        Controle.addUpdate();
-        TrafficSimulatorGUI.setUpdate(true);
+        ctrl.addUpdate();
+        gui.setUpdate(true);
 
     }
 

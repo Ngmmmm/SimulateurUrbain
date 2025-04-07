@@ -21,6 +21,7 @@ public class Controle {
 
 
     Simulation s;
+    TrafficSimulatorGUI gui;
     Statistique stats;
     CityMap cityMap; 
     Direction dir;
@@ -29,24 +30,24 @@ public class Controle {
     TrafficLight feu;
     TrafficLightGroup groupe1; 
 
-    static Timer ctrlTimer;
-    static Timer t2;
-    public static int speed = 10;
+    Timer ctrlTimer;
+    Timer t2;
+    int speed = 10;
 
-    static boolean needUpdate = false;
-    public static boolean timerIsRunning = false;
-    public static ArrayList<TrafficLightGroup> lights = new ArrayList<TrafficLightGroup>();
-    static ArrayList<Position> toUpdateCar = new ArrayList<Position>();
-    public static Update nextChange;
-    public static Stack2 caseUpdate = new Stack2();
+    boolean needUpdate = false;
+    boolean timerIsRunning = false;
+    ArrayList<TrafficLightGroup> lights = new ArrayList<TrafficLightGroup>();
+    ArrayList<Position> toUpdateCar = new ArrayList<Position>();
+    Update nextChange;
+    Stack2 caseUpdate = new Stack2();
 
     Controle(){
         initSim();
         ctrlTimer = new Timer(50*speed, createActionListener());
         t2 = new Timer(50*speed, new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                if(!TrafficSimulatorGUI.getPause() != ctrlTimer.isRunning()){
-                    if (!TrafficSimulatorGUI.getPause()) {
+                if(gui.isRunning() != ctrlTimer.isRunning()){
+                    if (gui.isRunning()) {
                         nextChange = null;
                         caseUpdate.clear();
                         start();
@@ -56,38 +57,48 @@ public class Controle {
                         pause();
                     }
                 }
-                if(TrafficSimulatorGUI.getPause() && !caseUpdate.isEmpty() && nextChange != null){
+                if(!gui.isRunning() && !caseUpdate.isEmpty() && nextChange != null){
                     nextChange.update(cityMap, caseUpdate, stats);
                     caseUpdate.clear();
                     nextChange = null;
                 }
             }
         });
-
+        gui = new TrafficSimulatorGUI(cityMap, stats, this);
+        initSet();
         start();
         t2.start();
     }
 
-    public static boolean getUpdate(){
+    public boolean getUpdate(){
         return needUpdate;
     }
 
-    public static void addUpdate(){
+
+    public void addUpdate(){
         needUpdate |= true;
     }
 
-    public static void addUpdateCar(Position pos){
+    public void addUpdateCar(Position pos){
         toUpdateCar.add(pos);
         addUpdate();
     }
 
+    public Stack2 getCaseUpdate(){
+        return caseUpdate;
+    }
+
+    public ArrayList<TrafficLightGroup> getLights(){
+        return lights;
+    }
+
     public void initSim(){
         stats = new Statistique();
-        s = new Simulation(stats);
+        s = new Simulation(stats, this);
         cityMap = s.getCityMap();
     }
 
-    public static void removeUpdateCar(Position p){
+    public void removeUpdateCar(Position p){
         toUpdateCar.removeIf(new Predicate<Position>(){
             public boolean test(Position pos){
                 return p.equals(pos);
@@ -95,7 +106,7 @@ public class Controle {
         });
     }
 
-    public static void removeLight(TrafficLight light){
+    public void removeLight(TrafficLight light){
         for(TrafficLightGroup t : lights){
             if (t.getId() == light.getIDGroupe()){
                 t.remove(light);
@@ -117,7 +128,7 @@ public class Controle {
         }
     }
 
-    public static void setChange(String s){
+    public void setChange(String s){
         nextChange = switch (s){
             case "route" -> SetRoute.set; 
             case "feu" -> SetFeu.set;
@@ -125,6 +136,14 @@ public class Controle {
             case "voiture" -> SetVoiture.set;
             default -> null;
         };
+    }
+
+    public int getSpeed(){
+        return speed;
+    }
+
+    public void setSpeed(int n){
+        speed = n;
     }
 
 
@@ -142,13 +161,13 @@ public class Controle {
                     needUpdate |=tmpCar.followPath(tmpCar.path, stats);
                 }
                 if (needUpdate){
-                    TrafficSimulatorGUI.setUpdate(true);
+                    gui.setUpdate(true);
                 }
             }
         };
     }
 
-    public static void modifySpeed(){
+    public void modifySpeed(){
         ctrlTimer.setDelay(speed*10);
         t2.setDelay(speed*10);
         if (ctrlTimer.isRunning() && t2.isRunning()){
@@ -164,13 +183,17 @@ public class Controle {
         }
     }   
 
+    public void initSet(){
+        SetFeu.set = new SetFeu(this, gui);
+        SetMaison.set = new SetMaison(this, gui);
+        SetRoute.set = new SetRoute(this, gui);
+        SetVoiture.set = new SetVoiture(this, gui);
+    }
+
 
 
     public static void main(String[] args) {
 
-        Controle a = new Controle(); 
-
-        
 
 
         
@@ -180,7 +203,7 @@ public class Controle {
         
         // Lancer l'interface graphique
         SwingUtilities.invokeLater(() -> {
-                new TrafficSimulatorGUI(a.cityMap, a.stats);
+                new Controle();
             }
         );
 

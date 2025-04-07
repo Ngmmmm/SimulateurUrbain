@@ -15,33 +15,35 @@ public class TrafficLightGroup {
     private ScheduledExecutorService scheduler;
     public static int nbGroupe = 0;
     public int id;
+    private Controle ctrl;
 
-    public TrafficLightGroup(List<TrafficLight> lights) {
+    public TrafficLightGroup(List<TrafficLight> lights, Controle ctrl) {
+        this.ctrl = ctrl;
         this.lights = lights;
         this.isNSGreen = true;
         setIdLights(lights);
         startCycle();
         id = ++nbGroupe;
-        Controle.lights.add(this);
+        ctrl.getLights().add(this);
     }
 
     public void startCycle() {
         scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(() -> {
             switchLights(LightColor.GREEN);
-            sleep(cycleTimeGreen * Controle.speed);
+            sleep(cycleTimeGreen * ctrl.getSpeed());
             switchLights(LightColor.ORANGE);
-            sleep(cycleTimeOrange* Controle.speed);
+            sleep(cycleTimeOrange* ctrl.getSpeed());
             isNSGreen = !isNSGreen; // Inverser le cycle après le rouge
-        }, 0, cycleTimeGreen* Controle.speed + cycleTimeOrange* Controle.speed +cycleTimeRed* Controle.speed, TimeUnit.MILLISECONDS);
+        }, 0, cycleTimeGreen* ctrl.getSpeed() + cycleTimeOrange* ctrl.getSpeed() +cycleTimeRed* ctrl.getSpeed(), TimeUnit.MILLISECONDS);
     }
 
     private void switchLights(LightColor newState) {
         for (TrafficLight light : lights) {
             if (light.isNorthSouth()) {
-                light.setColor(isNSGreen ? newState : getOppositeState(newState));
+                light.setColor(isNSGreen ? newState : getOppositeState(newState), ctrl);
             } else {
-                light.setColor(isNSGreen ? getOppositeState(newState) : newState);
+                light.setColor(isNSGreen ? getOppositeState(newState) : newState, ctrl);
             }
         }
     }

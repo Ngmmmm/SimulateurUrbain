@@ -18,10 +18,10 @@ public class TrafficLight extends Signalling {
 
     }
 
-    public void setColor(LightColor color) {
+    public void setColor(LightColor color, Controle ctrl) {
         this.color = color;
         //System.out.println(this);
-        Controle.addUpdate();
+        ctrl.addUpdate();
     }
 
     public boolean isNorthSouth() {

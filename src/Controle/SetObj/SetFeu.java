@@ -17,7 +17,14 @@ import Modele.Case;
 
 public class SetFeu implements Update {
     
-    public static final SetFeu set = new SetFeu();
+    Controle ctrl;
+    TrafficSimulatorGUI gui;
+
+    public SetFeu(Controle ctrl, TrafficSimulatorGUI gui){
+        this.ctrl = ctrl;
+    }
+
+    public static SetFeu set;
 
     public void update(CityMap map, Stack2 c, Statistique stats){
         Case toChangeA = CityMap.getCase(map.getGrid(), c.getA());
@@ -28,7 +35,7 @@ public class SetFeu implements Update {
             toChangeA.setSignalling(new TrafficLight(c.getA(), toChangeA.getRoad().getDirection()[0], map));
             ArrayList<TrafficLight> group = new ArrayList<TrafficLight>();
             group.add((TrafficLight) toChangeA.getSignalling());
-            new TrafficLightGroup(group);
+            new TrafficLightGroup(group, ctrl);
         }else{
             Case toChangeB = CityMap.getCase(map.getGrid(), c.getB());
             if (toChangeB.getSignalling()!= null && toChangeB.getSignalling() instanceof TrafficLight){
@@ -38,7 +45,7 @@ public class SetFeu implements Update {
                 }
                 TrafficLightGroup a = null;
                 TrafficLightGroup b = null;
-                for(TrafficLightGroup g : Controle.lights){
+                for(TrafficLightGroup g : ctrl.getLights()){
                     if (g.getId() == ((TrafficLight) toChangeA.getSignalling()).getIDGroupe()){
                         a = g;
                     }
@@ -49,7 +56,7 @@ public class SetFeu implements Update {
                         break;
                     }
                 }
-                Controle.removeLight((TrafficLight) toChangeB.getSignalling());
+                ctrl.removeLight((TrafficLight) toChangeB.getSignalling());
                 a.merge(b);
             }else{
                 ((TrafficLight) toChangeA.getSignalling()).setColor(
@@ -58,12 +65,12 @@ public class SetFeu implements Update {
                         case "RED" -> LightColor.GREEN;
                         case "ORANGE" -> LightColor.ORANGE; // L'orange reste orange
                         default -> LightColor.RED;
-                    }
+                    }, ctrl
                 );
             }
         }
-        Controle.addUpdate();
-        TrafficSimulatorGUI.setUpdate(true);
+        ctrl.addUpdate();
+        gui.setUpdate(true);
 
     }
     
