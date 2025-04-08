@@ -32,6 +32,8 @@ public abstract class Vehicle {
     boolean move;
     protected int temps = 0;
     protected int timeStanding = 0;
+    private Position oldPosition;               // ancienne position
+    private float animationProgress = 1.0f;
 
     public Vehicle(String id, int speed, Position position, Direction direction, float fuelConso, CityMap map, Position destination, Statistique stats) {
         this.id = id;
@@ -220,7 +222,8 @@ public abstract class Vehicle {
         if (nextCaseIsValid() && checkPrio()){
             if((act.getSignalling() == null || signallingOk(act)) && (actRight == null ||actRight.getSignalling() == null || signallingOk(actRight))){
                 act.setVehicle(null);
-                Controle.addUpdate();
+                //Controle.addUpdate();
+                startAnimation(position);
                 position = nextPosition();
                 map.getGrid()[position.getY()][position.getX()].setVehicle(this);
                 map.getGrid()[position.getY()][position.getX()].addPassage();
@@ -316,6 +319,26 @@ public abstract class Vehicle {
         }
         
 
+    }
+    public void startAnimation(Position fromPosition) {
+        this.oldPosition = fromPosition;
+        this.animationProgress = 0.0f;
+    }
+    
+    public void updateAnimationProgress(float delta) {
+        animationProgress = Math.min(1.0f, animationProgress + delta);
+    }
+    
+    public boolean isMovingTransition() {
+        return animationProgress < 1.0f;
+    }
+    
+    public float getAnimationProgress() {
+        return animationProgress;
+    }
+    
+    public Position getOldPosition() {
+        return oldPosition != null ? oldPosition : position;
     }
 
 
