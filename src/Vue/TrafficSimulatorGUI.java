@@ -27,19 +27,17 @@ public class TrafficSimulatorGUI extends JFrame {
     private final JScrollPane scrollPane;
     private int cellSize = 100;
     private double zoomFactor = 1.0;
-
     private CityMap cityMap;
     private Point lastDragPoint;
-
     private static boolean needUpdate;
     private static boolean pause = false;
     private final Timer uiTimer;
     private final Statistique stats;
-
     private Point highlightedCell = null; // Surbrillance jaune
     private final Stack2 selectedCells = new Stack2();
-
     private boolean imagesLoaded = false;
+    private JLabel statusLabel;
+
 
     public TrafficSimulatorGUI(CityMap cityMap, Statistique stats) {
         this.cityMap = cityMap;
@@ -150,24 +148,16 @@ public class TrafficSimulatorGUI extends JFrame {
             Direction entry = curveDirections[0];
             Direction exit = curveDirections[1];
             
-            // Calculer l'angle de rotation en fonction des directions
-            double rotationAngle = getRotationAngle(entry, exit);
-            
-            // Appliquer la transformation
-            AffineTransform oldTransform = g2d.getTransform();
+            double rotationAngle = getRotationAngle(entry, exit);// Calculer l'angle de rotation en fonction des directions
+            AffineTransform oldTransform = g2d.getTransform();// Appliquer la transformation
             AffineTransform at = new AffineTransform();
             
-            // Translation au centre de la cellule
             at.translate(x + cellSize/2, y + cellSize/2);
-            // Rotation
             at.rotate(rotationAngle);
-            // Translation de retour pour que l'image soit centrée
             at.translate(-cellSize/2, -cellSize/2);
             
             g2d.setTransform(at);
             g2d.drawImage(Image.imgVirage, 0, 0, cellSize, cellSize, null);
-            
-            // Restaurer la transformation originale
             g2d.setTransform(oldTransform);
         }
     
@@ -179,7 +169,6 @@ public class TrafficSimulatorGUI extends JFrame {
         drawSignalling(g2d, currentCase, x, y, direction[0], angle);
     }
     private double getRotationAngle(Direction entry, Direction exit) {
-        // Détermine l'angle en fonction de la combinaison entrée/sortie
         if ((entry == Direction.UP && exit == Direction.LEFT) || 
             (entry == Direction.RIGHT && exit == Direction.DOWN)) {
             return 0; // 0 degrés
@@ -217,7 +206,6 @@ public class TrafficSimulatorGUI extends JFrame {
         };
     
         if (img == null) return;
-    
         int size = cellSize / 2;
         int signalX = x, signalY = y;
     
@@ -249,7 +237,6 @@ public class TrafficSimulatorGUI extends JFrame {
     
     private void drawSelectionHighlights(Graphics g, int x, int y, int i, int j) {
         if (selectedCells.isEmpty()) return;
-    
         Position posA = selectedCells.getA();
         Position posB = selectedCells.getB();
     
@@ -280,7 +267,6 @@ public class TrafficSimulatorGUI extends JFrame {
             default -> 0;
         };
     }
-    
     
     private Direction[] getCurveDirections(Case currentCase, int i, int j) {
         if (currentCase.getRoad() == null || currentCase.getRoad().getDirection().length != 1) {
@@ -434,71 +420,92 @@ public class TrafficSimulatorGUI extends JFrame {
         return panel;
     }
     
+    private JPanel createChangePanel() {
+        JPanel panel = new JPanel(new GridLayout(3, 1));
+        panel.setBorder(BorderFactory.createTitledBorder("Action Utilisateur"));
 
-    private JPanel createChangePanel(){
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(2, 1));
+        statusLabel = new JLabel("", SwingConstants.CENTER);
+        statusLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        updateStatusLabel();
+        panel.add(statusLabel);
+
+        Box box = Box.createVerticalBox();
 
         JButton maisonButton = makeButton("Mettre une maison", "maison");
         JButton routeButton = new JButton("Mettre une route/changer rotation");
         JButton feuButton = makeButton("Mettre un Feu/changer de groupe", "feu");
         JButton voitureButton = makeButton("Mettre une voiture", "voiture");
-        JLabel speedLabel = new JLabel("Speed", JLabel.CENTER); // Centré au-dessus du slider
+
+        box.add(maisonButton);
+        box.add(routeButton);
+        box.add(feuButton);
+        box.add(voitureButton);
+
+        JLabel speedLabel = new JLabel("Speed", JLabel.CENTER);
+        box.add(speedLabel);
+
         JSlider speedSlider = new JSlider(JSlider.HORIZONTAL, 2, 20, Controle.speed);
         speedSlider.setMajorTickSpacing(2);
         speedSlider.setMinorTickSpacing(1);
         speedSlider.setPaintTicks(true);
         speedSlider.setPaintLabels(true);
-        speedSlider.setInverted(true); 
+        speedSlider.setInverted(true);
 
         Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
-        labelTable.put(20, new JLabel("-")); 
-        labelTable.put(2, new JLabel("+"));  
+        labelTable.put(20, new JLabel("-"));
+        labelTable.put(2, new JLabel("+"));
         speedSlider.setLabelTable(labelTable);
 
         speedSlider.addChangeListener(e -> {
             Controle.speed = speedSlider.getValue();
             Controle.modifySpeed();
         });
-        routeButton.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-                if (pause && !Controle.caseUpdate.isEmpty()){
-                    // Afficher le panneau de sélection de direction
-                    JDialog directionDialog = new JDialog(TrafficSimulatorGUI.this, "Sélection de direction", true);
-                    directionDialog.add(createDirectionSelectionPanel());
-                    directionDialog.pack();
-                    directionDialog.setLocationRelativeTo(TrafficSimulatorGUI.this);
-                    directionDialog.setVisible(true);
-                }
-                mapPanel.requestFocus();
+
+        box.add(speedSlider);
+
+        // Action bouton route
+        routeButton.addActionListener(e -> {
+            if (pause && !Controle.caseUpdate.isEmpty()) {
+                JDialog directionDialog = new JDialog(TrafficSimulatorGUI.this, "Sélection de direction", true);
+                directionDialog.add(createDirectionSelectionPanel());
+                directionDialog.pack();
+                directionDialog.setLocationRelativeTo(TrafficSimulatorGUI.this);
+                directionDialog.setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(panel, "Mettez en pause et sélectionnez au moins une case.", "Action impossible", JOptionPane.WARNING_MESSAGE);
             }
+            mapPanel.requestFocus();
         });
-        JLabel instruct = new JLabel("<html>Pour ajouter/retirer des objets:<br>- Mettre en pause la simulation en cliquant<br>sur P<br>- Appuyer sur les cases à modifier<br>- Appuyer sur le changement à effectuer</html>");
+
+        JLabel instruct = new JLabel(
+            "<html>Pour ajouter/retirer des objets:<br>" +"- Mettre en pause la simulation en cliquant sur P<br>" +"- Appuyer sur les cases à modifier<br>" +"- Appuyer sur le changement à effectuer</html>",
+            SwingConstants.CENTER
+        );
         instruct.setFont(new Font("Arial", Font.PLAIN, 14));
         instruct.setForeground(Color.BLACK);
-        instruct.setHorizontalAlignment(SwingConstants.CENTER);
         instruct.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         instruct.setPreferredSize(new Dimension(300, 100));
-        Box box = Box.createVerticalBox();
-
-        box.add(maisonButton);
-        box.add(routeButton);
-        box.add(feuButton);
-        box.add(voitureButton);
-        box.add(speedLabel);
-        box.add(speedSlider);
 
         Box box2 = Box.createVerticalBox();
         box2.add(instruct);
         panel.add(box);
         panel.add(box2);
-        panel.setBorder(BorderFactory.createTitledBorder("Action Utilisateur"));
-
         return panel;
     }
 
-    private static final double MAX_ZOOM = 2.5;
+    private void updateStatusLabel() {
+        if (statusLabel != null) {
+            if (pause) {
+                statusLabel.setText("Pause");
+                statusLabel.setForeground(Color.RED);
+            } else {
+                statusLabel.setText("Play");
+                statusLabel.setForeground(new Color(0, 150, 0));
+            }
+        }
+    }
 
+    private static final double MAX_ZOOM = 2.5;
     private void zoom(boolean zoomIn, Point cursorPosition) {
         if (zoomIn) {
             if (zoomFactor < MAX_ZOOM) {
@@ -511,7 +518,6 @@ public class TrafficSimulatorGUI extends JFrame {
         }
     
         cellSize = (int) (40 * zoomFactor);
-    
         mapPanel.setPreferredSize(new Dimension(COLS * cellSize, ROWS * cellSize));
         mapPanel.revalidate();
         mapPanel.repaint();
@@ -641,6 +647,8 @@ public class TrafficSimulatorGUI extends JFrame {
                             selectedCells.clear();
                             mapPanel.repaint();
                         }
+                        updateStatusLabel();
+
                     }
                 }
             }
