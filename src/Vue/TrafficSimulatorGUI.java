@@ -404,12 +404,43 @@ public class TrafficSimulatorGUI extends JFrame {
         return panel;
     }
 
+    private JPanel createDirectionSelectionPanel() {
+        JPanel panel = new JPanel(new GridLayout(2, 2));
+        panel.setBorder(BorderFactory.createTitledBorder("Choisir la direction"));
+    
+        // Directions et labels associés
+        String[][] directions = {
+            {"Haut", "UP"},
+            {"Bas", "DOWN"},
+            {"Gauche", "LEFT"},
+            {"Droite", "RIGHT"}
+        };
+    
+        for (String[] dir : directions) {
+            String label = dir[0];
+            String direction = dir[1];
+    
+            JButton button = new JButton(label);
+            button.addActionListener(e -> {
+                Controle.setChange("route:" + direction);
+                Window window = SwingUtilities.getWindowAncestor(panel);
+                if (window != null) window.dispose();
+                selectedCells.clear();
+                mapPanel.repaint();
+            });
+            panel.add(button);
+        }
+    
+        return panel;
+    }
+    
+
     private JPanel createChangePanel(){
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(2, 1));
 
         JButton maisonButton = makeButton("Mettre une maison", "maison");
-        JButton routeButton = makeButton("Mettre une route/changer rotation", "route");
+        JButton routeButton = new JButton("Mettre une route/changer rotation");
         JButton feuButton = makeButton("Mettre un Feu/changer de groupe", "feu");
         JButton voitureButton = makeButton("Mettre une voiture", "voiture");
         JLabel speedLabel = new JLabel("Speed", JLabel.CENTER); // Centré au-dessus du slider
@@ -429,7 +460,19 @@ public class TrafficSimulatorGUI extends JFrame {
             Controle.speed = speedSlider.getValue();
             Controle.modifySpeed();
         });
-
+        routeButton.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                if (pause && !Controle.caseUpdate.isEmpty()){
+                    // Afficher le panneau de sélection de direction
+                    JDialog directionDialog = new JDialog(TrafficSimulatorGUI.this, "Sélection de direction", true);
+                    directionDialog.add(createDirectionSelectionPanel());
+                    directionDialog.pack();
+                    directionDialog.setLocationRelativeTo(TrafficSimulatorGUI.this);
+                    directionDialog.setVisible(true);
+                }
+                mapPanel.requestFocus();
+            }
+        });
         JLabel instruct = new JLabel("<html>Pour ajouter/retirer des objets:<br>- Mettre en pause la simulation en cliquant<br>sur P<br>- Appuyer sur les cases à modifier<br>- Appuyer sur le changement à effectuer</html>");
         instruct.setFont(new Font("Arial", Font.PLAIN, 14));
         instruct.setForeground(Color.BLACK);

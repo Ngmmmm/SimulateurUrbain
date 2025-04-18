@@ -117,14 +117,20 @@ public class Controle {
         }
     }
 
-    public static void setChange(String s){
-        nextChange = switch (s){
-            case "route" -> SetRoute.set; 
-            case "feu" -> SetFeu.set;
-            case "maison" -> SetMaison.set;
-            case "voiture" -> SetVoiture.set;
-            default -> null;
-        };
+    public static void setChange(String s) {
+        if (s.startsWith("route:")) {
+            String direction = s.split(":")[1];
+            SetRoute.setSelectedDirection(Direction.valueOf(direction));
+            nextChange = SetRoute.set;
+        } else {
+            nextChange = switch (s) {
+                case "route" -> SetRoute.set; 
+                case "feu" -> SetFeu.set;
+                case "maison" -> SetMaison.set;
+                case "voiture" -> SetVoiture.set;
+                default -> null;
+            };
+        }
     }
 
 
