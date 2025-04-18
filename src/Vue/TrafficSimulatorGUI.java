@@ -1,8 +1,12 @@
 package Vue;
 
+import Controle.Controle;
+import Controle.UpdateStats;
 import Modele.*;
 import Modele.Enregistrer.GameLoader;
 import Modele.Enregistrer.GameSaver;
+import Modele.Signalling.TrafficLight;
+import Modele.Vehicle.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
@@ -13,10 +17,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import javax.swing.*;
-import Controle.Controle;
-import Controle.UpdateStats;
-import Modele.Signalling.TrafficLight;
-import Modele.Vehicle.*;
 
 public class TrafficSimulatorGUI extends JFrame {
 
@@ -616,7 +616,7 @@ public class TrafficSimulatorGUI extends JFrame {
         }
 
         // Créer un JComboBox avec les noms des sauvegardes
-        JComboBox<String> saveComboBox = new JComboBox<>(saveNames.toArray(new String[0]));
+        JComboBox<String> saveComboBox = new JComboBox<>(saveNames.toArray(String[]::new));
         saveComboBox.setSelectedIndex(0); // Sélectionner la première sauvegarde par défaut
 
         int option = JOptionPane.showConfirmDialog(this, saveComboBox, "Choisissez une sauvegarde", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -637,9 +637,10 @@ public class TrafficSimulatorGUI extends JFrame {
 
     private KeyListener createKeyListener(){
         return new KeyAdapter(){
+            @Override
             public void keyPressed(KeyEvent e){
                 switch(e.getKeyChar()){
-                    case 'p' : {
+                    case 'p' -> {
                         if (!TrafficSimulatorGUI.pause){
                             TrafficSimulatorGUI.pause();
                         }else{
@@ -656,17 +657,15 @@ public class TrafficSimulatorGUI extends JFrame {
     }
 
     private ActionListener createTimerListener(){
-        return new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-                if (needUpdate){
-                    if (controlPanel != null){
-                        UpdateStats.update(controlPanel.getComponents(), stats);
-                        controlPanel.repaint();
-                        stats.resetMoved();
-                    }
-                    mapPanel.repaint();
-                    needUpdate = false;
+        return (ActionEvent e) -> {
+            if (needUpdate){
+                if (controlPanel != null){
+                    UpdateStats.update(controlPanel.getComponents(), stats);
+                    controlPanel.repaint();
+                    stats.resetMoved();
                 }
+                mapPanel.repaint();
+                needUpdate = false;
             }
         };
     }
@@ -680,15 +679,13 @@ public class TrafficSimulatorGUI extends JFrame {
 
     private JButton makeButton(String s1, String s2){
         JButton button = new JButton(s1);
-        button.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-                if (pause && !Controle.caseUpdate.isEmpty()){
-                    Controle.setChange(s2);
-                    selectedCells.clear();
-                    mapPanel.repaint();
-                }
-                mapPanel.requestFocus();
+        button.addActionListener((ActionEvent e) -> {
+            if (pause && !Controle.caseUpdate.isEmpty()){
+                Controle.setChange(s2);
+                selectedCells.clear();
+                mapPanel.repaint();
             }
+            mapPanel.requestFocus();
         });
         return button;
     }
@@ -698,7 +695,7 @@ public class TrafficSimulatorGUI extends JFrame {
     public static void pause(){pause = true;}
     public static void start(){pause = false;}
     
-    public void maxDezoom(){
+    private void maxDezoom(){
         for(int i = 0; i<6; i++){
             zoom(false, null);
         }
