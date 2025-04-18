@@ -164,14 +164,16 @@ public class GameLoader {
      */
     private static Signalling createSignalling(String type, Position position, Direction direction, CityMap map) {
         switch (type) {
-            case "TrafficLights":
+            case "TrafficLights" -> {
                 return new TrafficLight(position, direction, map);
-            case "Stop":
+            }
+            case "Stop" -> {
                 return new Stop(position, direction);
-            case "NoEntry":
+            }
+            case "NoEntry" -> {
                 return new NoEntry(position, direction);
-            default:
-                throw new IllegalArgumentException("Type de signalisation inconnu : " + type);
+            }
+            default -> throw new IllegalArgumentException("Type de signalisation inconnu : " + type);
         }
     }
 
