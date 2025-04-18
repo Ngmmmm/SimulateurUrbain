@@ -85,8 +85,6 @@ public class CityMap{
                 // Ajouter la nouvelle direction si elle n'est pas déjà présente
                 if (newDirection != null && !Arrays.asList(currentRoad.getDirection()).contains(newDirection)) {
                     currentRoad.addDirection(newDirection);
-                } else {
-                    System.out.println("La direction " + newDirection + " est déjà présente ou est invalide.");
                 }
             } else {
                 System.out.println("Aucune route à la position " + pos + " pour changer l'edge.");
@@ -170,7 +168,6 @@ public class CityMap{
                 
                 
                 while (r != null && r.getDirection()[0] == grid[row][col].getRoad().getDirection()[0]) {
-                    System.out.println(r.getDirection()[0] + " " + grid[row][col].getRoad().getDirection()[0]);
                     r.setTrafficLight(true);
                     nextPos = grid[row][col].getRoad().getDirection()[1].move(nextPos);
                     r = grid[nextPos.getY()][nextPos.getX()].getRoad();
@@ -183,7 +180,6 @@ public class CityMap{
     public void setNoEntry(Position position) {
         Road road = getRoad(position);
         if (road == null) {
-            System.out.println("Impossible de placer un NoEntry : pas de route ici !");
             return;
         }
 
@@ -217,15 +213,6 @@ public class CityMap{
         }
     }
 
-    // Affichage simple de la carte en console
-    public void displayMap() {
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                System.out.print(grid[i][j] + " ");
-            }
-            System.out.println();
-        }
-    }
 
     public void findAccessiblePos(Position p){
         accessiblePosition = Pathfinding.findAllAccessiblePositions(this, p);

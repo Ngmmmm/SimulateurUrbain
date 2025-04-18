@@ -18,7 +18,6 @@ public class TrafficLight extends Signalling {
 
     public void setColor(LightColor color) {
         this.color = color;
-        //System.out.println(this);
         Controle.addUpdate();
     }
 

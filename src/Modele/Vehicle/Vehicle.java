@@ -78,7 +78,6 @@ public abstract class Vehicle {
             position = d.move(position);
             consumeFuel();
         } else {
-            System.out.println("No fuel");
             stop();
         }
     }
@@ -261,7 +260,6 @@ public abstract class Vehicle {
         Direction prochaineDir = Direction.getDirection(position, prochainePos);
         changeDirection(prochaineDir);
         Timer timer = new Timer(this.speed*50*Controle.speed, (ActionEvent e) -> {
-            System.out.println(Controle.speed);
             move = move();
             if(!move){
                 path.push(prochainePos);
