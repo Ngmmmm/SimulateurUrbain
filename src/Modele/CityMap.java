@@ -46,8 +46,8 @@ public class CityMap{
                 }
     
                 // Mise à jour des paramètres de la route
-                currentRoad.setDirection(updatedDirections.toArray(new Direction[0]));
-                currentRoad.setDoubleLane(ligne == "Pointillé");
+                currentRoad.setDirection(updatedDirections.toArray(Direction[]::new));
+                currentRoad.setDoubleLane("Pointillé".equals(ligne));
 
 
     
@@ -55,7 +55,7 @@ public class CityMap{
                 // Créer une nouvelle route avec les directions et paramètres donnés
                 Road newRoad = new Road(d, ligne);
 
-                newRoad.setDoubleLane(ligne == "Pointillé");
+                newRoad.setDoubleLane("Pointillé".equals(ligne));
 
                 grid[row][col].setRoad(newRoad);
             }

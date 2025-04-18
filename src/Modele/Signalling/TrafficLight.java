@@ -29,6 +29,7 @@ public class TrafficLight extends Signalling {
     public String getColor() {
         return color.name();
     }
+    @Override
     public Direction getDirection() { return direction; }
     @Override
     public Position getPosition() {

@@ -9,6 +9,7 @@ public class SetMaison implements Update {
     
     public static final SetMaison set = new SetMaison();
 
+    @Override
     public void update(CityMap map, Stack2 c, Statistique stats){
         Case toChange = CityMap.getCase(map.getGrid(), c.getA());
         if(toChange.getVehicle()!= null){

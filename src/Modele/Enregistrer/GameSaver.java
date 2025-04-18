@@ -50,8 +50,7 @@ public class GameSaver {
                         writer.write("Signalisation: " + signalling.getType() + " " + signalling.getPosition().getX() + "," + signalling.getPosition().getY() + " " + signalling.getDirection());
     
                         // Si c'est un feu de signalisation, sauvegarder l'idGroupe
-                        if (signalling instanceof TrafficLight) {
-                            TrafficLight trafficLight = (TrafficLight) signalling;
+                        if (signalling instanceof TrafficLight trafficLight) {
                             writer.write(" " + trafficLight.getIDGroupe());
                         }
     

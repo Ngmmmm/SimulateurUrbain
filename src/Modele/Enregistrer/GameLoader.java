@@ -179,14 +179,16 @@ public class GameLoader {
 
     private static Vehicle createVehicle(String type, String id, int speed, Position position, Direction direction, Position destination, CityMap map, Statistique stats) {
     switch (type) {
-        case "Car":
+        case "Car" -> {
             return new Car(id,speed, position, direction, map, destination, stats);
-        case "Truck":
+            }
+        case "Truck" -> {
             return new Truck(id, speed, position, direction, map, destination, stats);
-        case "Bus":
+            }
+        case "Bus" -> {
             return new Bus(id, speed, position, direction, map, destination, stats);
-        default:
-            throw new IllegalArgumentException("Type de véhicule inconnu : " + type);
+            }
+        default -> throw new IllegalArgumentException("Type de véhicule inconnu : " + type);
     }
 }
 
