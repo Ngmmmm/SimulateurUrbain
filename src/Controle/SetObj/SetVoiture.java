@@ -9,17 +9,13 @@ import Modele.Statistique;
 import Modele.Vehicle.Car;
 import Modele.Vehicle.Vehicle;
 import Vue.TrafficSimulatorGUI;
-import Modele.Direction;
-
-
-
 import java.util.Random;
-
 
 public class SetVoiture implements Update {
     
     public static final SetVoiture set = new SetVoiture();
 
+    @Override
     public void update(CityMap map, Stack2 c, Statistique stats){
         Case toChange = CityMap.getCase(map.getGrid(), c.getA());
         if (toChange.getVehicle() == null){
@@ -33,8 +29,7 @@ public class SetVoiture implements Update {
                 Controle.addUpdate();
                 TrafficSimulatorGUI.setUpdate(true);
             }
-        };
-        
+        }
     }
 
     @Override

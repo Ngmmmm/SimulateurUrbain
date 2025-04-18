@@ -1,24 +1,21 @@
 package Controle.SetObj;
 
 import Controle.Controle;
-
-import Modele.Stack2;
-import Modele.Statistique;
+import Modele.Case;
+import Modele.CityMap;
 import Modele.Signalling.LightColor;
 import Modele.Signalling.TrafficLight;
 import Modele.Signalling.TrafficLightGroup;
+import Modele.Stack2;
+import Modele.Statistique;
 import Vue.TrafficSimulatorGUI;
-import Modele.CityMap;
-import Modele.Position;
-
 import java.util.ArrayList;
-
-import Modele.Case;
 
 public class SetFeu implements Update {
     
     public static final SetFeu set = new SetFeu();
 
+    @Override
     public void update(CityMap map, Stack2 c, Statistique stats){
         Case toChangeA = CityMap.getCase(map.getGrid(), c.getA());
         if(toChangeA.getBuilding() != null){
@@ -26,7 +23,7 @@ public class SetFeu implements Update {
         }
         if (toChangeA.getSignalling() == null || !(toChangeA.getSignalling() instanceof TrafficLight)){
             toChangeA.setSignalling(new TrafficLight(c.getA(), toChangeA.getRoad().getDirection()[0], map));
-            ArrayList<TrafficLight> group = new ArrayList<TrafficLight>();
+            ArrayList<TrafficLight> group = new ArrayList<>();
             group.add((TrafficLight) toChangeA.getSignalling());
             new TrafficLightGroup(group);
         }else{
