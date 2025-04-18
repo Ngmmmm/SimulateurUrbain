@@ -1,13 +1,9 @@
 package Controle.SetObj;
 
 import Controle.Controle;
-import Modele.Stack2;
-import Modele.Statistique;
+import Modele.*;
 import Modele.Signalling.TrafficLight;
 import Vue.TrafficSimulatorGUI;
-import Modele.Building;
-import Modele.Case;
-import Modele.CityMap;
 
 public class SetMaison implements Update {
     

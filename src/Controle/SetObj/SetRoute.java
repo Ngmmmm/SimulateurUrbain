@@ -1,12 +1,7 @@
 package Controle.SetObj;
 
 import Controle.Controle;
-import Modele.Case;
-import Modele.CityMap;
-import Modele.Direction;
-import Modele.Road;
-import Modele.Stack2;
-import Modele.Statistique;
+import Modele.*;
 import Vue.TrafficSimulatorGUI;
 
 public class SetRoute implements Update {
@@ -18,6 +13,7 @@ public class SetRoute implements Update {
         selectedDirection = direction;
     }
 
+    @Override
     public void update(CityMap map, Stack2 c, Statistique stats) {
         Case toChange = CityMap.getCase(map.getGrid(), c.getA());
         

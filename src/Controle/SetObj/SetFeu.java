@@ -1,13 +1,8 @@
 package Controle.SetObj;
 
 import Controle.Controle;
-import Modele.Case;
-import Modele.CityMap;
-import Modele.Signalling.LightColor;
-import Modele.Signalling.TrafficLight;
-import Modele.Signalling.TrafficLightGroup;
-import Modele.Stack2;
-import Modele.Statistique;
+import Modele.*;
+import Modele.Signalling.*;
 import Vue.TrafficSimulatorGUI;
 import java.util.ArrayList;
 

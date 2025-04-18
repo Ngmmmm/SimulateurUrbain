@@ -1,9 +1,7 @@
 package Modele.Vehicle;
 
-import Modele.CityMap;
-import Modele.Direction;
-import Modele.Position;
-import Modele.Statistique;
+import Modele.*;
+
 
 public class Car extends Vehicle {
     

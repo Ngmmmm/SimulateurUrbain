@@ -1,9 +1,7 @@
 package Modele.Signalling;
 
 import Controle.Controle;
-import Modele.CityMap;
-import Modele.Direction;
-import Modele.Position;
+import Modele.*;
 
 public class TrafficLight extends Signalling {
     private LightColor color;

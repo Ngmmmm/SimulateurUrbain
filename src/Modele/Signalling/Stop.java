@@ -1,7 +1,6 @@
 package Modele.Signalling;
 
-import Modele.Direction;
-import Modele.Position;
+import Modele.*;
 
 public class Stop extends Signalling {
     

@@ -1,6 +1,5 @@
 package Modele;
 
-
 import Modele.Signalling.Signalling;
 import Modele.Vehicle.Vehicle;
 

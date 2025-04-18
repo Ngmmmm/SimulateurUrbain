@@ -1,15 +1,8 @@
 package Modele;
 
-import Modele.Signalling.TrafficLight;
-import Modele.Signalling.TrafficLightGroup;
-import Modele.Vehicle.Bus;
-import Modele.Vehicle.Car;
-import Modele.Vehicle.Truck;
-import Modele.Vehicle.Vehicle;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import Modele.Signalling.*;
+import Modele.Vehicle.*;
+import java.util.*;
 
 public class Simulation {
     private static CityMap cityMap;

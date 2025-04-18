@@ -2,17 +2,9 @@ package Modele.Enregistrer;
 
 import Modele.*;
 import Modele.Signalling.*;
-import Modele.Vehicle.Bus;
-import Modele.Vehicle.Car;
-import Modele.Vehicle.Truck;
-import Modele.Vehicle.Vehicle;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import Modele.Vehicle.*;
+import java.io.*;
+import java.util.*;
 
 public class GameLoader {
 

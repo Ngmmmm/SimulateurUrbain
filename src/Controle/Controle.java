@@ -7,8 +7,7 @@ import Modele.Vehicle.*;
 import Vue.*;
 import java.awt.event.*;
 import java.util.ArrayList;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
+import javax.swing.*;
 
 public class Controle {
 

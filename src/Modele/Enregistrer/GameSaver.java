@@ -1,17 +1,11 @@
 package Modele.Enregistrer;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-
 import Modele.*;
 import Modele.Signalling.*;
 import Modele.Vehicle.Vehicle;
+import java.io.*;
+import java.nio.file.*;
+import java.util.*;
 
 public class GameSaver {
     private static final String SAVE_DIRECTORY = "Save";

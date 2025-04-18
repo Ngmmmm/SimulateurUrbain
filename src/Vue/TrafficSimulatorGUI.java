@@ -1,19 +1,15 @@
 package Vue;
 
-import Controle.Controle;
-import Controle.UpdateStats;
+import Controle.*;
 import Modele.*;
-import Modele.Enregistrer.GameLoader;
-import Modele.Enregistrer.GameSaver;
+import Modele.Enregistrer.*;
 import Modele.Signalling.TrafficLight;
 import Modele.Vehicle.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import javax.swing.*;

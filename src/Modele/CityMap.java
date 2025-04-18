@@ -1,13 +1,8 @@
 package Modele;
 
-import Modele.Signalling.NoEntry;
-import Modele.Signalling.Stop;
-import Modele.Signalling.TrafficLight;
+import Modele.Signalling.*;
 import Modele.Vehicle.Vehicle;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class CityMap{
     private int rows;

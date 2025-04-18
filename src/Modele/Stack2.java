@@ -1,6 +1,5 @@
 package Modele;
 
-
 public class Stack2{
     
     private Position a;

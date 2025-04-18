@@ -1,13 +1,8 @@
 package Controle.SetObj;
 
 import Controle.Controle;
-import Modele.Case;
-import Modele.CityMap;
-import Modele.Position;
-import Modele.Stack2;
-import Modele.Statistique;
-import Modele.Vehicle.Car;
-import Modele.Vehicle.Vehicle;
+import Modele.*;
+import Modele.Vehicle.*;
 import Vue.TrafficSimulatorGUI;
 import java.util.Random;
 
