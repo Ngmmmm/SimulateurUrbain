@@ -1,49 +1,64 @@
 package Controle.SetObj;
 
+import Controle.Controle;
+import Modele.Case;
+import Modele.CityMap;
+import Modele.Direction;
+import Modele.Road;
 import Modele.Stack2;
 import Modele.Statistique;
 import Vue.TrafficSimulatorGUI;
-import Modele.Position;
-import Modele.Road;
-import Modele.CityMap;
-import Modele.Direction;
-import Modele.Case;
-
-import Controle.Controle;
 
 public class SetRoute implements Update {
     
     public static final SetRoute set = new SetRoute();
+    private static Direction selectedDirection = null; // Direction sélectionnée via le panneau
 
-    public void update(CityMap map, Stack2 c, Statistique stats){
+    public static void setSelectedDirection(Direction direction) {
+        selectedDirection = direction;
+    }
+
+    public void update(CityMap map, Stack2 c, Statistique stats) {
         Case toChange = CityMap.getCase(map.getGrid(), c.getA());
-        if (toChange.getRoad() != null){
-            Direction[] newDir = new Direction[toChange.getRoad().getDirection().length];
-            for(int i = 0; i<toChange.getRoad().getDirection().length; i++){
-                newDir[i] = switch(toChange.getRoad().getDirection()[i].toString()){
-                    case "UP" -> Direction.RIGHT;
-                    case "RIGHT" -> Direction.DOWN;
-                    case "DOWN" -> Direction.LEFT;
-                    case "LEFT" -> Direction.UP;
-                    default -> Direction.UP;
-                };
+        
+        if (toChange.getRoad() != null) {
+            if (selectedDirection != null) {
+                // Si une direction a été sélectionnée via le panneau
+                Direction[] newDir = new Direction[]{selectedDirection};
+                toChange.getRoad().setDirection(newDir);
+                selectedDirection = null; // Réinitialiser après utilisation
+            } else {
+                // Rotation cyclique comme avant
+                Direction[] newDir = new Direction[toChange.getRoad().getDirection().length];
+                for(int i = 0; i < toChange.getRoad().getDirection().length; i++) {
+                    newDir[i] = switch(toChange.getRoad().getDirection()[i].toString()) {
+                        case "UP" -> Direction.RIGHT;
+                        case "RIGHT" -> Direction.DOWN;
+                        case "DOWN" -> Direction.LEFT;
+                        case "LEFT" -> Direction.UP;
+                        default -> Direction.UP;
+                    };
+                }
+                toChange.getRoad().setDirection(newDir);
             }
-            toChange.getRoad().setDirection(newDir);
-        }else{
-            if(toChange.getBuilding() != null){
+        } else {
+            // Création d'une nouvelle route
+            if(toChange.getBuilding() != null) {
                 toChange.setBuilding(null);
             }
+            
             Direction[] dir = new Direction[1];
-            dir[0] = Direction.UP;
+            dir[0] = (selectedDirection != null) ? selectedDirection : Direction.UP;
             toChange.setRoad(new Road(dir, "Continue"));
+            selectedDirection = null; // Réinitialiser après utilisation
         }
+        
         Controle.addUpdate();
         TrafficSimulatorGUI.setUpdate(true);
-
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return "route";
     }
 }
