@@ -3,6 +3,7 @@ package Vue;
 import Modele.Direction;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import javax.imageio.ImageIO;
 
 public class Image {
@@ -66,7 +67,7 @@ public class Image {
             imgCamionRight = ImageIO.read(new File("img/camionRight.PNG"));
 
             
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println("Erreur lors du chargement des images");
         }
     }

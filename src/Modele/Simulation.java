@@ -16,12 +16,12 @@ public class Simulation {
 
     public Simulation(Statistique stats) {
         cityMap = new CityMap(50, 50);
-        initializeMap(stats);
+        initializeMap();
         cityMap.updateAllEdges();
         spawnRandomCars(10, stats);
     }
 
-    private void initializeMap(Statistique stats) {
+    private void initializeMap() {
 
         // Routes principales horizontales (Avenues)
         for (int i = 0; i < 50; i++) {
