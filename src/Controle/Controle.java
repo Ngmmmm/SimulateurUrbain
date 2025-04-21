@@ -185,8 +185,6 @@ public class Controle {
 
     public static void main(String[] args) {
 
-        Controle a = new Controle(); 
-
         // Lancer l'interface graphique
         SwingUtilities.invokeLater(() -> {
                 new Controle();
