@@ -2,7 +2,6 @@ package Modele.Vehicle;
 
 import Controle.Controle;
 import Modele.*;
-import Modele.*;
 import Modele.Signalling.*;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
@@ -29,6 +28,7 @@ public abstract class Vehicle {
     protected int timeStanding = 0;
     private Position oldPosition;               // ancienne position
     private float animationProgress = 1.0f;
+    protected Controle ctrl;
 
     public Vehicle(String id, int speed, Position position, Direction direction, float fuelConso, CityMap map, Position destination, Statistique stats, Controle ctrl) {
         this.ctrl = ctrl;
