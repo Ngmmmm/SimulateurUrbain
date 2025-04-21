@@ -1,17 +1,15 @@
 package Controle;
 
+import Modele.Statistique;
 import java.awt.Component;
 import javax.swing.*;
-
-import Modele.Statistique;
 
 
 public class UpdateStats {
     
     public static void update(Component[] comps, Statistique stat){
         for(Component c : comps){
-            if (c instanceof JLabel){
-                JLabel label = (JLabel) c;
+            if (c instanceof JLabel label){
                 if (label.getText().contains("trajet")){
                     label.setText("Temps de trajet moyen: " + stat.getTemps() + "u");
                 }

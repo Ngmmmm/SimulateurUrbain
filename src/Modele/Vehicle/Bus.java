@@ -1,10 +1,7 @@
 package Modele.Vehicle;
 
 import Controle.Controle;
-import Modele.CityMap;
-import Modele.Direction;
-import Modele.Position;
-import Modele.Statistique;
+import Modele.*;
 
 public class Bus extends Vehicle {
 

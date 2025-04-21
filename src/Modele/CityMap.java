@@ -1,13 +1,8 @@
 package Modele;
 
-import Modele.Signalling.NoEntry;
-import Modele.Signalling.Stop;
-import Modele.Signalling.TrafficLight;
+import Modele.Signalling.*;
 import Modele.Vehicle.Vehicle;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class CityMap{
     private int rows;
@@ -51,8 +46,8 @@ public class CityMap{
                 }
     
                 // Mise à jour des paramètres de la route
-                currentRoad.setDirection(updatedDirections.toArray(new Direction[0]));
-                currentRoad.setDoubleLane(ligne == "Pointillé");
+                currentRoad.setDirection(updatedDirections.toArray(Direction[]::new));
+                currentRoad.setDoubleLane("Pointillé".equals(ligne));
 
 
     
@@ -60,7 +55,7 @@ public class CityMap{
                 // Créer une nouvelle route avec les directions et paramètres donnés
                 Road newRoad = new Road(d, ligne);
 
-                newRoad.setDoubleLane(ligne == "Pointillé");
+                newRoad.setDoubleLane("Pointillé".equals(ligne));
 
                 grid[row][col].setRoad(newRoad);
             }
@@ -90,8 +85,6 @@ public class CityMap{
                 // Ajouter la nouvelle direction si elle n'est pas déjà présente
                 if (newDirection != null && !Arrays.asList(currentRoad.getDirection()).contains(newDirection)) {
                     currentRoad.addDirection(newDirection);
-                } else {
-                    System.out.println("La direction " + newDirection + " est déjà présente ou est invalide.");
                 }
             } else {
                 System.out.println("Aucune route à la position " + pos + " pour changer l'edge.");
@@ -175,7 +168,6 @@ public class CityMap{
                 
                 
                 while (r != null && r.getDirection()[0] == grid[row][col].getRoad().getDirection()[0]) {
-                    System.out.println(r.getDirection()[0] + " " + grid[row][col].getRoad().getDirection()[0]);
                     r.setTrafficLight(true);
                     nextPos = grid[row][col].getRoad().getDirection()[1].move(nextPos);
                     r = grid[nextPos.getY()][nextPos.getX()].getRoad();
@@ -188,7 +180,6 @@ public class CityMap{
     public void setNoEntry(Position position) {
         Road road = getRoad(position);
         if (road == null) {
-            System.out.println("Impossible de placer un NoEntry : pas de route ici !");
             return;
         }
 
@@ -222,15 +213,6 @@ public class CityMap{
         }
     }
 
-    // Affichage simple de la carte en console
-    public void displayMap() {
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                System.out.print(grid[i][j] + " ");
-            }
-            System.out.println();
-        }
-    }
 
     public void findAccessiblePos(Position p){
         accessiblePosition = Pathfinding.findAllAccessiblePositions(this, p);

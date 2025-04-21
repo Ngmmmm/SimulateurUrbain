@@ -1,15 +1,8 @@
 package Modele;
 
-import Modele.Signalling.TrafficLight;
-import Modele.Signalling.TrafficLightGroup;
-import Modele.Vehicle.Bus;
-import Modele.Vehicle.Car;
-import Modele.Vehicle.Truck;
-import Modele.Vehicle.Vehicle;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import Modele.Signalling.*;
+import Modele.Vehicle.*;
+import java.util.*;
 
 import Controle.Controle;
 
@@ -20,12 +13,12 @@ public class Simulation {
     public Simulation(Statistique stats, Controle ctrl) {
         this.ctrl = ctrl;
         cityMap = new CityMap(50, 50);
-        initializeMap(stats);
+        initializeMap();
         cityMap.updateAllEdges();
         spawnRandomCars(10, stats, ctrl);
     }
 
-    private void initializeMap(Statistique stats) {
+    private void initializeMap() {
 
         // Routes principales horizontales (Avenues)
         for (int i = 0; i < 50; i++) {

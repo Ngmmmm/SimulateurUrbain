@@ -1,20 +1,10 @@
 package Controle.SetObj;
 
 import Controle.Controle;
-import Modele.Case;
-import Modele.CityMap;
-import Modele.Position;
-import Modele.Stack2;
-import Modele.Statistique;
-import Modele.Vehicle.Car;
-import Modele.Vehicle.Vehicle;
+import Modele.*;
+import Modele.Vehicle.*;
 import Vue.TrafficSimulatorGUI;
-import Modele.Direction;
-
-
-
 import java.util.Random;
-
 
 public class SetVoiture implements Update {
     
@@ -28,6 +18,7 @@ public class SetVoiture implements Update {
 
     public static SetVoiture set;
 
+    @Override
     public void update(CityMap map, Stack2 c, Statistique stats){
         Case toChange = CityMap.getCase(map.getGrid(), c.getA());
         if (toChange.getVehicle() == null){
@@ -41,8 +32,7 @@ public class SetVoiture implements Update {
                 ctrl.addUpdate();
                 gui.setUpdate(true);
             }
-        };
-        
+        }
     }
 
     @Override

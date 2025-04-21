@@ -1,14 +1,8 @@
 package Modele.Vehicle;
 
 import Controle.Controle;
-import Modele.Case;
-import Modele.CityMap;
-import Modele.Direction;
-import Modele.Pathfinding;
-import Modele.Position;
+import Modele.*;
 import Modele.Signalling.*;
-import Modele.Simulation;
-import Modele.Statistique;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
@@ -86,7 +80,6 @@ public abstract class Vehicle {
             position = d.move(position);
             consumeFuel();
         } else {
-            System.out.println("No fuel");
             stop();
         }
     }

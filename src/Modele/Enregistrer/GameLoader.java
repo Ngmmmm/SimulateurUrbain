@@ -2,17 +2,9 @@ package Modele.Enregistrer;
 
 import Modele.*;
 import Modele.Signalling.*;
-import Modele.Vehicle.Bus;
-import Modele.Vehicle.Car;
-import Modele.Vehicle.Truck;
-import Modele.Vehicle.Vehicle;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import Modele.Vehicle.*;
+import java.io.*;
+import java.util.*;
 
 import Controle.Controle;
 
@@ -174,27 +166,31 @@ public class GameLoader {
      */
     private static Signalling createSignalling(String type, Position position, Direction direction, CityMap map) {
         switch (type) {
-            case "TrafficLights":
+            case "TrafficLights" -> {
                 return new TrafficLight(position, direction, map);
-            case "Stop":
+            }
+            case "Stop" -> {
                 return new Stop(position, direction);
-            case "NoEntry":
+            }
+            case "NoEntry" -> {
                 return new NoEntry(position, direction);
-            default:
-                throw new IllegalArgumentException("Type de signalisation inconnu : " + type);
+            }
+            default -> throw new IllegalArgumentException("Type de signalisation inconnu : " + type);
         }
     }
 
     private static Vehicle createVehicle(String type, String id, int speed, Position position, Direction direction, Position destination, CityMap map, Statistique stats, Controle ctrl) {
         switch (type) {
-            case "Car":
+            case "Car" -> {
                 return new Car(id,speed, position, direction, map, destination, stats, ctrl);
-            case "Truck":
+            }
+            case "Truck" -> {
                 return new Truck(id, speed, position, direction, map, destination, stats, ctrl);
-            case "Bus":
+            }
+            case "Bus" -> {
                 return new Bus(id, speed, position, direction, map, destination, stats, ctrl);
-            default:
-                throw new IllegalArgumentException("Type de véhicule inconnu : " + type);
+            }
+            default -> throw new IllegalArgumentException("Type de véhicule inconnu : " + type);
         }
     }
 

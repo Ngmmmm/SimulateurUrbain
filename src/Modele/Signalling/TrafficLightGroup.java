@@ -1,10 +1,8 @@
 package Modele.Signalling;
 
+import Controle.Controle;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.function.Predicate;
-
-import Controle.Controle;
 
 public class TrafficLightGroup {
     private List<TrafficLight> lights;
@@ -49,12 +47,12 @@ public class TrafficLightGroup {
     }
 
     private LightColor getOppositeState(LightColor state) {
-        switch (state) {
-            case GREEN: return LightColor.RED;
-            case RED: return LightColor.GREEN;
-            case ORANGE: return LightColor.ORANGE; // L'orange reste orange
-            default: return LightColor.RED;
-        }
+        return switch (state) {
+            case GREEN -> LightColor.RED;
+            case RED -> LightColor.GREEN;
+            case ORANGE -> LightColor.ORANGE;
+            default -> LightColor.RED;
+        }; // L'orange reste orange
     }
 
     private void sleep(int mseconds) {
@@ -100,11 +98,7 @@ public class TrafficLightGroup {
 
     }
     public void remove(TrafficLight t){
-        lights.removeIf(new Predicate<TrafficLight>(){
-            public boolean test(TrafficLight tList){
-                return t == tList;
-            }
-        });
+        lights.removeIf((TrafficLight tList) -> t == tList);
     }
 
     public int getId(){
