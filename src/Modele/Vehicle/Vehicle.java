@@ -2,6 +2,7 @@ package Modele.Vehicle;
 
 import Controle.Controle;
 import Modele.*;
+import Modele.*;
 import Modele.Signalling.*;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;

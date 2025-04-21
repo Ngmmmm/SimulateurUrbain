@@ -3,6 +3,8 @@ package Controle.SetObj;
 import Controle.Controle;
 import Modele.*;
 import Modele.Vehicle.*;
+import Modele.*;
+import Modele.Vehicle.*;
 import Vue.TrafficSimulatorGUI;
 import java.util.Random;
 

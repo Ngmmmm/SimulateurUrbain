@@ -112,6 +112,7 @@ public class TrafficSimulatorGUI extends JFrame {
         };
     }
 
+
     public void drawCase(Graphics g, int i, int j) {
         int x = j * cellSize;
         int y = i * cellSize;
@@ -640,7 +641,9 @@ public class TrafficSimulatorGUI extends JFrame {
 
         if (option == JOptionPane.OK_OPTION) {
             String selectedSave = (String) saveComboBox.getSelectedItem();
-            CityMap loadedMap = GameLoader.loadGame(selectedSave, stats, ctrl); // Appeler la classe GameLoader pour charger la carte
+
+            // Appeler la classe GameLoader pour charger la carte
+            CityMap loadedMap = GameLoader.loadGame(selectedSave, stats, ctrl);
 
             if (loadedMap != null) {
                 this.cityMap = loadedMap; // Mettre à jour la carte dans l'interface graphique
