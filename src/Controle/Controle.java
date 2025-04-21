@@ -167,6 +167,7 @@ public class Controle {
     public int getSpeed() { return speed; }
 
     public void setSpeed(int n) { speed = n; }
+    public boolean timerIsRunning(){return timerIsRunning;}
 
     // --- Point d'entrée ---
     public static void main(String[] args) {
