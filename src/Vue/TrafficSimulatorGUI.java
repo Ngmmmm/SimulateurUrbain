@@ -18,6 +18,7 @@ public class TrafficSimulatorGUI extends JFrame {
 
     private static final int ROWS = 50;
     private static final int COLS = 50;
+    private Controle ctrl;
     private JPanel mapPanel;
     private final JPanel controlPanel;
     private final JScrollPane scrollPane;
@@ -25,8 +26,7 @@ public class TrafficSimulatorGUI extends JFrame {
     private double zoomFactor = 1.0;
     private CityMap cityMap;
     private Point lastDragPoint;
-    private static boolean needUpdate;
-    private static boolean pause = false;
+    private boolean needUpdate;
     private final Timer uiTimer;
     private final Statistique stats;
     private Point highlightedCell = null; // Surbrillance jaune
@@ -35,9 +35,12 @@ public class TrafficSimulatorGUI extends JFrame {
     private JLabel statusLabel;
 
 
-    public TrafficSimulatorGUI(CityMap cityMap, Statistique stats) {
+    public TrafficSimulatorGUI(CityMap cityMap, Statistique stats, Controle ctrl) {
         this.cityMap = cityMap;
         this.stats = stats;
+        this.ctrl = ctrl;
+        this.uiTimer = new Timer(500, createTimerListener());
+        uiTimer.start();
 
         setTitle("Simulateur de gestion de trafic urbain");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -61,9 +64,8 @@ public class TrafficSimulatorGUI extends JFrame {
         add(createChangePanel(), BorderLayout.WEST);
         addListener();
 
-        uiTimer = new Timer(500, createTimerListener());
-        uiTimer.setInitialDelay(0);
-        uiTimer.start();
+        
+        
 
         setVisible(true);
         
@@ -73,14 +75,14 @@ public class TrafficSimulatorGUI extends JFrame {
         mapPanel.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
-                if (TrafficSimulatorGUI.getPause()) {
+                if (!uiTimer.isRunning()) {
                     int x = e.getX() / cellSize;
                     int y = e.getY() / cellSize;
                     highlightedCell = new Point(x, y);
                     mapPanel.repaint();
                 } else {
                     highlightedCell = null;
-                    Controle.caseUpdate.clear();
+                    ctrl.getCaseUpdate().clear();
                 }
             }
         });
@@ -110,13 +112,18 @@ public class TrafficSimulatorGUI extends JFrame {
         };
     }
 
+
     public void drawCase(Graphics g, int i, int j) {
         int x = j * cellSize;
         int y = i * cellSize;
         Case currentCase = cityMap.getGrid()[i][j];
     
         if (currentCase.getRoad() != null) {
-            drawRoad(g, currentCase, x, y, i, j);
+            if(cityMap.getMode()){
+                drawFreq(g, currentCase, x, y);
+            }else{
+                drawRoad(g, currentCase, x, y, i, j);
+            }
         } else if (currentCase.getBuilding() != null) {
             g.drawImage(Image.imgBuilding, x, y, cellSize, cellSize, null);
         } else {
@@ -126,6 +133,13 @@ public class TrafficSimulatorGUI extends JFrame {
     
         drawSelectionHighlights(g, x, y, i, j);
         drawHighlightMode(g, x, y, i, j);
+    }
+
+    private void drawFreq(Graphics g, Case currentCase, int x, int y){
+        double ratio = ((double) currentCase.getNbPassage()) / ((double) stats.getMaxPassage());
+        int grad = (int) Math.floor(255 * (1 - ratio));
+        g.setColor(new Color(255, grad, grad));
+        g.fillRect(x, y, cellSize, cellSize);
     }
     
     private void drawRoad(Graphics g, Case currentCase, int x, int y, int i, int j) {
@@ -248,7 +262,7 @@ public class TrafficSimulatorGUI extends JFrame {
     }
     
     private void drawHighlightMode(Graphics g, int x, int y, int i, int j) {
-        if (TrafficSimulatorGUI.getPause() && highlightedCell != null && highlightedCell.x == j && highlightedCell.y == i) {
+        if (!uiTimer.isRunning() && highlightedCell != null && highlightedCell.x == j && highlightedCell.y == i) {
             g.setColor(new Color(255, 255, 0, 100));
             g.fillRect(x, y, cellSize, cellSize);
         }
@@ -404,7 +418,7 @@ public class TrafficSimulatorGUI extends JFrame {
     
             JButton button = new JButton(label);
             button.addActionListener(e -> {
-                Controle.setChange("route:" + direction);
+                ctrl.setChange("route:" + direction);
                 Window window = SwingUtilities.getWindowAncestor(panel);
                 if (window != null) window.dispose();
                 selectedCells.clear();
@@ -431,16 +445,24 @@ public class TrafficSimulatorGUI extends JFrame {
         JButton routeButton = new JButton("Mettre une route/changer rotation");
         JButton feuButton = makeButton("Mettre un Feu/changer de groupe", "feu");
         JButton voitureButton = makeButton("Mettre une voiture", "voiture");
+        JButton tabFreq = new JButton("Montrer la fréquence de passage des cases");
+
+
+        tabFreq.addActionListener((ActionEvent e) ->{
+            cityMap.setMode(!cityMap.getMode());
+            mapPanel.requestFocus();
+        });
 
         box.add(maisonButton);
         box.add(routeButton);
         box.add(feuButton);
         box.add(voitureButton);
+        box.add(tabFreq);
 
         JLabel speedLabel = new JLabel("Speed", JLabel.CENTER);
         box.add(speedLabel);
 
-        JSlider speedSlider = new JSlider(JSlider.HORIZONTAL, 2, 20, Controle.speed);
+        JSlider speedSlider = new JSlider(JSlider.HORIZONTAL, 2, 20, ctrl.getSpeed());
         speedSlider.setMajorTickSpacing(2);
         speedSlider.setMinorTickSpacing(1);
         speedSlider.setPaintTicks(true);
@@ -453,15 +475,15 @@ public class TrafficSimulatorGUI extends JFrame {
         speedSlider.setLabelTable(labelTable);
 
         speedSlider.addChangeListener(e -> {
-            Controle.speed = speedSlider.getValue();
-            Controle.modifySpeed();
+            ctrl.setSpeed(speedSlider.getValue());
+            ctrl.modifySpeed();
         });
 
         box.add(speedSlider);
 
         // Action bouton route
         routeButton.addActionListener(e -> {
-            if (pause && !Controle.caseUpdate.isEmpty()) {
+            if (!uiTimer.isRunning() && !ctrl.getCaseUpdate().isEmpty()) {
                 JDialog directionDialog = new JDialog(TrafficSimulatorGUI.this, "Sélection de direction", true);
                 directionDialog.add(createDirectionSelectionPanel());
                 directionDialog.pack();
@@ -491,7 +513,7 @@ public class TrafficSimulatorGUI extends JFrame {
 
     private void updateStatusLabel() {
         if (statusLabel != null) {
-            if (pause) {
+            if (!uiTimer.isRunning()) {
                 statusLabel.setText("Pause");
                 statusLabel.setForeground(Color.RED);
             } else {
@@ -549,8 +571,8 @@ public class TrafficSimulatorGUI extends JFrame {
             public void mouseClicked(MouseEvent e){
                 int x = e.getY()/cellSize;
                 int y = e.getX()/cellSize;
-                if (pause){
-                    Controle.caseUpdate.add(new Position(y, x));
+                if (!uiTimer.isRunning()){
+                    ctrl.getCaseUpdate().add(new Position(y, x));
                     selectedCells.add(new Position(y, x));
                 }
                 mapPanel.repaint();
@@ -619,7 +641,9 @@ public class TrafficSimulatorGUI extends JFrame {
 
         if (option == JOptionPane.OK_OPTION) {
             String selectedSave = (String) saveComboBox.getSelectedItem();
-            CityMap loadedMap = GameLoader.loadGame(selectedSave, stats); // Appeler la classe GameLoader pour charger la carte
+
+            // Appeler la classe GameLoader pour charger la carte
+            CityMap loadedMap = GameLoader.loadGame(selectedSave, stats, ctrl);
 
             if (loadedMap != null) {
                 this.cityMap = loadedMap; // Mettre à jour la carte dans l'interface graphique
@@ -637,10 +661,10 @@ public class TrafficSimulatorGUI extends JFrame {
             public void keyPressed(KeyEvent e){
                 switch(e.getKeyChar()){
                     case 'p' -> {
-                        if (!TrafficSimulatorGUI.pause){
-                            TrafficSimulatorGUI.pause();
+                        if (uiTimer.isRunning()){
+                            uiTimer.stop();
                         }else{
-                            TrafficSimulatorGUI.start();
+                            uiTimer.start();
                             selectedCells.clear();
                             mapPanel.repaint();
                         }
@@ -676,8 +700,8 @@ public class TrafficSimulatorGUI extends JFrame {
     private JButton makeButton(String s1, String s2){
         JButton button = new JButton(s1);
         button.addActionListener((ActionEvent e) -> {
-            if (pause && !Controle.caseUpdate.isEmpty()){
-                Controle.setChange(s2);
+            if (!uiTimer.isRunning() && !ctrl.getCaseUpdate().isEmpty()){
+                ctrl.setChange(s2);
                 selectedCells.clear();
                 mapPanel.repaint();
             }
@@ -686,11 +710,20 @@ public class TrafficSimulatorGUI extends JFrame {
         return button;
     }
     
-    public static void setUpdate(boolean b){needUpdate = b;}
-    public static boolean getPause(){return pause;}
-    public static void pause(){pause = true;}
-    public static void start(){pause = false;}
+
+  
+
     
+
+
+    public boolean isRunning(){
+        return (uiTimer != null)? uiTimer.isRunning() : false;
+    }
+
+    public void setUpdate(boolean b){
+        needUpdate = b;
+    }
+
     private void maxDezoom(){
         for(int i = 0; i<6; i++){
             zoom(false, null);

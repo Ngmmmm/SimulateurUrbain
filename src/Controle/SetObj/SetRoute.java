@@ -6,7 +6,14 @@ import Vue.TrafficSimulatorGUI;
 
 public class SetRoute implements Update {
     
-    public static final SetRoute set = new SetRoute();
+    Controle ctrl;
+    TrafficSimulatorGUI gui;
+
+    public SetRoute(Controle ctrl, TrafficSimulatorGUI gui){
+        this.ctrl = ctrl;
+        this.gui = gui;
+    }
+    public static SetRoute set;
     private static Direction selectedDirection = null; // Direction sélectionnée via le panneau
 
     public static void setSelectedDirection(Direction direction) {
@@ -48,9 +55,9 @@ public class SetRoute implements Update {
             toChange.setRoad(new Road(dir, "Continue"));
             selectedDirection = null; // Réinitialiser après utilisation
         }
-        
-        Controle.addUpdate();
-        TrafficSimulatorGUI.setUpdate(true);
+        ctrl.addUpdate();
+        gui.setUpdate(true);
+
     }
 
     @Override
