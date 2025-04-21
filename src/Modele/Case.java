@@ -1,6 +1,5 @@
 package Modele;
 
-
 import Modele.Signalling.Signalling;
 import Modele.Vehicle.Vehicle;
 
@@ -92,6 +91,10 @@ public class Case{
 
     public void setPos(Position pos) {
         this.pos = pos;
+    }
+
+    public int getNbPassage(){
+        return nbPassage;
     }
 
     public boolean isRoad(){

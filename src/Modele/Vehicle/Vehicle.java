@@ -1,14 +1,9 @@
 package Modele.Vehicle;
 
 import Controle.Controle;
-import Modele.Case;
-import Modele.CityMap;
-import Modele.Direction;
-import Modele.Pathfinding;
-import Modele.Position;
+import Modele.*;
+import Modele.*;
 import Modele.Signalling.*;
-import Modele.Simulation;
-import Modele.Statistique;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
@@ -35,7 +30,8 @@ public abstract class Vehicle {
     private Position oldPosition;               // ancienne position
     private float animationProgress = 1.0f;
 
-    public Vehicle(String id, int speed, Position position, Direction direction, float fuelConso, CityMap map, Position destination, Statistique stats) {
+    public Vehicle(String id, int speed, Position position, Direction direction, float fuelConso, CityMap map, Position destination, Statistique stats, Controle ctrl) {
+        this.ctrl = ctrl;
         this.id = id;
         this.speed = speed;
         this.position = position;
@@ -51,10 +47,11 @@ public abstract class Vehicle {
         }
         stats.addVoiture();
         followAllPath(stats);
-
+        
     }
 
-    public Vehicle(String id, int speed, Position position, float fuelConso, CityMap map, Position destination, Statistique stats) {
+    public Vehicle(String id, int speed, Position position, float fuelConso, CityMap map, Position destination, Statistique stats, Controle ctrl) {
+        this.ctrl = ctrl;
         this.id = id;
         this.speed = speed;
         this.position = position;
@@ -69,7 +66,6 @@ public abstract class Vehicle {
             map.addVehicle(this);
         }
         stats.addVoiture();
-
     }
 
     public void start() {
@@ -86,7 +82,6 @@ public abstract class Vehicle {
             position = d.move(position);
             consumeFuel();
         } else {
-            System.out.println("No fuel");
             stop();
         }
     }
@@ -201,7 +196,7 @@ public abstract class Vehicle {
                     }
                 }else if(signal instanceof Stop){
                     if(checkCaseForSignalling() != null){
-                            Timer timer = new Timer(200*Controle.speed, (ActionEvent e) -> {
+                            Timer timer = new Timer(200 * ctrl.getSpeed(), (ActionEvent e) -> {
                                 this.stopOk = getCase(checkCaseForSignalling()).isEmpty();
                             });
                     
@@ -216,7 +211,7 @@ public abstract class Vehicle {
         return true;
     }
 
-    public boolean move(){
+    public boolean move(Statistique stats){
         Case act = getCase(position);
         Case actRight = getCase(rightPos());
         if (nextCaseIsValid() && checkPrio()){
@@ -227,6 +222,7 @@ public abstract class Vehicle {
                 position = nextPosition();
                 map.getGrid()[position.getY()][position.getX()].setVehicle(this);
                 map.getGrid()[position.getY()][position.getX()].addPassage();
+                stats.updateMax(map.getGrid()[position.getY()][position.getX()]);
                 return true;
             }
         }
@@ -257,21 +253,20 @@ public abstract class Vehicle {
         move = false;
         if (path.isEmpty()) {
             this.getCase(position).setVehicle(null);
-            Simulation.spawnRandomCars(1, stats);
+            Simulation.spawnRandomCars(1, stats, ctrl);
             stats.delVoiture(temps);
             return false; // Arrêt si on a atteint la destination
         }
     
         Position prochainePos = path.pop();
         if (position == prochainePos) {
-            Controle.addUpdateCar(position);
+            ctrl.addUpdateCar(position);
             return false;
         }
         Direction prochaineDir = Direction.getDirection(position, prochainePos);
         changeDirection(prochaineDir);
-        Timer timer = new Timer(this.speed*50*Controle.speed, (ActionEvent e) -> {
-            System.out.println(Controle.speed);
-            move = move();
+        Timer timer = new Timer(this.speed * 50 * ctrl.getSpeed(), (ActionEvent e) -> {
+            move = move(stats);
             if(!move){
                 path.push(prochainePos);
                 timeStanding++;
@@ -280,7 +275,7 @@ public abstract class Vehicle {
                 stats.addArret(timeStanding);
                 timeStanding = 0;
             }
-            Controle.addUpdateCar(position);
+            ctrl.addUpdateCar(position);
         });
 
         timer.setRepeats(false); 

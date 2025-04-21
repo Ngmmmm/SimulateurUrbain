@@ -54,8 +54,6 @@ public class Road {
             Direction[] newDirections = Arrays.copyOf(direction, direction.length + 1); // Créer un nouveau tableau
             newDirections[newDirections.length - 1] = newDirection; // Ajouter la nouvelle direction
             this.direction = newDirections;
-        } else {
-            System.out.println("La direction " + newDirection + " est déjà présente.");
         }
     }
 

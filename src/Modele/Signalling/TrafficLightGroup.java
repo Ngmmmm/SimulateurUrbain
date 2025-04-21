@@ -1,10 +1,8 @@
 package Modele.Signalling;
 
+import Controle.Controle;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.function.Predicate;
-
-import Controle.Controle;
 
 public class TrafficLightGroup {
     private List<TrafficLight> lights;
@@ -15,44 +13,46 @@ public class TrafficLightGroup {
     private ScheduledExecutorService scheduler;
     public static int nbGroupe = 0;
     public int id;
+    private Controle ctrl;
 
-    public TrafficLightGroup(List<TrafficLight> lights) {
+    public TrafficLightGroup(List<TrafficLight> lights, Controle ctrl) {
+        this.ctrl = ctrl;
         this.lights = lights;
         this.isNSGreen = true;
         setIdLights(lights);
         startCycle();
         id = ++nbGroupe;
-        Controle.lights.add(this);
+        ctrl.getLights().add(this);
     }
 
     public void startCycle() {
         scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(() -> {
             switchLights(LightColor.GREEN);
-            sleep(cycleTimeGreen * Controle.speed);
+            sleep(cycleTimeGreen * ctrl.getSpeed());
             switchLights(LightColor.ORANGE);
-            sleep(cycleTimeOrange* Controle.speed);
+            sleep(cycleTimeOrange* ctrl.getSpeed());
             isNSGreen = !isNSGreen; // Inverser le cycle après le rouge
-        }, 0, cycleTimeGreen* Controle.speed + cycleTimeOrange* Controle.speed +cycleTimeRed* Controle.speed, TimeUnit.MILLISECONDS);
+        }, 0, cycleTimeGreen* ctrl.getSpeed() + cycleTimeOrange* ctrl.getSpeed() +cycleTimeRed* ctrl.getSpeed(), TimeUnit.MILLISECONDS);
     }
 
     private void switchLights(LightColor newState) {
         for (TrafficLight light : lights) {
             if (light.isNorthSouth()) {
-                light.setColor(isNSGreen ? newState : getOppositeState(newState));
+                light.setColor(isNSGreen ? newState : getOppositeState(newState), ctrl);
             } else {
-                light.setColor(isNSGreen ? getOppositeState(newState) : newState);
+                light.setColor(isNSGreen ? getOppositeState(newState) : newState, ctrl);
             }
         }
     }
 
     private LightColor getOppositeState(LightColor state) {
-        switch (state) {
-            case GREEN: return LightColor.RED;
-            case RED: return LightColor.GREEN;
-            case ORANGE: return LightColor.ORANGE; // L'orange reste orange
-            default: return LightColor.RED;
-        }
+        return switch (state) {
+            case GREEN -> LightColor.RED;
+            case RED -> LightColor.GREEN;
+            case ORANGE -> LightColor.ORANGE;
+            default -> LightColor.RED;
+        }; // L'orange reste orange
     }
 
     private void sleep(int mseconds) {
@@ -98,11 +98,7 @@ public class TrafficLightGroup {
 
     }
     public void remove(TrafficLight t){
-        lights.removeIf(new Predicate<TrafficLight>(){
-            public boolean test(TrafficLight tList){
-                return t == tList;
-            }
-        });
+        lights.removeIf((TrafficLight tList) -> t == tList);
     }
 
     public int getId(){

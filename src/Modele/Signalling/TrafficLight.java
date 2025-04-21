@@ -1,9 +1,7 @@
 package Modele.Signalling;
 
 import Controle.Controle;
-import Modele.CityMap;
-import Modele.Direction;
-import Modele.Position;
+import Modele.*;
 
 public class TrafficLight extends Signalling {
     private LightColor color;
@@ -18,10 +16,9 @@ public class TrafficLight extends Signalling {
 
     }
 
-    public void setColor(LightColor color) {
+    public void setColor(LightColor color, Controle ctrl) {
         this.color = color;
-        //System.out.println(this);
-        Controle.addUpdate();
+        ctrl.addUpdate();
     }
 
     public boolean isNorthSouth() {
@@ -31,6 +28,7 @@ public class TrafficLight extends Signalling {
     public String getColor() {
         return color.name();
     }
+    @Override
     public Direction getDirection() { return direction; }
     @Override
     public Position getPosition() {

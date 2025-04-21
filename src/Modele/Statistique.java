@@ -7,6 +7,7 @@ public class Statistique {
     int tempsEchantillon = 0;
     int tempsArret = 0;
     int nbArret = 0;
+    int maxPassage = 0;
 
 
     public void addVoiture(){
@@ -51,4 +52,18 @@ public class Statistique {
     public String getArret(){
         return (nbArret != 0)? String.valueOf(tempsArret / nbArret) : "0";
     }
+
+    public void updateMax(Case c){
+        if (c != null){
+            if (c.getNbPassage() > maxPassage){
+                maxPassage = c.getNbPassage();
+            }
+        }}
+    
+
+    public int getMaxPassage(){
+        return (maxPassage == 0)? 1 : maxPassage;
+    }
+
+
 }

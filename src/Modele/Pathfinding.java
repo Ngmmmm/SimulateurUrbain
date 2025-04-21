@@ -1,11 +1,7 @@
 package Modele;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.PriorityQueue;
-
 import Modele.Vehicle.Vehicle;
+import java.util.*;
 
 public class Pathfinding {
 
