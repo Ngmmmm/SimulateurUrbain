@@ -67,6 +67,19 @@ public class TrafficSimulatorGUI extends JFrame {
         
         
 
+        new Timer(16, e -> {
+            for (int i = 0; i < cityMap.getCols(); i++) {
+                for (int j = 0; j < cityMap.getRows(); j++) {
+                    Case c = cityMap.getGrid()[i][j];
+                    Vehicle v = c.getVehicle();
+                    if (v != null && v.isMovingTransition()) {
+                        v.updateAnimationProgress(0.05f);
+                    }
+                }
+            }
+            repaint(); // redessiner la map avec les positions interpolées
+        }).start();
+
         setVisible(true);
         
         mapPanel.setFocusable(true);
@@ -175,7 +188,6 @@ public class TrafficSimulatorGUI extends JFrame {
             g2d.drawImage(Image.intersection, x, y, cellSize, cellSize, null);
         }
     
-        drawVehicle(g2d, currentCase, x, y);
         drawSignalling(g2d, currentCase, x, y, direction[0], angle);
     }
     private double getRotationAngle(Direction entry, Direction exit) {
@@ -193,17 +205,36 @@ public class TrafficSimulatorGUI extends JFrame {
         }
     }
     
-    private void drawVehicle(Graphics2D g2d, Case currentCase, int x, int y) {
-        if (currentCase.getVehicle() == null) return;
+    private void drawVehicle(Graphics2D g2d, Vehicle vehicle) {
+        float progress = vehicle.getAnimationProgress();
     
-        if (currentCase.getVehicle() instanceof Car) {
-            g2d.drawImage(Image.getImgCar(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
-        } else if (currentCase.getVehicle() instanceof Bus) {
-            g2d.drawImage(Image.getImgBus(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
-        } else if (currentCase.getVehicle() instanceof Truck) {
-            g2d.drawImage(Image.getImgCamion(currentCase.getVehicle().getDirection()), x, y, cellSize, cellSize, null);
+        Position oldPos = vehicle.getOldPosition();
+        Position newPos = vehicle.getPosition();
+    
+        int oldX = oldPos.getX() * cellSize;
+        int oldY = oldPos.getY() * cellSize;
+        int newX = newPos.getX() * cellSize;
+        int newY = newPos.getY() * cellSize;
+    
+        int drawX = (int) ((1 - progress) * oldX + progress * newX);
+        int drawY = (int) ((1 - progress) * oldY + progress * newY);
+    
+        BufferedImage img = null;
+        if (vehicle instanceof Car) {
+            img = Image.getImgCar(vehicle.getDirection());
+        } else if (vehicle instanceof Bus) {
+            img = Image.getImgBus(vehicle.getDirection());
+        } else if (vehicle instanceof Truck) {
+            img = Image.getImgCamion(vehicle.getDirection());
+        }
+    
+        if (img != null) {
+            g2d.drawImage(img, drawX, drawY, cellSize, cellSize, null);
         }
     }
+    
+    
+     
     
     private void drawSignalling(Graphics2D g2d, Case currentCase, int x, int y, Direction direction, double angle) {
         if (currentCase.getSignalling() == null) return;
@@ -338,6 +369,15 @@ public class TrafficSimulatorGUI extends JFrame {
         for (int i = startRow; i < endRow; i++) {
             for (int j = startCol; j < endCol; j++) {
                 drawCase(g, i, j);
+            }
+        }
+        Graphics2D g2d = (Graphics2D) g;
+        for (int i = 0; i < cityMap.getRows(); i++) {
+            for (int j = 0; j < cityMap.getCols(); j++) {
+                Vehicle v = cityMap.getGrid()[i][j].getVehicle();
+                if (v != null) {
+                    drawVehicle(g2d, v); // dessin par position interpolée
+                }
             }
         }
     }
