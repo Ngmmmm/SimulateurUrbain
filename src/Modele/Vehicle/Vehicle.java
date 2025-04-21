@@ -209,7 +209,7 @@ public abstract class Vehicle {
         return true;
     }
 
-    public boolean move(){
+    public boolean move(Statistique stats){
         Case act = getCase(position);
         Case actRight = getCase(rightPos());
         if (nextCaseIsValid() && checkPrio()){
@@ -219,6 +219,7 @@ public abstract class Vehicle {
                 position = nextPosition();
                 map.getGrid()[position.getY()][position.getX()].setVehicle(this);
                 map.getGrid()[position.getY()][position.getX()].addPassage();
+                stats.updateMax(map.getGrid()[position.getY()][position.getX()]);
                 return true;
             }
         }
@@ -262,7 +263,7 @@ public abstract class Vehicle {
         Direction prochaineDir = Direction.getDirection(position, prochainePos);
         changeDirection(prochaineDir);
         Timer timer = new Timer(this.speed * 50 * ctrl.getSpeed(), (ActionEvent e) -> {
-            move = move();
+            move = move(stats);
             if(!move){
                 path.push(prochainePos);
                 timeStanding++;

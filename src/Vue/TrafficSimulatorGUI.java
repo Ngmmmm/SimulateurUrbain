@@ -118,7 +118,11 @@ public class TrafficSimulatorGUI extends JFrame {
         Case currentCase = cityMap.getGrid()[i][j];
     
         if (currentCase.getRoad() != null) {
-            drawRoad(g, currentCase, x, y, i, j);
+            if(cityMap.getMode()){
+                drawFreq(g, currentCase, x, y);
+            }else{
+                drawRoad(g, currentCase, x, y, i, j);
+            }
         } else if (currentCase.getBuilding() != null) {
             g.drawImage(Image.imgBuilding, x, y, cellSize, cellSize, null);
         } else {
@@ -128,6 +132,13 @@ public class TrafficSimulatorGUI extends JFrame {
     
         drawSelectionHighlights(g, x, y, i, j);
         drawHighlightMode(g, x, y, i, j);
+    }
+
+    private void drawFreq(Graphics g, Case currentCase, int x, int y){
+        double ratio = ((double) currentCase.getNbPassage()) / ((double) stats.getMaxPassage());
+        int grad = (int) Math.floor(255 * (1 - ratio));
+        g.setColor(new Color(255, grad, grad));
+        g.fillRect(x, y, cellSize, cellSize);
     }
     
     private void drawRoad(Graphics g, Case currentCase, int x, int y, int i, int j) {
@@ -433,11 +444,19 @@ public class TrafficSimulatorGUI extends JFrame {
         JButton routeButton = new JButton("Mettre une route/changer rotation");
         JButton feuButton = makeButton("Mettre un Feu/changer de groupe", "feu");
         JButton voitureButton = makeButton("Mettre une voiture", "voiture");
+        JButton tabFreq = new JButton("Montrer la fréquence de passage des cases");
+
+
+        tabFreq.addActionListener((ActionEvent e) ->{
+            cityMap.setMode(!cityMap.getMode());
+            mapPanel.requestFocus();
+        });
 
         box.add(maisonButton);
         box.add(routeButton);
         box.add(feuButton);
         box.add(voitureButton);
+        box.add(tabFreq);
 
         JLabel speedLabel = new JLabel("Speed", JLabel.CENTER);
         box.add(speedLabel);

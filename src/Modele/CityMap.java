@@ -9,6 +9,7 @@ public class CityMap{
     private int cols;
     LinkedList<Position> accessiblePosition;
 
+    private boolean isModefrequence = false;
     private Case[][] grid; // Grille représentant la carte
 
 
@@ -290,6 +291,14 @@ public class CityMap{
             }
         }
         return false;
+    }
+
+    public boolean getMode(){
+        return isModefrequence;
+    }
+
+    public void setMode(boolean b){
+        isModefrequence = b;
     }
 
 

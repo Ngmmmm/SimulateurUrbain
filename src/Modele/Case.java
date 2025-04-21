@@ -93,6 +93,10 @@ public class Case{
         this.pos = pos;
     }
 
+    public int getNbPassage(){
+        return nbPassage;
+    }
+
     public boolean isRoad(){
         return this.road != null;
     }
