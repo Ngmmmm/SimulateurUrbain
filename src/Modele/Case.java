@@ -22,19 +22,20 @@ public class Case{
 
     // Pas fonctionnelle pour l'instant
     public Case(String type){
-        this.vehicle = null;
-        this.signalling = null;
-        this.pos = null;
+        this();
         switch (type) {
             case "Building" -> {
                 this.building = new Building();
                 this.road = null;
+                break;
             }
-            case "Road" -> //this.road = new Road();
+            case "Road" -> {
                 this.building = null;
+                break;
+            }
+
             default -> {
-                this.road = null;
-                this.building = null;
+                break;
             }
         }
 
@@ -51,56 +52,6 @@ public class Case{
             this.building = null;
         }
     }
-
-
-    public Vehicle getVehicle() {
-        return this.vehicle;
-    }
-
-    public void setVehicle(Vehicle vehicle) {
-        this.vehicle = vehicle;
-    }
-
-    public Building getBuilding() {
-        return this.building;
-    }
-
-    public void setBuilding(Building building) {
-        this.building = building;
-    }
-
-    public Road getRoad() {
-        return this.road;
-    }
-
-    public void setRoad(Road road) {
-        this.road = road;
-    }
-
-    public Signalling getSignalling() {
-        return this.signalling;
-    }
-
-    public void setSignalling(Signalling signalling) {
-        this.signalling = signalling;
-    }
-
-    public Position getPos() {
-        return this.pos;
-    }
-
-    public void setPos(Position pos) {
-        this.pos = pos;
-    }
-
-    public int getNbPassage(){
-        return nbPassage;
-    }
-
-    public boolean isRoad(){
-        return this.road != null;
-    }
-    public boolean isBuilding(){return this.building != null;}
 
     @Override
     public String toString() {
@@ -122,20 +73,26 @@ public class Case{
         
     }
 
-    public boolean isEmpty(){
-        return (this.vehicle == null && this.building == null);
-    }
+
+    public void setVehicle(Vehicle vehicle) {this.vehicle = vehicle;}
+    public void setBuilding(Building building) {this.building = building;}
+    public void setRoad(Road road) {this.road = road;}
+    public void setSignalling(Signalling signalling) {this.signalling = signalling;}
+    public void setPos(Position pos) {this.pos = pos;}
 
 
-    public void addPassage(){
-        nbPassage++;
-    }
-    public boolean haveVehicle(){
-        return (this.vehicle != null);
-    }
-    public boolean haveBuilding(){
-        return (this.building != null);
-    }
+    public Building getBuilding() {return this.building;}
+    public Road getRoad() {return this.road;}
+    public Vehicle getVehicle() {return this.vehicle;}
+    public Signalling getSignalling() {return this.signalling;}
+    public Position getPos() {return this.pos;}
+    public int getNbPassage(){return nbPassage;}
+    public boolean isRoad(){return this.road != null;}
+    public boolean isBuilding(){return this.building != null;}
+    public boolean isEmpty(){return (this.vehicle == null && this.building == null);}
+    public void addPassage(){nbPassage++;}
+    public boolean haveVehicle(){return (this.vehicle != null);}
+    public boolean haveBuilding(){return (this.building != null);}
 
 
 

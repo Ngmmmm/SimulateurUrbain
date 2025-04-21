@@ -20,90 +20,44 @@ public class Road {
         this.lineType = lineType;
     }
 
-    public Direction[] getDirection() {
-        return direction;
-    }
+    // Getters & Setters
+    public Direction[] getDirection() { return direction; }
+    public void setDirection(Direction[] direction) { this.direction = direction; }
 
-    public void setDirection(Direction[] direction) {
-        this.direction = direction;
-    }
+    public String getLineType() { return lineType; }
+    public void setLineType(String lineType) { this.lineType = lineType; }
 
-    public String getLineType() {
-        return lineType;
-    }
+    public boolean isIntersection() { return isIntersection; }
+    public void setIntersection(boolean isIntersection) { this.isIntersection = isIntersection; }
 
-    public void setLineType(String lineType) {
-        this.lineType = lineType;
-    }
+    public double getWeight() { return weight; }
+    public void setWeight(double weight) { this.weight = weight; }
 
-    public void setIntersection(boolean b) {
-        isIntersection = b;
-    }
+    public double getTrafficFactor() { return trafficFactor; }
+    public void setTrafficFactor(double trafficFactor) { this.trafficFactor = trafficFactor; }
 
-    public boolean isIntersection() {
-        return isIntersection;
+    public boolean hasTrafficLight() { return hasTrafficLight; }
+    public void setTrafficLight(boolean hasTrafficLight) { this.hasTrafficLight = hasTrafficLight; }
+
+    public int getTrafficLightDelay() { return trafficLightDelay; }
+    public void setTrafficLightDelay(int trafficLightDelay) { this.trafficLightDelay = trafficLightDelay; }
+
+    public boolean hasStopSign() { return hasStopSign; }
+    public void setStopSign(boolean hasStopSign) { this.hasStopSign = hasStopSign; }
+
+    public boolean isDoubleLane() { return isDoubleLane; }
+    public void setDoubleLane(boolean isDoubleLane) { this.isDoubleLane = isDoubleLane; }
+
+    // Méthode pour ajouter une direction
+    public void addDirection(Direction newDirection) {
+        if (!Arrays.asList(direction).contains(newDirection)) {
+            direction = Arrays.copyOf(direction, direction.length + 1); // Créer un nouveau tableau
+            direction[direction.length - 1] = newDirection; // Ajouter la nouvelle direction
+        }
     }
 
     @Override
     public String toString() {
         return "Route";
-    }
-
-    public void addDirection(Direction newDirection) {
-        if (!Arrays.asList(direction).contains(newDirection)) { // Vérifier si la direction est déjà présente
-            Direction[] newDirections = Arrays.copyOf(direction, direction.length + 1); // Créer un nouveau tableau
-            newDirections[newDirections.length - 1] = newDirection; // Ajouter la nouvelle direction
-            this.direction = newDirections;
-        }
-    }
-
-    // --- Nouveaux getters/setters pour la pondération et le trafic ---
-    
-    public double getWeight() {
-        return weight;
-    }
-
-    public void setWeight(double weight) {
-        this.weight = weight;
-    }
-
-    public double getTrafficFactor() {
-        return trafficFactor;
-    }
-
-    public void setTrafficFactor(double trafficFactor) {
-        this.trafficFactor = trafficFactor;
-    }
-
-    public boolean hasTrafficLight() {
-        return hasTrafficLight;
-    }
-
-    public void setTrafficLight(boolean hasTrafficLight) {
-        this.hasTrafficLight = hasTrafficLight;
-    }
-
-    public int getTrafficLightDelay() {
-        return trafficLightDelay;
-    }
-
-    public void setTrafficLightDelay(int trafficLightDelay) {
-        this.trafficLightDelay = trafficLightDelay;
-    }
-
-    public boolean hasStopSign() {
-        return hasStopSign;
-    }
-
-    public void setStopSign(boolean hasStopSign) {
-        this.hasStopSign = hasStopSign;
-    }
-
-    public boolean isDoubleLane() {
-        return isDoubleLane;
-    }
-
-    public void setDoubleLane(boolean isDoubleLane) {
-        this.isDoubleLane = isDoubleLane;
     }
 }
