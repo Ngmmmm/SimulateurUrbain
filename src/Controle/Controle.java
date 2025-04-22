@@ -2,55 +2,53 @@ package Controle;
 
 import Controle.SetObj.*;
 import Modele.*;
-
 import Modele.Signalling.*;
 import Modele.Vehicle.*;
 import Vue.*;
+
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import java.awt.event.*;
-import java.util.ArrayList;
-import javax.swing.*;
+import java.util.*;
 
 public class Controle {
 
+    // --- Simulation et interface ---
+    private Simulation s;
+    private TrafficSimulatorGUI gui;
+    private Statistique stats;
+    private CityMap cityMap;
 
+    // --- Timers ---
+    private Timer ctrlTimer;
+    private Timer t2;
+    private int speed = 10;
 
-    Simulation s;
-    TrafficSimulatorGUI gui;
-    Statistique stats;
-    CityMap cityMap; 
-    Direction dir;
-    Car car;
-    ArrayList<TrafficLight> allLights; 
-    TrafficLight feu;
-    TrafficLightGroup groupe1; 
+    // --- États de la simulation ---
+    private boolean needUpdate = false;
+    private boolean timerIsRunning = false;
 
-    Timer ctrlTimer;
-    Timer t2;
-    int speed = 10;
+    // --- Objets de contrôle ---
+    private ArrayList<TrafficLightGroup> lights = new ArrayList<>();
+    private ArrayList<Position> toUpdateCar = new ArrayList<>();
+    private Update nextChange;
+    private final Stack2 caseUpdate = new Stack2();
 
-    boolean needUpdate = false;
-    boolean timerIsRunning = false;
-    ArrayList<TrafficLightGroup> lights = new ArrayList<>();
-    ArrayList<Position> toUpdateCar = new ArrayList<>();
-    Update nextChange;
-    Stack2 caseUpdate = new Stack2();
-
-    Controle(){
+    // --- Constructeur ---
+    public Controle() {
         initSim();
         ctrlTimer = new Timer(50 * speed, createActionListener());
-        t2 = new Timer(50*speed, (ActionEvent e) -> {
-            if(gui.isRunning() != ctrlTimer.isRunning()){
+        t2 = new Timer(50 * speed, e -> {
+            if (gui.isRunning() != ctrlTimer.isRunning()) {
                 if (gui.isRunning()) {
                     nextChange = null;
                     caseUpdate.clear();
                     start();
-                    
-                }
-                else {
+                } else {
                     pause();
                 }
             }
-            if(!gui.isRunning() && !caseUpdate.isEmpty() && nextChange != null){
+            if (!gui.isRunning() && !caseUpdate.isEmpty() && nextChange != null) {
                 nextChange.update(cityMap, caseUpdate, stats);
                 caseUpdate.clear();
                 nextChange = null;
@@ -62,60 +60,67 @@ public class Controle {
         t2.start();
     }
 
-    public boolean getUpdate(){
-        return needUpdate;
-    }
-
-
-    public void addUpdate(){
-        needUpdate |= true;
-    }
-
-    public void addUpdateCar(Position pos){
-        toUpdateCar.add(pos);
-        addUpdate();
-    }
-
-    public Stack2 getCaseUpdate(){
-        return caseUpdate;
-    }
-
-    public ArrayList<TrafficLightGroup> getLights(){
-        return lights;
-    }
-
-    public void initSim(){
+    // --- Initialisation ---
+    private void initSim() {
         stats = new Statistique();
         s = new Simulation(stats, this);
         cityMap = s.getCityMap();
     }
 
-    public void removeUpdateCar(Position p){
-        toUpdateCar.removeIf(p::equals);
+    private void initSet() {
+        SetFeu.set = new SetFeu(this, gui);
+        SetMaison.set = new SetMaison(this, gui);
+        SetRoute.set = new SetRoute(this, gui);
+        SetVoiture.set = new SetVoiture(this, gui);
     }
 
-    public void removeLight(TrafficLight light){
-        for(TrafficLightGroup t : lights){
-            if (t.getId() == light.getIDGroupe()){
-                t.remove(light);
-            }
-        }
-    }
-
-    public void pause(){
-        ctrlTimer.stop();
-        for (TrafficLightGroup g : lights){
-            if (!g.isDown()) g.stop();
-        }
-    }
-
-    public void start(){
+    // --- Timer / Simulation ---
+    public void start() {
         ctrlTimer.start();
-        for(TrafficLightGroup g : lights){
+        for (TrafficLightGroup g : lights)
             if (g.isDown()) g.startCycle();
-        }
     }
 
+    public void pause() {
+        ctrlTimer.stop();
+        for (TrafficLightGroup g : lights)
+            if (!g.isDown()) g.stop();
+    }
+
+    public void modifySpeed() {
+        int newDelay = 50 * speed;
+        ctrlTimer.setDelay(newDelay);
+        t2.setDelay(newDelay);
+
+        if (ctrlTimer.isRunning() && t2.isRunning()) {
+            ctrlTimer.stop();
+            t2.stop();
+        }
+
+        ctrlTimer.start();
+        t2.start();
+
+        for (TrafficLightGroup g : lights)
+            g.reset();
+    }
+
+    public ActionListener createActionListener() {
+        return e -> {
+            ArrayList<Position> iter = new ArrayList<>(toUpdateCar);
+            toUpdateCar.clear();
+
+            for (Position p : iter) {
+                Vehicle v = CityMap.getCase(cityMap.getGrid(), p).getVehicle();
+                if (v != null)
+                    needUpdate |= v.followPath(v.path, stats);
+            }
+
+            if (needUpdate)
+                gui.setUpdate(true);
+        };
+    }
+
+    // --- Gestion des modifications de case ---
     public void setChange(String s) {
         if (s.startsWith("route:")) {
             String direction = s.split(":")[1];
@@ -123,7 +128,7 @@ public class Controle {
             nextChange = SetRoute.set;
         } else {
             nextChange = switch (s) {
-                case "route" -> SetRoute.set; 
+                case "route" -> SetRoute.set;
                 case "feu" -> SetFeu.set;
                 case "maison" -> SetMaison.set;
                 case "voiture" -> SetVoiture.set;
@@ -132,67 +137,40 @@ public class Controle {
         }
     }
 
-    public int getSpeed(){
-        return speed;
+    public void removeUpdateCar(Position p) {
+        toUpdateCar.removeIf(p::equals);
     }
 
-    public void setSpeed(int n){
-        speed = n;
-    }
-
-
-    public ActionListener createActionListener(){
-        return (ActionEvent e) -> {
-            Vehicle tmpCar;
-            ArrayList<Position> iter = new ArrayList<>();
-            for(Position p : toUpdateCar){
-                iter.add(p);
+    public void removeLight(TrafficLight light) {
+        for (TrafficLightGroup g : lights) {
+            if (g.getId() == light.getIDGroupe()) {
+                g.remove(light);
+                break;
             }
-            toUpdateCar.clear();
-            for(Position p : iter){
-                tmpCar = CityMap.getCase(cityMap.getGrid(), p).getVehicle();
-                needUpdate |=tmpCar.followPath(tmpCar.path, stats);
-            }
-            if (needUpdate){
-                gui.setUpdate(true);
-            }
-        };
-    }
-
-    public void modifySpeed(){
-        ctrlTimer.setDelay(speed*10);
-        t2.setDelay(speed*10);
-        if (ctrlTimer.isRunning() && t2.isRunning()){
-            ctrlTimer.stop();  // Arrêter le timer en cours
-            t2.stop();
         }
-        ctrlTimer.setDelay(50*speed); // Modifier l'intervalle
-        t2.setDelay(50*speed);
-        ctrlTimer.start(); // Redémarrer avec le nouveau délai
-        t2.start();
-        for(int i = 0; i< lights.size();i++){
-            lights.get(i).reset();
-        }
-    }   
-
-    public void initSet(){
-        SetFeu.set = new SetFeu(this, gui);
-        SetMaison.set = new SetMaison(this, gui);
-        SetRoute.set = new SetRoute(this, gui);
-        SetVoiture.set = new SetVoiture(this, gui);
     }
 
+    // --- Getters / Setters ---
+    public boolean getUpdate() { return needUpdate; }
 
+    public void addUpdate() { needUpdate = true; }
 
+    public void addUpdateCar(Position pos) {
+        toUpdateCar.add(pos);
+        addUpdate();
+    }
+
+    public Stack2 getCaseUpdate() { return caseUpdate; }
+
+    public ArrayList<TrafficLightGroup> getLights() { return lights; }
+
+    public int getSpeed() { return speed; }
+
+    public void setSpeed(int n) { speed = n; }
+    public boolean timerIsRunning(){return timerIsRunning;}
+
+    // --- Point d'entrée ---
     public static void main(String[] args) {
-
-        // Lancer l'interface graphique
-        SwingUtilities.invokeLater(() -> {
-                new Controle();
-            }
-        );
-
+        SwingUtilities.invokeLater(Controle::new);
     }
 }
-
-

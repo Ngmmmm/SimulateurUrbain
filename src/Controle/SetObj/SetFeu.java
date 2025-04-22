@@ -7,67 +7,84 @@ import Vue.TrafficSimulatorGUI;
 import java.util.ArrayList;
 
 public class SetFeu implements Update {
-    
-    Controle ctrl;
-    TrafficSimulatorGUI gui;
 
-    public SetFeu(Controle ctrl, TrafficSimulatorGUI gui){
-        this.ctrl = ctrl;
-    }
+    private final Controle ctrl;
+    private final TrafficSimulatorGUI gui;
 
     public static SetFeu set;
 
+    public SetFeu(Controle ctrl, TrafficSimulatorGUI gui) {
+        this.ctrl = ctrl;
+        this.gui = gui;
+    }
+
     @Override
-    public void update(CityMap map, Stack2 c, Statistique stats){
-        Case toChangeA = CityMap.getCase(map.getGrid(), c.getA());
-        if(toChangeA.getBuilding() != null){
-            return ;
-        }
-        if (toChangeA.getSignalling() == null || !(toChangeA.getSignalling() instanceof TrafficLight)){
-            toChangeA.setSignalling(new TrafficLight(c.getA(), toChangeA.getRoad().getDirection()[0], map));
-            ArrayList<TrafficLight> group = new ArrayList<>();
-            group.add((TrafficLight) toChangeA.getSignalling());
-            new TrafficLightGroup(group, ctrl);
-        }else{
-            Case toChangeB = CityMap.getCase(map.getGrid(), c.getB());
-            if (toChangeB.getSignalling()!= null && toChangeB.getSignalling() instanceof TrafficLight){
-                if (((TrafficLight) toChangeA.getSignalling()).getIDGroupe() == 
-                    ((TrafficLight) toChangeB.getSignalling()).getIDGroupe()){
-                        return ;
-                }
-                TrafficLightGroup a = null;
-                TrafficLightGroup b = null;
-                for(TrafficLightGroup g : ctrl.getLights()){
-                    if (g.getId() == ((TrafficLight) toChangeA.getSignalling()).getIDGroupe()){
-                        a = g;
-                    }
-                    if (g.getId() == ((TrafficLight) toChangeB.getSignalling()).getIDGroupe()){
-                        b = g;
-                    }
-                    if (b != null && a != null){
-                        break;
-                    }
-                }
-                ctrl.removeLight((TrafficLight) toChangeB.getSignalling());
-                a.merge(b);
-            }else{
-                ((TrafficLight) toChangeA.getSignalling()).setColor(
-                    switch (((TrafficLight) toChangeA.getSignalling()).getColor()) {
-                        case "GREEN" ->  LightColor.RED;
-                        case "RED" -> LightColor.GREEN;
-                        case "ORANGE" -> LightColor.ORANGE; // L'orange reste orange
-                        default -> LightColor.RED;
-                    }, ctrl
-                );
+    public void update(CityMap map, Stack2 c, Statistique stats) {
+        Case caseA = CityMap.getCase(map.getGrid(), c.getA());
+
+        // On ne modifie rien si un bâtiment est présent
+        if (caseA.getBuilding() != null) return;
+
+        Signalling signallingA = caseA.getSignalling();
+
+        if (!(signallingA instanceof TrafficLight trafficLightA)) {
+            createNewTrafficLight(caseA, c, map);
+        } else {
+            Case caseB = CityMap.getCase(map.getGrid(), c.getB());
+            Signalling signallingB = caseB.getSignalling();
+
+            if (signallingB instanceof TrafficLight trafficLightB) {
+                if (trafficLightA.getIDGroupe() == trafficLightB.getIDGroupe()) return;
+                mergeTrafficLightGroups(trafficLightA, trafficLightB);
+            } else {
+                toggleTrafficLightColor(trafficLightA);
             }
         }
+
         ctrl.addUpdate();
         gui.setUpdate(true);
-
     }
-    
+
+    private void createNewTrafficLight(Case caseA, Stack2 c, CityMap map) {
+        Direction direction = caseA.getRoad().getDirection()[0];
+        TrafficLight newLight = new TrafficLight(c.getA(), direction, map);
+        caseA.setSignalling(newLight);
+
+        ArrayList<TrafficLight> group = new ArrayList<>();
+        group.add(newLight);
+        new TrafficLightGroup(group, ctrl);
+    }
+
+    private void mergeTrafficLightGroups(TrafficLight a, TrafficLight b) {
+        TrafficLightGroup groupA = null;
+        TrafficLightGroup groupB = null;
+
+        for (TrafficLightGroup g : ctrl.getLights()) {
+            if (g.getId() == a.getIDGroupe()) groupA = g;
+            else if (g.getId() == b.getIDGroupe()) groupB = g;
+            if (groupA != null && groupB != null) break;
+        }
+
+        if (groupA != null && groupB != null) {
+            ctrl.removeLight(b);
+            groupA.merge(groupB);
+        }
+    }
+
+    private void toggleTrafficLightColor(TrafficLight light) {
+        light.setColor(
+            switch (light.getColor()) {
+                case "GREEN" -> LightColor.RED;
+                case "RED" -> LightColor.GREEN;
+                case "ORANGE" -> LightColor.ORANGE;
+                default -> LightColor.RED;
+            },
+            ctrl
+        );
+    }
+
     @Override
-    public String toString(){
+    public String toString() {
         return "feu";
     }
 }

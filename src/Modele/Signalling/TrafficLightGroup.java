@@ -4,104 +4,139 @@ import Controle.Controle;
 import java.util.*;
 import java.util.concurrent.*;
 
+/**
+ * Gère un groupe de feux tricolores synchronisés selon une logique Nord-Sud / Est-Ouest.
+ */
 public class TrafficLightGroup {
+
     private List<TrafficLight> lights;
-    private int cycleTimeGreen = 1000;  // Durée du feu vert
-    private int cycleTimeOrange = 300;  // Durée du feu orange
-    private int cycleTimeRed = 200;     // Durée du feu rouge (ajouté)
-    private boolean isNSGreen; // Indique si les feux Nord-Sud sont verts
+    private int cycleTimeGreen = 1000;   // Durée du vert en ms
+    private int cycleTimeOrange = 300;   // Durée de l'orange en ms
+    private int cycleTimeRed = 200;      // Durée du rouge en ms (utilisé pour décaler les cycles)
+    private boolean isNSGreen;           // Vrai si Nord-Sud est vert
     private ScheduledExecutorService scheduler;
     public static int nbGroupe = 0;
-    public int id;
+    private int id;
     private Controle ctrl;
 
+    /**
+     * Initialise un groupe de feux avec un cycle automatique.
+     */
     public TrafficLightGroup(List<TrafficLight> lights, Controle ctrl) {
         this.ctrl = ctrl;
         this.lights = lights;
         this.isNSGreen = true;
-        setIdLights(lights);
-        startCycle();
         id = ++nbGroupe;
+        setIdLights(lights);
         ctrl.getLights().add(this);
+        startCycle();
     }
 
+    /**
+     * Lance le cycle des feux (vert → orange → inverse).
+     */
     public void startCycle() {
         scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(() -> {
             switchLights(LightColor.GREEN);
             sleep(cycleTimeGreen * ctrl.getSpeed());
             switchLights(LightColor.ORANGE);
-            sleep(cycleTimeOrange* ctrl.getSpeed());
-            isNSGreen = !isNSGreen; // Inverser le cycle après le rouge
-        }, 0, cycleTimeGreen* ctrl.getSpeed() + cycleTimeOrange* ctrl.getSpeed() +cycleTimeRed* ctrl.getSpeed(), TimeUnit.MILLISECONDS);
+            sleep(cycleTimeOrange * ctrl.getSpeed());
+            isNSGreen = !isNSGreen;
+        }, 0,
+           (cycleTimeGreen + cycleTimeOrange + cycleTimeRed) * ctrl.getSpeed(),
+           TimeUnit.MILLISECONDS);
     }
 
+    /**
+     * Change la couleur des feux selon leur direction et l'état du groupe.
+     */
     private void switchLights(LightColor newState) {
         for (TrafficLight light : lights) {
-            if (light.isNorthSouth()) {
-                light.setColor(isNSGreen ? newState : getOppositeState(newState), ctrl);
-            } else {
-                light.setColor(isNSGreen ? getOppositeState(newState) : newState, ctrl);
-            }
+            boolean isNS = light.isNorthSouth();
+            LightColor color = isNS == isNSGreen ? newState : getOppositeState(newState);
+            light.setColor(color, ctrl);
         }
     }
 
+    /**
+     * Renvoie la couleur opposée (rouge ↔ vert, orange = orange).
+     */
     private LightColor getOppositeState(LightColor state) {
         return switch (state) {
             case GREEN -> LightColor.RED;
             case RED -> LightColor.GREEN;
             case ORANGE -> LightColor.ORANGE;
-            default -> LightColor.RED;
-        }; // L'orange reste orange
+        };
     }
 
-    private void sleep(int mseconds) {
-        try { Thread.sleep(mseconds); } 
+    /**
+     * Pause d'attente dans le cycle (utilisée pour simuler le temps).
+     */
+    private void sleep(int milliseconds) {
+        try { Thread.sleep(milliseconds); }
         catch (InterruptedException e) { Thread.currentThread().interrupt(); }
     }
 
+    /**
+     * Arrête le cycle des feux.
+     */
     public void stop() {
         scheduler.shutdownNow();
     }
 
+    /**
+     * Redémarre le cycle des feux depuis le début.
+     */
     public void reset() {
         stop();
         startCycle();
     }
 
-    public boolean isDown(){
+    /**
+     * Vérifie si le cycle est arrêté.
+     */
+    public boolean isDown() {
         return scheduler.isShutdown();
     }
 
+    /**
+     * Fusionne un autre groupe de feux dans ce groupe.
+     */
+    public void merge(TrafficLightGroup g) {
+        for (TrafficLight light : g.lights) add(light);
+    }
+
+    /**
+     * Ajoute un feu au groupe s'il n'y est pas déjà.
+     */
+    public void add(TrafficLight t) {
+        if (!lights.contains(t)) {
+            lights.add(t);
+            t.setIDGroupe(this.id);
+        }
+    }
+
+    /**
+     * Supprime un feu du groupe.
+     */
+    public void remove(TrafficLight t) {
+        lights.remove(t);
+    }
+
+    /**
+     * Attribue l'identifiant du groupe à tous les feux.
+     */
     private void setIdLights(List<TrafficLight> lights) {
         for (TrafficLight light : lights) {
             light.setIDGroupe(this.id);
         }
-
     }
 
-    public void merge(TrafficLightGroup g){
-        for(TrafficLight light : g.lights){
-            add(light);
-        }
-    }
-
-    public void add(TrafficLight t){
-        boolean flag = true;
-        for (TrafficLight f : lights){
-            flag &= (f != t);
-        }
-        if (flag){
-            lights.add(t);
-            t.setIDGroupe(this.id);
-        }
-
-    }
-    public void remove(TrafficLight t){
-        lights.removeIf((TrafficLight tList) -> t == tList);
-    }
-
-    public int getId(){
+    /**
+     * Retourne l'identifiant du groupe.
+     */
+    public int getId() {
         return id;
     }
 }

@@ -5,7 +5,6 @@ import java.util.*;
 
 public class Pathfinding {
 
-    
     private Pathfinding() {
         // Empêcher l'instanciation de la classe statique
     }
@@ -19,8 +18,8 @@ public class Pathfinding {
         Position[][] previous = new Position[rows][cols]; // Chemin pour reconstituer
 
         // Initialisation des distances
-        for (int i = 0; i < rows; i++) {
-            Arrays.fill(distances[i], Double.MAX_VALUE);
+        for (double[] row : distances) {
+            Arrays.fill(row, Double.MAX_VALUE);
         }
         distances[start.getY()][start.getX()] = 0;
 
@@ -51,8 +50,8 @@ public class Pathfinding {
                     }
 
                     Road neighborRoad = cityMap.getRoad(neighbor);
-                    double baseWeight = neighborRoad.getWeight(); // Poids de la route
-                    double trafficFactor = neighborRoad.getTrafficFactor(); // Congestion
+                    double baseWeight = neighborRoad.getWeight();
+                    double trafficFactor = neighborRoad.getTrafficFactor();
                     double delay = 0;
 
                     // Gestion des feux rouges
@@ -67,7 +66,7 @@ public class Pathfinding {
 
                     // Réduction de l’impact du trafic si route à double voie
                     if (neighborRoad.isDoubleLane()) {
-                        trafficFactor *= 0.5; // Réduction de moitié
+                        trafficFactor *= 0.5;
                     }
 
                     // --- Gestion des véhicules sur la route ---
@@ -91,7 +90,7 @@ public class Pathfinding {
 
         return new LinkedList<>(); // Aucun chemin trouvé
     }
-  
+
     private static LinkedList<Position> reconstructPath(Position[][] previous, Position goal) {
         LinkedList<Position> path = new LinkedList<>();
         Position current = goal;
@@ -103,9 +102,6 @@ public class Pathfinding {
         return path;
     }
 
-
-
-
     public static LinkedList<Position> findAllAccessiblePositions(CityMap cityMap, Position start) {
         int rows = cityMap.getGrid().length;
         int cols = cityMap.getGrid()[0].length;
@@ -114,8 +110,8 @@ public class Pathfinding {
         double[][] distances = new double[rows][cols]; // Distance minimale trouvée
     
         // Initialisation des distances à l'infini
-        for (int i = 0; i < rows; i++) {
-            Arrays.fill(distances[i], Double.MAX_VALUE);
+        for (double[] row : distances) {
+            Arrays.fill(row, Double.MAX_VALUE);
         }
         distances[start.getY()][start.getX()] = 0;
     
@@ -124,13 +120,10 @@ public class Pathfinding {
         openSet.add(start);
     
         while (!openSet.isEmpty()) {
-            // Extraire la position avec la plus petite distance
             Position current = openSet.poll();
     
             // Si déjà visité, on passe
-            if (visited[current.getY()][current.getX()]) {
-                continue;
-            }
+            if (visited[current.getY()][current.getX()]) continue;
             visited[current.getY()][current.getX()] = true;
     
             // Explorer les voisins valides
@@ -166,45 +159,37 @@ public class Pathfinding {
     
         return accessiblePositions;
     }
-    
 
-
-    public static LinkedList<Position> FindSpawnPosition(CityMap map){
-        LinkedList<Position> resultat = new LinkedList<>();
+    public static LinkedList<Position> FindSpawnPosition(CityMap map) {
+        LinkedList<Position> result = new LinkedList<>();
         int rows = map.getRows();
         int cols = map.getCols();
+        Case[][] grid = map.getGrid();
 
-        Case[][]grid = map.getGrid();
-        
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < 4; j++) {  // Boucle sur les 4 bords
                 int x = (j == 0) ? 0 : (j == 1) ? i : (j == 2) ? rows - 1 : i;
                 int y = (j == 0) ? i : (j == 1) ? 0 : (j == 2) ? i : cols - 1;
-        
+
                 if (grid[y][x].isRoad()) {
                     Direction[] directions = grid[y][x].getRoad().getDirection();
                     Position pos = new Position(x, y);
-                    boolean test = false;
-        
+                    boolean isValid = false;
+
                     for (Direction dir : directions) {
                         if (dir.move(pos).posIsInMap(rows, cols)) {
-                            test = true;
+                            isValid = true;
                             break;
                         }
                     }
-        
-                    if (test) {
-                        resultat.add(pos);
+
+                    if (isValid) {
+                        result.add(pos);
                     }
                 }
             }
         }
         
-        return resultat;
-
-
+        return result;
     }
-
-    
-    
 }

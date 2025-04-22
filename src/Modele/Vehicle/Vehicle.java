@@ -195,14 +195,19 @@ public abstract class Vehicle {
                         return false;
                     }
                 }else if(signal instanceof Stop){
-                    if(checkCaseForSignalling() != null){
-                            Timer timer = new Timer(200 * ctrl.getSpeed(), (ActionEvent e) -> {
-                                this.stopOk = getCase(checkCaseForSignalling()).isEmpty();
-                            });
+                    Position targetPosition = checkCaseForSignalling();
+                    Case caseToCheck = getCase(targetPosition);
+                    if (caseToCheck != null) {
+                        Timer timer = new Timer(200 * ctrl.getSpeed(), (ActionEvent e) -> {
+                            this.stopOk = caseToCheck.isEmpty();
+                        });
                     
-                            timer.setRepeats(false); 
-                            timer.start();
-                            return this.stopOk;
+                        timer.setRepeats(false); 
+                        timer.start();
+                        return this.stopOk;
+                    } else {
+                        // Position non valide : on considère par défaut qu'on ne peut pas avancer
+                        return false;
                     }
 
                 }else return !(signal instanceof NoEntry);

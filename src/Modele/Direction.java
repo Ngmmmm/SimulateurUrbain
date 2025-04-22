@@ -20,7 +20,7 @@ public enum Direction {
 
     @Override
     public String toString() {
-        return name(); // Utilise le nom de l'enum (UP, DOWN, etc.)
+        return name();
     }
 
     public static Direction fromString(String direction) {
@@ -34,12 +34,10 @@ public enum Direction {
     public static Direction getDirection(Position from, Position to) {
         int dx = to.getX() - from.getX();
         int dy = to.getY() - from.getY();
-
         if (dx == 1 && dy == 0) return RIGHT;
         if (dx == -1 && dy == 0) return LEFT;
         if (dx == 0 && dy == 1) return DOWN;
         if (dx == 0 && dy == -1) return UP;
-
         return null;
     }
 
@@ -49,7 +47,10 @@ public enum Direction {
             case DOWN -> UP;
             case LEFT -> RIGHT;
             case RIGHT -> LEFT;
-            default -> null;
         };
     }
+
+    // Getters compactés
+    public int getDeltaX() { return deltaX; }
+    public int getDeltaY() { return deltaY; }
 }
