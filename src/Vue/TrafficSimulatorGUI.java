@@ -151,26 +151,29 @@ public class TrafficSimulatorGUI extends JFrame {
         Direction[] direction = currentCase.getRoad().getDirection();
         double angle = getRotationAngle(direction[0]);
     
+        // Sauvegarder la transformation actuelle
+        AffineTransform oldTransform = g2d.getTransform();
+        
+        // Dessiner la route droite
         g2d.translate(x + cellSize / 2, y + cellSize / 2);
         g2d.rotate(angle);
         g2d.drawImage(Image.imgRoad, -cellSize / 2, -cellSize / 2, cellSize, cellSize, null);
-        g2d.rotate(-angle);
-        g2d.translate(-x - cellSize / 2, -y - cellSize / 2);
+        // Restaurer la transformation
+        g2d.setTransform(oldTransform);
     
         Direction[] curveDirections = getCurveDirections(currentCase, i, j);
         if (curveDirections != null) {
             Direction entry = curveDirections[0];
             Direction exit = curveDirections[1];
             double rotationAngle = getRotationAngle(entry, exit);
-            AffineTransform oldTransform = g2d.getTransform();
-            AffineTransform at = new AffineTransform();
             
-            at.translate(x + cellSize/2, y + cellSize/2);
-            at.rotate(rotationAngle);
-            at.translate(-cellSize/2, -cellSize/2);
+            // Appliquer la transformation pour le virage
+            g2d.translate(x + cellSize/2, y + cellSize/2);
+            g2d.rotate(rotationAngle);
+            g2d.translate(-cellSize/2, -cellSize/2);
             
-            g2d.setTransform(at);
             g2d.drawImage(Image.imgVirage, 0, 0, cellSize, cellSize, null);
+            // Restaurer la transformation
             g2d.setTransform(oldTransform);
         }
     
