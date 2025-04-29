@@ -1,93 +1,115 @@
-# 2024-CB1-A-SimulateurUrbain
 
+```markdown
+# 🚦 Simulateur de Gestion de Trafic Urbain
 
+Projet de L2 Programmation 2024–2025 — Université
 
-## Getting started
+## 📌 Description
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+Ce projet a pour but de simuler le trafic urbain d'une ville fictive à l'aide d'une **application Java interactive**. Il comprend la modélisation d'intersections, routes, feux de signalisation, et véhicules se déplaçant selon des règles réalistes. Le simulateur permet à l'utilisateur d'interagir avec la carte, d'observer le trafic, de consulter des statistiques, et d'optimiser la circulation grâce à des algorithmes intelligents.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## 🎯 Objectifs pédagogiques
 
-## Add your files
+- Utilisation de l'architecture **Modèle-Vue-Contrôleur (MVC)**.
+- Conception d’une **interface graphique avec Swing**.
+- Implémentation de **règles de trafic réalistes**.
+- Collecte et affichage de **statistiques en temps réel**.
+- Introduction aux **algorithmes d’optimisation heuristiques**.
+- Travail collaboratif avec **Git/GitLab**.
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+## 🛠️ Fonctionnalités principales
+
+### 🗺️ Carte Interactive
+- Affichage de routes, intersections, feux de signalisation.
+- Zoom/dézoom possible.
+- Routes de tailles variées.
+
+### 🚗 Simulation de trafic
+- Véhicules variés : voitures, bus, camions.
+- Différences de vitesse et de taille.
+- Gestion de la priorité et des feux aux intersections.
+
+### 🚦 Gestion des feux de signalisation
+- Ajout et contrôle manuel des cycles.
+- Interaction utilisateur via clics.
+
+### 📊 Statistiques en temps réel
+- Temps moyen de trajet.
+- Temps de parcours par route.
+- Embouteillages.
+- Estimation de la consommation de carburant.
+
+### 🧠 Extensions (optionnelles)
+- Algorithmes d’optimisation (génétique, tabou, etc.).
+- Sauvegarde/chargement de la simulation.
+
+## 🧱 Architecture du projet
 
 ```
-cd existing_repo
-git remote add origin https://moule.informatique.univ-paris-diderot.fr/tp-1/2024-cb1-a-simulateururbain.git
-git branch -M main
-git push -uf origin main
+C:.
+├── .vscode                 # Configuration de l’environnement de développement
+├── bin                    # Fichiers compilés
+│   ├── Controle
+│   │   └── SetObj
+│   ├── Modele
+│   │   ├── Enregistrer
+│   │   ├── Signalling
+│   │   └── Vehicle
+│   └── Vue
+├── img                    # Images utilisées dans l’interface
+├── Save                   # Fichiers de sauvegarde de simulation
+└── src                    # Code source du projet
+    ├── Controle           # Contrôleurs du projet
+    │   └── SetObj
+    ├── Modele             # Données et logique métier
+    │   ├── Enregistrer
+    │   ├── Signalling
+    │   └── Vehicle
+    └── Vue                # Interface graphique avec Swing
 ```
 
-## Integrate with your tools
+## 💻 Technologies utilisées
 
-- [ ] [Set up project integrations](https://moule.informatique.univ-paris-diderot.fr/tp-1/2024-cb1-a-simulateururbain/-/settings/integrations)
+- **Java 17+**
+- **Swing (javax.swing)** pour l’interface graphique
+- **Git / GitLab** pour la collaboration
+- **Timer** Swing pour l'animation
+- **OOP et MVC** pour la structuration du code
 
-## Collaborate with your team
+## 🚀 Lancement du projet
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+1. Cloner le projet :
+   ```bash
+   git clone <url_du_dépôt>
+   ```
 
-## Test and Deploy
+2. Compiler le projet :
+   ```bash
+   javac -d bin src/**/*.java
+   ```
 
-Use the built-in continuous integration in GitLab.
+3. Lancer l'application :
+   ```bash
+   java -cp bin Vue.Main
+   ```
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+## 👥 Équipe projet
 
-***
+- 👤 [Nom 1] — Gestion de la carte et affichage
+- 👤 [Nom 2] — Logique de simulation des véhicules
+- 👤 [Nom 3] — Statistiques et optimisation
+- 👤 [Nom 4] — Interface utilisateur et interactions
+- 🧑‍🏫 Superviseur : Costas Bouyioukos
 
-# Editing this README
+## 📅 Planification
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+- **Semaines 1–2** : Répartition des rôles, plan de projet
+- **Semaine 6** : Version fonctionnelle minimale
+- **Semaines 7+** : Optimisation, extensions, interface avancée
 
-## Suggestions for a good README
+## 📂 Licence
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+Projet académique — Utilisation libre à des fins pédagogiques uniquement.
+```
 
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+Souhaites-tu aussi un exemple de `gitignore` adapté pour ce projet Java ?
