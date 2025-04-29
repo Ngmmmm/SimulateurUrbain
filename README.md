@@ -1,5 +1,4 @@
 
-```markdown
 # 🚦 Simulateur de Gestion de Trafic Urbain
 
 Projet de L2 Programmation 2024–2025 — Université
@@ -39,8 +38,10 @@ Ce projet a pour but de simuler le trafic urbain d'une ville fictive à l'aide d
 - Embouteillages.
 - Estimation de la consommation de carburant.
 
-### 🧠 Extensions (optionnelles)
-- Algorithmes d’optimisation (génétique, tabou, etc.).
+### 📌 Calcul de trajets
+- Utilisation de l’algorithme de Dijkstra pour déterminer les plus courts chemins entre intersections, selon les conditions de trafic.
+
+### 🧠 Extensions
 - Sauvegarde/chargement de la simulation.
 
 ## 🧱 Architecture du projet
@@ -95,21 +96,14 @@ C:.
 
 ## 👥 Équipe projet
 
-- 👤 [Nom 1] — Gestion de la carte et affichage
-- 👤 [Nom 2] — Logique de simulation des véhicules
-- 👤 [Nom 3] — Statistiques et optimisation
-- 👤 [Nom 4] — Interface utilisateur et interactions
+- 👤 RAMANATHAN Jonas — 22308381
+- 👤 POTIER Nathan — 22305976 
+- 👤 GRÉGOIRE-MELLIER Noa — 22308594
+- 👤 NGUYEN Le-Augustin — 22301887
 - 🧑‍🏫 Superviseur : Costas Bouyioukos
 
-## 📅 Planification
-
-- **Semaines 1–2** : Répartition des rôles, plan de projet
-- **Semaine 6** : Version fonctionnelle minimale
-- **Semaines 7+** : Optimisation, extensions, interface avancée
 
 ## 📂 Licence
 
 Projet académique — Utilisation libre à des fins pédagogiques uniquement.
-```
 
-Souhaites-tu aussi un exemple de `gitignore` adapté pour ce projet Java ?
