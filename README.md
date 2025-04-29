@@ -86,13 +86,23 @@ C:.
 
 2. Compiler le projet :
    ```bash
-   javac -d bin src/**/*.java
+   javac -d bin -cp src src\Controle\*.java src\Controle\SetObj\*.java src\Modele\*.java src\Modele\Enregistrer\*.java src\Modele\Signalling\*.java src\Modele\Vehicle\*.java src\Vue\*.java
    ```
 
 3. Lancer l'application :
    ```bash
    java -cp bin Vue.Main
    ```
+   Sous Windows : 
+    ```bash
+    java -cp "bin;." Controle.Controle
+    ```
+   Sous Linux : 
+    ```bash
+    java -cp "bin:." Controle.Controle
+    ```
+
+
 
 ## 👥 Équipe projet
 
