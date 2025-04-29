@@ -417,7 +417,7 @@ public class TrafficSimulatorGUI extends JFrame {
         labelTable.put(20, new JLabel("-"));
         labelTable.put(2, new JLabel("+"));
         speedSlider.setLabelTable(labelTable);
-        speedSlider.addChangeListener(e -> { ctrl.setSpeed(speedSlider.getValue()); ctrl.modifySpeed(); });
+        speedSlider.addChangeListener(e -> { ctrl.setSpeed(speedSlider.getValue()); ctrl.modifySpeed(); mapPanel.requestFocus(); });
         box.add(speedSlider);
 
         routeButton.addActionListener(e -> {
