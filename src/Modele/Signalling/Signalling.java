@@ -1,8 +1,6 @@
 package Modele.Signalling;
 
-import Modele.Direction;
-import Modele.Position;
-
+import Modele.*;
 
 public abstract class Signalling {
     protected Position position;

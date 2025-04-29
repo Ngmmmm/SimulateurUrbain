@@ -1,37 +1,53 @@
 package Controle.SetObj;
 
 import Controle.Controle;
-import Modele.Stack2;
-import Modele.Statistique;
+import Modele.*;
 import Modele.Signalling.TrafficLight;
 import Vue.TrafficSimulatorGUI;
-import Modele.Building;
-import Modele.Case;
-import Modele.CityMap;
 
 public class SetMaison implements Update {
-    
-    public static final SetMaison set = new SetMaison();
 
-    public void update(CityMap map, Stack2 c, Statistique stats){
-        Case toChange = CityMap.getCase(map.getGrid(), c.getA());
-        if(toChange.getVehicle()!= null){
-            Controle.removeUpdateCar(c.getA());
-            toChange.setVehicle(null);
-        }
-        toChange.setRoad(null);
-        if(toChange.getSignalling() != null && toChange.getSignalling() instanceof TrafficLight){
-            Controle.removeLight((TrafficLight) toChange.getSignalling());
-        }
-        toChange.setSignalling(null);
-        toChange.setBuilding(new Building());
+    private final Controle ctrl;
+    private final TrafficSimulatorGUI gui;
 
-        Controle.addUpdate();
-        TrafficSimulatorGUI.setUpdate(true);
+    public static SetMaison set;
+
+    public SetMaison(Controle ctrl, TrafficSimulatorGUI gui) {
+        this.ctrl = ctrl;
+        this.gui = gui;
     }
 
     @Override
-    public String toString(){
+    public void update(CityMap map, Stack2 c, Statistique stats) {
+        Case target = CityMap.getCase(map.getGrid(), c.getA());
+
+        removeVehicleIfPresent(target, c);
+        clearRoadAndSignalling(target);
+        target.setBuilding(new Building());
+
+        ctrl.addUpdate();
+        gui.setUpdate(true);
+    }
+
+    private void removeVehicleIfPresent(Case target, Stack2 c) {
+        if (target.getVehicle() != null) {
+            ctrl.removeUpdateCar(c.getA());
+            target.setVehicle(null);
+        }
+    }
+
+    private void clearRoadAndSignalling(Case target) {
+        target.setRoad(null);
+
+        if (target.getSignalling() instanceof TrafficLight trafficLight) {
+            ctrl.removeLight(trafficLight);
+        }
+
+        target.setSignalling(null);
+    }
+
+    @Override
+    public String toString() {
         return "maison";
     }
 }

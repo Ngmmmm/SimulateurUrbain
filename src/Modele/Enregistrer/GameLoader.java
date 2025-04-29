@@ -2,17 +2,11 @@ package Modele.Enregistrer;
 
 import Modele.*;
 import Modele.Signalling.*;
-import Modele.Vehicle.Bus;
-import Modele.Vehicle.Car;
-import Modele.Vehicle.Truck;
-import Modele.Vehicle.Vehicle;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import Modele.Vehicle.*;
+import java.io.*;
+import java.util.*;
+
+import Controle.Controle;
 
 public class GameLoader {
 
@@ -22,7 +16,7 @@ public class GameLoader {
      * @param fileName Le nom du fichier de sauvegarde (sans extension).
      * @return La CityMap chargée, ou null en cas d'erreur.
      */
-    public static CityMap loadGame(String fileName, Statistique stats) {
+    public static CityMap loadGame(String fileName, Statistique stats, Controle ctrl) {
         String filePath = "Save/" + fileName + ".txt";
         CityMap cityMap = null;
         Map<Integer, List<TrafficLight>> trafficLightGroups = new HashMap<>();
@@ -81,7 +75,7 @@ public class GameLoader {
                     int destX = Integer.parseInt(destinationData[0]);
                     int destY = Integer.parseInt(destinationData[1]);
                 
-                    Vehicle vehicle = createVehicle(type, id,speed, new Position(x, y), direction, new Position(destX, destY), cityMap, stats);
+                    Vehicle vehicle = createVehicle(type, id,speed, new Position(x, y), direction, new Position(destX, destY), cityMap, stats, ctrl);
                     cityMap.getGrid()[currentRow][currentCol].setVehicle(vehicle);
                 } else if (line.startsWith("Signalisation: ")) {
                     // Lecture des données de la signalisation
@@ -117,7 +111,7 @@ public class GameLoader {
             }
 
             // Recréer les groupes de feux après lecture complète
-            rebuildTrafficLightGroups(trafficLightGroups);
+            rebuildTrafficLightGroups(trafficLightGroups, ctrl);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -133,14 +127,14 @@ public class GameLoader {
      * @param cityMap La carte de la ville
      * @param trafficLightGroups Les groupes de feux stockés temporairement
      */
-    private static void rebuildTrafficLightGroups(Map<Integer, List<TrafficLight>> trafficLightGroups) {
+    private static void rebuildTrafficLightGroups(Map<Integer, List<TrafficLight>> trafficLightGroups, Controle ctrl) {
         for (Map.Entry<Integer, List<TrafficLight>> entry : trafficLightGroups.entrySet()) {
 
             List<TrafficLight> lights = entry.getValue();
 
             // Créer un groupe de feux
             @SuppressWarnings("unused")
-            TrafficLightGroup group = new TrafficLightGroup(lights);
+            TrafficLightGroup group = new TrafficLightGroup(lights, ctrl);
 
         }
     }
@@ -172,28 +166,32 @@ public class GameLoader {
      */
     private static Signalling createSignalling(String type, Position position, Direction direction, CityMap map) {
         switch (type) {
-            case "TrafficLights":
+            case "TrafficLights" -> {
                 return new TrafficLight(position, direction, map);
-            case "Stop":
+            }
+            case "Stop" -> {
                 return new Stop(position, direction);
-            case "NoEntry":
+            }
+            case "NoEntry" -> {
                 return new NoEntry(position, direction);
-            default:
-                throw new IllegalArgumentException("Type de signalisation inconnu : " + type);
+            }
+            default -> throw new IllegalArgumentException("Type de signalisation inconnu : " + type);
         }
     }
 
-    private static Vehicle createVehicle(String type, String id, int speed, Position position, Direction direction, Position destination, CityMap map, Statistique stats) {
-    switch (type) {
-        case "Car":
-            return new Car(id,speed, position, direction, map, destination, stats);
-        case "Truck":
-            return new Truck(id, speed, position, direction, map, destination, stats);
-        case "Bus":
-            return new Bus(id, speed, position, direction, map, destination, stats);
-        default:
-            throw new IllegalArgumentException("Type de véhicule inconnu : " + type);
+    private static Vehicle createVehicle(String type, String id, int speed, Position position, Direction direction, Position destination, CityMap map, Statistique stats, Controle ctrl) {
+        switch (type) {
+            case "Car" -> {
+                return new Car(id,speed, position, direction, map, destination, stats, ctrl);
+            }
+            case "Truck" -> {
+                return new Truck(id, speed, position, direction, map, destination, stats, ctrl);
+            }
+            case "Bus" -> {
+                return new Bus(id, speed, position, direction, map, destination, stats, ctrl);
+            }
+            default -> throw new IllegalArgumentException("Type de véhicule inconnu : " + type);
+        }
     }
-}
 
 }

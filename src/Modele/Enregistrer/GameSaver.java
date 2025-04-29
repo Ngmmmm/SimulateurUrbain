@@ -1,17 +1,11 @@
 package Modele.Enregistrer;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-
 import Modele.*;
 import Modele.Signalling.*;
 import Modele.Vehicle.Vehicle;
+import java.io.*;
+import java.nio.file.*;
+import java.util.*;
 
 public class GameSaver {
     private static final String SAVE_DIRECTORY = "Save";
@@ -56,8 +50,7 @@ public class GameSaver {
                         writer.write("Signalisation: " + signalling.getType() + " " + signalling.getPosition().getX() + "," + signalling.getPosition().getY() + " " + signalling.getDirection());
     
                         // Si c'est un feu de signalisation, sauvegarder l'idGroupe
-                        if (signalling instanceof TrafficLight) {
-                            TrafficLight trafficLight = (TrafficLight) signalling;
+                        if (signalling instanceof TrafficLight trafficLight) {
                             writer.write(" " + trafficLight.getIDGroupe());
                         }
     

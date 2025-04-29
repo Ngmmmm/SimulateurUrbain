@@ -1,15 +1,8 @@
 package Modele.Vehicle;
 
 import Controle.Controle;
-import Modele.Case;
-import Modele.CityMap;
-import Modele.Direction;
-import Modele.Pathfinding;
-import Modele.Position;
+import Modele.*;
 import Modele.Signalling.*;
-import Modele.Simulation;
-import Modele.Statistique;
-
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
@@ -32,8 +25,13 @@ public abstract class Vehicle {
     public LinkedList<Position> path;
     boolean move;
     protected int temps = 0;
+    protected int timeStanding = 0;
+    private Position oldPosition;               // ancienne position
+    private float animationProgress = 1.0f;
+    protected Controle ctrl;
 
-    public Vehicle(String id, int speed, Position position, Direction direction, float fuelConso, CityMap map, Position destination, Statistique stats) {
+    public Vehicle(String id, int speed, Position position, Direction direction, float fuelConso, CityMap map, Position destination, Statistique stats, Controle ctrl) {
+        this.ctrl = ctrl;
         this.id = id;
         this.speed = speed;
         this.position = position;
@@ -49,10 +47,11 @@ public abstract class Vehicle {
         }
         stats.addVoiture();
         followAllPath(stats);
-
+        
     }
 
-    public Vehicle(String id, int speed, Position position, float fuelConso, CityMap map, Position destination, Statistique stats) {
+    public Vehicle(String id, int speed, Position position, float fuelConso, CityMap map, Position destination, Statistique stats, Controle ctrl) {
+        this.ctrl = ctrl;
         this.id = id;
         this.speed = speed;
         this.position = position;
@@ -67,7 +66,6 @@ public abstract class Vehicle {
             map.addVehicle(this);
         }
         stats.addVoiture();
-
     }
 
     public void start() {
@@ -84,7 +82,6 @@ public abstract class Vehicle {
             position = d.move(position);
             consumeFuel();
         } else {
-            System.out.println("No fuel");
             stop();
         }
     }
@@ -198,14 +195,19 @@ public abstract class Vehicle {
                         return false;
                     }
                 }else if(signal instanceof Stop){
-                    if(checkCaseForSignalling() != null){
-                            Timer timer = new Timer(200*Controle.speed, (ActionEvent e) -> {
-                                this.stopOk = getCase(checkCaseForSignalling()).isEmpty();
-                            });
+                    Position targetPosition = checkCaseForSignalling();
+                    Case caseToCheck = getCase(targetPosition);
+                    if (caseToCheck != null) {
+                        Timer timer = new Timer(200 * ctrl.getSpeed(), (ActionEvent e) -> {
+                            this.stopOk = caseToCheck.isEmpty();
+                        });
                     
-                            timer.setRepeats(false); 
-                            timer.start();
-                            return this.stopOk;
+                        timer.setRepeats(false); 
+                        timer.start();
+                        return this.stopOk;
+                    } else {
+                        // Position non valide : on considère par défaut qu'on ne peut pas avancer
+                        return false;
                     }
 
                 }else return !(signal instanceof NoEntry);
@@ -214,18 +216,34 @@ public abstract class Vehicle {
         return true;
     }
 
-    public boolean move(){
+    public boolean move(Statistique stats){
         Case act = getCase(position);
         Case actRight = getCase(rightPos());
-        if (nextCaseIsValid()){
+        if (nextCaseIsValid() && checkPrio()){
             if((act.getSignalling() == null || signallingOk(act)) && (actRight == null ||actRight.getSignalling() == null || signallingOk(actRight))){
                 act.setVehicle(null);
-                Controle.addUpdate();
+                //Controle.addUpdate();
+                startAnimation(position);
                 position = nextPosition();
                 map.getGrid()[position.getY()][position.getX()].setVehicle(this);
+                map.getGrid()[position.getY()][position.getX()].addPassage();
+                stats.updateMax(map.getGrid()[position.getY()][position.getX()]);
                 return true;
             }
         }
+        
+        if (getCase(nextPosition()) != null && getCase(nextPosition()).getVehicle() != null) {
+            LinkedList<Position> temp = Pathfinding.findShortestPath(map, position, destination);
+            if (temp != null && !temp.isEmpty()) { // Vérification ajoutée
+                path = temp;
+
+                return true;
+
+            } else {
+                System.out.println("Erreur: Impossible de recalculer un chemin !");
+            }
+        }
+        
         return false;
     }
 
@@ -238,28 +256,31 @@ public abstract class Vehicle {
     public boolean followPath(LinkedList<Position> path, Statistique stats) {
         temps++;
         move = false;
-        stats.isMoving();
         if (path.isEmpty()) {
             this.getCase(position).setVehicle(null);
-            Simulation.spawnRandomCars(1, stats);
+            Simulation.spawnRandomCars(1, stats, ctrl);
             stats.delVoiture(temps);
             return false; // Arrêt si on a atteint la destination
         }
     
         Position prochainePos = path.pop();
         if (position == prochainePos) {
-            Controle.addUpdateCar(position);
+            ctrl.addUpdateCar(position);
             return false;
         }
         Direction prochaineDir = Direction.getDirection(position, prochainePos);
         changeDirection(prochaineDir);
-        Timer timer = new Timer(this.speed*50*Controle.speed, (ActionEvent e) -> {
-            System.out.println(Controle.speed);
-            move = move();
+        Timer timer = new Timer(this.speed * 50 * ctrl.getSpeed(), (ActionEvent e) -> {
+            move = move(stats);
             if(!move){
                 path.push(prochainePos);
+                timeStanding++;
+            }else{
+                stats.isMoving();
+                stats.addArret(timeStanding);
+                timeStanding = 0;
             }
-            Controle.addUpdateCar(position);
+            ctrl.addUpdateCar(position);
         });
 
         timer.setRepeats(false); 
@@ -285,6 +306,39 @@ public abstract class Vehicle {
     
     public Position getDestination() {
         return destination;
+    }
+
+
+    public boolean checkPrio(){
+        Case right = getCase(rightPos());
+        if(right != null && right.haveBuilding()){
+            Case prio = getCase(checkCaseForSignalling());
+            return !prio.haveVehicle();
+        }else{
+            return true;
+        }
+        
+
+    }
+    public void startAnimation(Position fromPosition) {
+        this.oldPosition = fromPosition;
+        this.animationProgress = 0.0f;
+    }
+    
+    public void updateAnimationProgress(float delta) {
+        animationProgress = Math.min(1.0f, animationProgress + delta);
+    }
+    
+    public boolean isMovingTransition() {
+        return animationProgress < 1.0f;
+    }
+    
+    public float getAnimationProgress() {
+        return animationProgress;
+    }
+    
+    public Position getOldPosition() {
+        return oldPosition != null ? oldPosition : position;
     }
 
 

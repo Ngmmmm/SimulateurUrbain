@@ -1,6 +1,5 @@
 package Modele;
 
-
 public class Stack2{
     
     private Position a;
@@ -16,20 +15,11 @@ public class Stack2{
         return a == b;
     }
 
-    public Position getA(){
-        return a;
-    }
-
-    public Position getB(){
-        return b;
-    }
-
+    public Position getA(){return a;}
+    public Position getB(){return b;}
     public void clear(){
         a = null;
         b = null;
     }
-
-    public boolean isEmpty(){
-        return a == null;
-    }
+    public boolean isEmpty(){return a == null;}
 }
