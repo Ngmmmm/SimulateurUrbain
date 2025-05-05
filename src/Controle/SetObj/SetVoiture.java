@@ -4,7 +4,6 @@ import Controle.Controle;
 import Modele.*;
 import Modele.Vehicle.*;
 import Vue.TrafficSimulatorGUI;
-
 import java.util.List;
 import java.util.Random;
 
@@ -35,7 +34,7 @@ public class SetVoiture implements Update {
         if (accessible.isEmpty()) return;
 
         Position destination = accessible.get(random.nextInt(accessible.size()));
-        Car car = new Car("Car" + Vehicle.nbCar, 2, c.getA(), map, destination, stats, ctrl);
+        Car car = new Car("Car" + Vehicle.nbCar, 0, c.getA(), map, destination, stats, ctrl);
 
         car.checkPath();
 
