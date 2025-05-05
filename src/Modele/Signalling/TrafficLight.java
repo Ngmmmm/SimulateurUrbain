@@ -19,8 +19,10 @@ public class TrafficLight extends Signalling {
     }
 
     public void setColor(LightColor color, Controle ctrl) {
-        this.color = color;
-        ctrl.addUpdate();
+        if (color != null){
+            this.color = color;
+            ctrl.addUpdate();
+        }
     }
 
     @Override
@@ -46,4 +48,12 @@ public class TrafficLight extends Signalling {
     public int getIDGroupe() { return idGroupe; }
 
     public void setIDGroupe(int id) { this.idGroupe = id; }
+
+    public TrafficLightGroup getTrafficLightGroup(Controle ctrl){
+        if (ctrl == null) return null;
+        for (TrafficLightGroup g : ctrl.getLights()) {
+            if (g.getId() == idGroupe) return g;
+        }
+        return null;
+    }
 }
