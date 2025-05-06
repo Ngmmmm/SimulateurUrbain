@@ -55,6 +55,7 @@ public class Controle {
             }
         });
         gui = new TrafficSimulatorGUI(cityMap, stats, this);
+        timerIsRunning = true;
         initSet();
         start();
         t2.start();
@@ -77,14 +78,18 @@ public class Controle {
     // --- Timer / Simulation ---
     public void start() {
         ctrlTimer.start();
-        for (TrafficLightGroup g : lights)
+        timerIsRunning = true;
+        for (TrafficLightGroup g : lights){
             if (g.isDown()) g.startCycle();
+        }
     }
 
     public void pause() {
         ctrlTimer.stop();
-        for (TrafficLightGroup g : lights)
-            if (!g.isDown()) g.stop();
+        timerIsRunning = false;
+        for (TrafficLightGroup g : lights){
+            if (!g.isDown()) {g.stop();}
+        }
     }
 
     public void modifySpeed() {
@@ -167,7 +172,7 @@ public class Controle {
     public int getSpeed() { return speed; }
 
     public void setSpeed(int n) { speed = n; }
-    public boolean timerIsRunning(){return timerIsRunning;}
+    public boolean getTimerIsRunning(){return timerIsRunning;}
 
     // --- Point d'entrée ---
     public static void main(String[] args) {
