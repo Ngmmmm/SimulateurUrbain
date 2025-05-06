@@ -69,7 +69,7 @@ public class TrafficSimulatorGUI extends JFrame {
                     Case c = cityMap.getGrid()[i][j];
                     Vehicle v = c.getVehicle();
                     if (v != null && v.isMovingTransition()) {
-                        v.updateAnimationProgress(0.005f * ctrl.getSpeed());
+                        v.updateAnimationProgress(0.05f );
                     }
                 }
             }

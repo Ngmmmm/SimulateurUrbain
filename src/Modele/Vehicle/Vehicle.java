@@ -326,7 +326,7 @@ public abstract class Vehicle {
     }
     
     public void updateAnimationProgress(float delta) {
-        animationProgress = Math.min(1.0f, animationProgress + delta /(this.speed+1));
+        animationProgress = Math.min(1.0f, animationProgress + delta );
     }
     
     public boolean isMovingTransition() {
