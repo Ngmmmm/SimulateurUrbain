@@ -496,39 +496,54 @@ public class TrafficSimulatorGUI extends JFrame {
         return new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                int x = e.getY()/cellSize;
-                int y = e.getX()/cellSize;
-                Position clickedPos = new Position(y, x);
+                int row = e.getY() / cellSize, col = e.getX() / cellSize;
+                Position pos = new Position(col, row);
+    
                 if (!uiTimer.isRunning()) {
-                    ctrl.getCaseUpdate().add(new Position(y, x));
-                    selectedCells.add(new Position(y, x));
+                    ctrl.getCaseUpdate().add(pos);
+                    selectedCells.add(pos);
                 }
-                Vehicle vehicle = cityMap.getVehicleAt(clickedPos);
-                if (vehicle != null && vehicle.path != null) {
-                    highlightedPath = new LinkedList<>(vehicle.path);
-                    repaint();
-                }
+    
+                Vehicle v = cityMap.getVehicleAt(pos);
+                highlightedPath = (v != null && v.path != null) ? new LinkedList<>(v.path) : null;
+                mapPanel.repaint();
+            }
+    
+            @Override
+            public void mouseExited(MouseEvent e) {
+                highlightedCell = null;
                 mapPanel.repaint();
             }
         };
     }
-
+    
     private MouseMotionListener createMouseMotionListener() {
         return new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
                 if (lastDragPoint != null) {
-                    JScrollBar horizontal = scrollPane.getHorizontalScrollBar();
-                    JScrollBar vertical = scrollPane.getVerticalScrollBar();
-                    int deltaX = lastDragPoint.x - e.getX();
-                    int deltaY = lastDragPoint.y - e.getY();
-                    horizontal.setValue(horizontal.getValue() + deltaX);
-                    vertical.setValue(vertical.getValue() + deltaY);
+                    scrollPane.getHorizontalScrollBar().setValue(
+                        scrollPane.getHorizontalScrollBar().getValue() + lastDragPoint.x - e.getX());
+                    scrollPane.getVerticalScrollBar().setValue(
+                        scrollPane.getVerticalScrollBar().getValue() + lastDragPoint.y - e.getY());
                 }
                 lastDragPoint = e.getPoint();
             }
+    
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                int x = e.getX(), y = e.getY();
+                if (x >= 0 && x < mapPanel.getWidth() && y >= 0 && y < mapPanel.getHeight() && !uiTimer.isRunning()) {
+                    highlightedCell = new Point(x / cellSize, y / cellSize);
+                } else {
+                    highlightedCell = null;
+                    if (uiTimer.isRunning()) ctrl.getCaseUpdate().clear();
+                }
+                mapPanel.repaint();
+            }
         };
     }
+    
 
     private void saveMap() {
         String fileName = JOptionPane.showInputDialog(this, "Entrez le nom de la sauvegarde :", "Sauvegarder", JOptionPane.PLAIN_MESSAGE);
