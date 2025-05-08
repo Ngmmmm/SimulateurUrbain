@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.LinkedList;
 import javax.swing.*;
 
 public class TrafficSimulatorGUI extends JFrame {
@@ -33,6 +34,7 @@ public class TrafficSimulatorGUI extends JFrame {
     private final Stack2 selectedCells = new Stack2();
     private boolean imagesLoaded = false;
     private JLabel statusLabel;
+    private LinkedList<Position> highlightedPath = null;
 
     public TrafficSimulatorGUI(CityMap cityMap, Statistique stats, Controle ctrl) {
         this.cityMap = cityMap;
@@ -137,6 +139,11 @@ public class TrafficSimulatorGUI extends JFrame {
     
         drawSelectionHighlights(g, x, y, i, j);
         drawHighlightMode(g, x, y, i, j);
+
+        if (!uiTimer.isRunning() && highlightedPath != null && highlightedPath.contains(new Position(j, i))) {
+            g.setColor(new Color(0, 0, 255, 100));
+            g.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
+        }
     }
 
     private void drawFreq(Graphics g, Case currentCase, int x, int y) {
@@ -491,9 +498,15 @@ public class TrafficSimulatorGUI extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 int x = e.getY()/cellSize;
                 int y = e.getX()/cellSize;
+                Position clickedPos = new Position(y, x);
                 if (!uiTimer.isRunning()) {
                     ctrl.getCaseUpdate().add(new Position(y, x));
                     selectedCells.add(new Position(y, x));
+                }
+                Vehicle vehicle = cityMap.getVehicleAt(clickedPos);
+                if (vehicle != null && vehicle.path != null) {
+                    highlightedPath = new LinkedList<>(vehicle.path);
+                    repaint();
                 }
                 mapPanel.repaint();
             }
@@ -564,7 +577,7 @@ public class TrafficSimulatorGUI extends JFrame {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyChar() == 'p') {
-                    if (uiTimer.isRunning()) uiTimer.stop();
+                    if (uiTimer.isRunning()) {uiTimer.stop(); highlightedPath = null;}
                     else { uiTimer.start(); selectedCells.clear(); mapPanel.repaint(); }
                     updateStatusLabel();
                 }
