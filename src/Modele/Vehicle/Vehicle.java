@@ -124,6 +124,7 @@ public abstract class Vehicle {
     public Direction getDirection() {return this.direction;}
     public boolean isMoving() {return this.isMoving;}
     public void setSpeed(int speed) {this.speed = speed;}
+    public LinkedList<Position> getPath(){return this.path;}
 
 
     @Override

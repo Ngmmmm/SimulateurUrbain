@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.LinkedList;
 import javax.swing.*;
 
 public class TrafficSimulatorGUI extends JFrame {
@@ -33,6 +34,7 @@ public class TrafficSimulatorGUI extends JFrame {
     private final Stack2 selectedCells = new Stack2();
     private boolean imagesLoaded = false;
     private JLabel statusLabel;
+    private LinkedList<Position> highlightedPath = null;
 
     public TrafficSimulatorGUI(CityMap cityMap, Statistique stats, Controle ctrl) {
         this.cityMap = cityMap;
@@ -137,6 +139,11 @@ public class TrafficSimulatorGUI extends JFrame {
     
         drawSelectionHighlights(g, x, y, i, j);
         drawHighlightMode(g, x, y, i, j);
+
+        if (!uiTimer.isRunning() && highlightedPath != null && highlightedPath.contains(new Position(j, i))) {
+            g.setColor(new Color(0, 0, 255, 100));
+            g.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
+        }
     }
 
     private void drawFreq(Graphics g, Case currentCase, int x, int y) {
@@ -489,33 +496,54 @@ public class TrafficSimulatorGUI extends JFrame {
         return new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                int x = e.getY()/cellSize;
-                int y = e.getX()/cellSize;
+                int row = e.getY() / cellSize, col = e.getX() / cellSize;
+                Position pos = new Position(col, row);
+    
                 if (!uiTimer.isRunning()) {
-                    ctrl.getCaseUpdate().add(new Position(y, x));
-                    selectedCells.add(new Position(y, x));
+                    ctrl.getCaseUpdate().add(pos);
+                    selectedCells.add(pos);
                 }
+    
+                Vehicle v = cityMap.getVehicleAt(pos);
+                highlightedPath = (v != null && v.path != null) ? new LinkedList<>(v.path) : null;
+                mapPanel.repaint();
+            }
+    
+            @Override
+            public void mouseExited(MouseEvent e) {
+                highlightedCell = null;
                 mapPanel.repaint();
             }
         };
     }
-
+    
     private MouseMotionListener createMouseMotionListener() {
         return new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
                 if (lastDragPoint != null) {
-                    JScrollBar horizontal = scrollPane.getHorizontalScrollBar();
-                    JScrollBar vertical = scrollPane.getVerticalScrollBar();
-                    int deltaX = lastDragPoint.x - e.getX();
-                    int deltaY = lastDragPoint.y - e.getY();
-                    horizontal.setValue(horizontal.getValue() + deltaX);
-                    vertical.setValue(vertical.getValue() + deltaY);
+                    scrollPane.getHorizontalScrollBar().setValue(
+                        scrollPane.getHorizontalScrollBar().getValue() + lastDragPoint.x - e.getX());
+                    scrollPane.getVerticalScrollBar().setValue(
+                        scrollPane.getVerticalScrollBar().getValue() + lastDragPoint.y - e.getY());
                 }
                 lastDragPoint = e.getPoint();
             }
+    
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                int x = e.getX(), y = e.getY();
+                if (x >= 0 && x < mapPanel.getWidth() && y >= 0 && y < mapPanel.getHeight() && !uiTimer.isRunning()) {
+                    highlightedCell = new Point(x / cellSize, y / cellSize);
+                } else {
+                    highlightedCell = null;
+                    if (uiTimer.isRunning()) ctrl.getCaseUpdate().clear();
+                }
+                mapPanel.repaint();
+            }
         };
     }
+    
 
     private void saveMap() {
         String fileName = JOptionPane.showInputDialog(this, "Entrez le nom de la sauvegarde :", "Sauvegarder", JOptionPane.PLAIN_MESSAGE);
@@ -564,7 +592,7 @@ public class TrafficSimulatorGUI extends JFrame {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyChar() == 'p') {
-                    if (uiTimer.isRunning()) uiTimer.stop();
+                    if (uiTimer.isRunning()) {uiTimer.stop(); highlightedPath = null;}
                     else { uiTimer.start(); selectedCells.clear(); mapPanel.repaint(); }
                     updateStatusLabel();
                 }
