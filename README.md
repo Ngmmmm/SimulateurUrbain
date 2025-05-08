@@ -90,9 +90,7 @@ C:.
    ```
 
 3. Lancer l'application :
-   ```bash
-   java -cp bin Vue.Main
-   ```
+
    Sous Windows : 
     ```bash
     java -cp "bin;." Controle.Controle
