@@ -73,8 +73,14 @@ public class Pathfinding {
                     double vehiclePenalty = 0;
                     Vehicle vehicle = cityMap.getVehicleAt(neighbor);
                     if (vehicle != null) {
-                        double distanceToGoal = Math.sqrt(Math.pow(goal.getX() - neighbor.getX(), 2) + Math.pow(goal.getY() - neighbor.getY(), 2));
-                        vehiclePenalty = 5.0 / (1 + distanceToGoal); // Plus la voiture est proche, plus la pénalité est forte
+                        if (detectDeadlock(cityMap, vehicle)) {
+                            // Deadlock détecté -> coût infini
+                            vehiclePenalty = Double.MAX_VALUE;
+                            System.out.println("bonjour");
+                        } else {
+                            double distanceToGoal = Math.sqrt(Math.pow(goal.getX() - neighbor.getX(), 2) + Math.pow(goal.getY() - neighbor.getY(), 2));
+                            vehiclePenalty = 10.0 / (1 + distanceToGoal);
+                        }
                     }
 
                     double newDist = distances[y][x] + (baseWeight * trafficFactor) + delay + vehiclePenalty;
@@ -192,4 +198,38 @@ public class Pathfinding {
         
         return result;
     }
+
+
+    public static boolean detectDeadlock(CityMap map, Vehicle vehicle) {
+        Set<Vehicle> visited = new HashSet<>();
+        return dfsCycle(map, vehicle, visited, new HashSet<>());
+    }
+
+    private static boolean dfsCycle(CityMap map, Vehicle current, Set<Vehicle> visited, Set<Vehicle> recursionStack) {
+        if (current == null || !current.isMoving()) return false;
+        
+        if (recursionStack.contains(current)) {
+            return true; // cycle détecté
+        }
+
+        if (visited.contains(current)) {
+            return false;
+        }
+
+        visited.add(current);
+        recursionStack.add(current);
+
+        // Trouver la voiture devant celle-ci
+        Position frontPos = current.getPosition().getNextPosition(current.getDirection());
+        Vehicle frontVehicle = map.getVehicleAt(frontPos);
+
+        if (dfsCycle(map, frontVehicle, visited, recursionStack)) {
+            return true;
+        }
+
+        recursionStack.remove(current);
+        return false;
+    }
+
+
 }
