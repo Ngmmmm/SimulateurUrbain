@@ -215,7 +215,11 @@ public class CityMap {
     }
 
     public Vehicle getVehicleAt(Position pos) { 
-        return grid[pos.getY()][pos.getX()].getVehicle(); 
+        if (pos.posIsInMap(rows, cols)){
+            return grid[pos.getY()][pos.getX()].getVehicle(); 
+        }
+        return null;
+        
     }
 
     public List<Vehicle> getAllVehicles() {
