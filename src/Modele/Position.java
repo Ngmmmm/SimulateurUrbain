@@ -24,6 +24,9 @@ public class Position {
     }
 
     public Position getNextPosition(Direction dir) {
+        if (dir == null) {
+            return null; // Retourner null si la direction est null
+        }
         switch (dir.toString()) {
             case "UP": return new Position(this.x, this.y - 1);
             case "DOWN": return new Position(this.x, this.y + 1);

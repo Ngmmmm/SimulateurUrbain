@@ -583,6 +583,7 @@ public class TrafficSimulatorGUI extends JFrame {
             CityMap loadedMap = GameLoader.loadGame(selectedSave, stats, ctrl);
             if (loadedMap != null) {
                 this.cityMap = loadedMap;
+                ctrl.setMap(cityMap);
                 mapPanel.repaint();
                 JOptionPane.showMessageDialog(this, "Chargement réussi !", "Succès", JOptionPane.INFORMATION_MESSAGE);
             } else {

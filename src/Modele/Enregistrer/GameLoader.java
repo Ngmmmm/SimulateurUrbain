@@ -42,7 +42,6 @@ public class GameLoader {
             // Lecture des cases de la carte
             int currentRow = -1;
             int currentCol = -1;
-            
 
             while ((line = reader.readLine()) != null) {
                 if (line.startsWith("Case: ")) {
@@ -64,50 +63,59 @@ public class GameLoader {
                 } else if (line.startsWith("Vehicule: ")) {
                     // Lecture des données du véhicule
                     String[] vehicleData = line.substring(10).split(" ");
-                    String type = vehicleData[0].substring(0, vehicleData[0].length() - 1);  // Ajoute une colonne dans le fichier de sauvegarde pour stocker le type
-                    String id = vehicleData[0];
-                    String[] positionData = vehicleData[1].split(",");
+                    String type = vehicleData[0];
+                    String id = vehicleData[1];
+                    String[] positionData = vehicleData[2].split(",");
                     int x = Integer.parseInt(positionData[0]);
                     int y = Integer.parseInt(positionData[1]);
-                    Direction direction = Direction.fromString(vehicleData[2]);
-                    int speed = Integer.parseInt(vehicleData[3]);
-                    String[] destinationData = vehicleData[4].split(",");
+                    Direction direction = Direction.fromString(vehicleData[3]);
+
+                    // Conversion sécurisée de la vitesse
+                    int speed;
+                    try {
+                        speed = Integer.parseInt(vehicleData[4]);
+                    } catch (NumberFormatException e) {
+                        speed = 0; // Valeur par défaut si la conversion échoue
+                    }
+
+                    String[] destinationData = vehicleData[5].split(",");
                     int destX = Integer.parseInt(destinationData[0]);
                     int destY = Integer.parseInt(destinationData[1]);
-                
-                    Vehicle vehicle = createVehicle(type, id,speed, new Position(x, y), direction, new Position(destX, destY), cityMap, stats, ctrl);
+
+                    Vehicle vehicle = createVehicle(type, id, speed, new Position(x, y), direction, new Position(destX, destY), cityMap, stats, ctrl);
                     cityMap.getGrid()[currentRow][currentCol].setVehicle(vehicle);
+
+                    // Recalculer le chemin pour le véhicule
+                    vehicle.checkPath();
+                    System.out.println(vehicle.getPath());
                 } else if (line.startsWith("Signalisation: ")) {
                     // Lecture des données de la signalisation
-                    String[] signallingData = line.substring(15).split(" ");  // Diviser à partir de l'espace
-                    String type = signallingData[0];  // "TrafficLights"
+                    String[] signallingData = line.substring(15).split(" ");
+                    String type = signallingData[0];
 
-                    
                     // Extraire les coordonnées
-                    String[] positionData = signallingData[1].split(",");  // Séparer les coordonnées
+                    String[] positionData = signallingData[1].split(",");
                     int x = Integer.parseInt(positionData[0]);
                     int y = Integer.parseInt(positionData[1]);
-                    
+
                     // La direction est toujours présente ici
                     Direction direction = Direction.fromString(signallingData[2]);
-                
+
                     // Créer la signalisation
                     Signalling signalling = createSignalling(type, new Position(x, y), direction, cityMap);
-                
+
                     // Si c'est un feu de signalisation, récupérer l'ID de groupe
                     if (signalling instanceof TrafficLight && signallingData.length > 3) {
-                        int groupID = Integer.parseInt(signallingData[3]);  // L'ID de groupe est à l'indice 3
+                        int groupID = Integer.parseInt(signallingData[3]);
                         ((TrafficLight) signalling).setIDGroupe(groupID);
-                
+
                         // Ajouter le feu dans la liste du groupe
                         trafficLightGroups.computeIfAbsent(groupID, k -> new ArrayList<>()).add((TrafficLight) signalling);
                     }
-                
+
                     // Ajouter la signalisation à la carte
                     cityMap.getGrid()[currentRow][currentCol].setSignalling(signalling);
                 }
-                
-
             }
 
             // Recréer les groupes de feux après lecture complète
@@ -121,6 +129,8 @@ public class GameLoader {
         return cityMap;
     }
 
+
+
     /**
      * Recrée les groupes de feux et assigne les feux aux bons groupes.
      *
@@ -129,13 +139,11 @@ public class GameLoader {
      */
     private static void rebuildTrafficLightGroups(Map<Integer, List<TrafficLight>> trafficLightGroups, Controle ctrl) {
         for (Map.Entry<Integer, List<TrafficLight>> entry : trafficLightGroups.entrySet()) {
-
             List<TrafficLight> lights = entry.getValue();
 
             // Créer un groupe de feux
             @SuppressWarnings("unused")
             TrafficLightGroup group = new TrafficLightGroup(lights, ctrl);
-
         }
     }
 
@@ -153,7 +161,6 @@ public class GameLoader {
         }
         return directions;
     }
-
 
     /**
      * Crée un objet de signalisation en fonction du type.
@@ -182,7 +189,7 @@ public class GameLoader {
     private static Vehicle createVehicle(String type, String id, int speed, Position position, Direction direction, Position destination, CityMap map, Statistique stats, Controle ctrl) {
         switch (type) {
             case "Car" -> {
-                return new Car(id,speed, position, direction, map, destination, stats, ctrl);
+                return new Car(id, speed, position, direction, map, destination, stats, ctrl);
             }
             case "Truck" -> {
                 return new Truck(id, speed, position, direction, map, destination, stats, ctrl);
@@ -193,5 +200,4 @@ public class GameLoader {
             default -> throw new IllegalArgumentException("Type de véhicule inconnu : " + type);
         }
     }
-
 }

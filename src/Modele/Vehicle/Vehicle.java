@@ -143,10 +143,13 @@ public abstract class Vehicle {
 
 
     public Position nextPosition(){
+        if (direction == null) {
+            return null; // Retourner null si la direction est null
+        }
         return direction.move(position);
     }
     public Position rightPos(){
-        if(position.getX() > 0 && position.getY() > 0){
+        if(position.getX() > 0 && position.getY() > 0 && direction != null){
         switch (direction.toString()) {
             case "UP" -> {
                 return new Position(this.position.getX() +1, this.position.getY());
@@ -297,7 +300,9 @@ public abstract class Vehicle {
     
     public void followAllPath(Statistique stats) {
         checkPath();
-        path.pop();
+        if (!path.isEmpty()) {
+        path.pop(); // Supprimer le premier élément de la liste
+        }
         if (!path.isEmpty()) {
             followPath(path, stats); 
         }

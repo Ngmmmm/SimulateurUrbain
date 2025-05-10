@@ -183,6 +183,7 @@ public class Controle {
 
     public void setSpeed(int n) { speed = n; }
     public boolean getTimerIsRunning(){return timerIsRunning;}
+    public void setMap(CityMap map){this.cityMap = map;}
 
     // --- Point d'entrée ---
     public static void main(String[] args) {
