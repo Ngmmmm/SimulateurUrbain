@@ -143,7 +143,7 @@ public class Controle {
     }
 
     public void Spawn15Car(){
-        Simulation.spawnRandomCars(15, stats, this);
+        Simulation.spawnRandomCars(200, stats, this);
     }
 
     public void removeUpdateCar(Position p) {

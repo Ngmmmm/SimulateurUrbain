@@ -140,7 +140,7 @@ public class Simulation {
 
     // 4) Spawn optimisé : un seul Random et boucle claire
     public static void spawnRandomCars(int nbCars, Statistique stats, Controle ctrl) {
-        LinkedList<Position> spawnPositions = Pathfinding.FindSpawnPosition(cityMap);
+        LinkedList<Position> spawnPositions = Pathfinding.FindSpawnPosition(cityMap); 
         if (spawnPositions.isEmpty()) {
             System.out.println("Pas de spawn disponible.");
             return;

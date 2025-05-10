@@ -75,7 +75,7 @@ public class Pathfinding {
                     if (vehicle != null) {
                         if (!vehicle.isMoving() && detectDeadlock(cityMap, vehicle)) {
                             // Deadlock détecté -> coût infini
-                            vehiclePenalty = Double.MAX_VALUE;
+                            vehiclePenalty = 1000.0;//Double.MAX_VALUE;
                             
                         } else {
                             double distanceToGoal = Math.sqrt(Math.pow(goal.getX() - neighbor.getX(), 2) + Math.pow(goal.getY() - neighbor.getY(), 2));
@@ -155,10 +155,10 @@ public class Pathfinding {
     
         // Collecter toutes les positions accessibles
         LinkedList<Position> accessiblePositions = new LinkedList<>();
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                if (distances[i][j] != Double.MAX_VALUE) {
-                    accessiblePositions.add(new Position(j, i)); // (x, y)
+        for (int y = 0; y < rows; y++) {
+            for (int x = 0; x < cols; x++) {
+                if (!(x == start.getX() && y == start.getY()) && distances[y][x] != Double.MAX_VALUE) {
+                    accessiblePositions.add(new Position(x, y));
                 }
             }
         }

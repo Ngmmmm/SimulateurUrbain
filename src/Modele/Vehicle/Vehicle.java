@@ -217,33 +217,39 @@ public abstract class Vehicle {
         return true;
     }
 
-    public boolean move(Statistique stats){
+    public boolean move(Statistique stats) {
         Case act = getCase(position);
         Case actRight = getCase(rightPos());
+        Case next = getCase(nextPosition());
 
-        boolean peutAvancer = nextCaseIsValid() && checkPrio() &&
-            (act.getSignalling() == null || signallingOk(act)) &&
-            (actRight == null || actRight.getSignalling() == null || signallingOk(actRight));
+        boolean peutAvancer = nextCaseIsValid()
+            && checkPrio()
+            && (act.getSignalling() == null || signallingOk(act))
+            && (actRight == null || actRight.getSignalling() == null || signallingOk(actRight));
 
-        if (peutAvancer) {
+        if (peutAvancer && (next == null || next.getVehicle() == null)) {
             act.setVehicle(null);
             startAnimation(position);
             position = nextPosition();
-            map.getGrid()[position.getY()][position.getX()].setVehicle(this);
-            map.getGrid()[position.getY()][position.getX()].addPassage();
-            stats.updateMax(map.getGrid()[position.getY()][position.getX()]);
+            Case dest = map.getGrid()[position.getY()][position.getX()];
+            dest.setVehicle(this);
+            dest.addPassage();
+            stats.updateMax(dest);
             return true;
-        } else {
-            // Recalcul du chemin si bloqué
-            LinkedList<Position> temp = Pathfinding.findShortestPath(map, position, destination);
-            if (temp != null && !temp.isEmpty()) {
-                this.path = temp; 
-            } else {
-                //System.out.println("Aucun chemin trouvé depuis " + position + " vers " + destination);
-            }
-            return false;
         }
+
+        if ( next.getVehicle() != null){
+            // Cas bloqué : prochaine case occupée ou conditions non remplies
+            LinkedList<Position> temp = Pathfinding.findShortestPath(map, position, destination);
+            if (temp != null && !temp.isEmpty() ){
+                this.path = temp;
+                //System.out.println("Recalcul de chemin pour " + position + " vers " + destination);
+                return true;
+            }
+        }
+        return false;
     }
+
 
 
     public Position checkCaseForSignalling(){
@@ -291,8 +297,8 @@ public abstract class Vehicle {
     
     public void followAllPath(Statistique stats) {
         checkPath();
+        path.pop();
         if (!path.isEmpty()) {
-            path.pop();
             followPath(path, stats); 
         }
     }
