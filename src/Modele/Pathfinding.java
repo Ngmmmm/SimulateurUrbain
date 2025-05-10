@@ -65,21 +65,21 @@ public class Pathfinding {
                     }
 
                     // Réduction de l’impact du trafic si route à double voie
-                    if (neighborRoad.isDoubleLane()) {
-                        trafficFactor *= 0.5;
+                    if (neighborRoad.isDoubleLane() && trafficFactor > 1.5) {
+                        trafficFactor *= 0.9;  // aide un peu quand il y a beaucoup de trafic
                     }
 
                     // --- Gestion des véhicules sur la route ---
                     double vehiclePenalty = 0;
                     Vehicle vehicle = cityMap.getVehicleAt(neighbor);
                     if (vehicle != null) {
-                        if (detectDeadlock(cityMap, vehicle)) {
+                        if (!vehicle.isMoving() && detectDeadlock(cityMap, vehicle)) {
                             // Deadlock détecté -> coût infini
                             vehiclePenalty = Double.MAX_VALUE;
-                            System.out.println("bonjour");
+                            
                         } else {
                             double distanceToGoal = Math.sqrt(Math.pow(goal.getX() - neighbor.getX(), 2) + Math.pow(goal.getY() - neighbor.getY(), 2));
-                            vehiclePenalty = 10.0 / (1 + distanceToGoal);
+                            vehiclePenalty = 5.0 / (1 + distanceToGoal);
                         }
                     }
 
@@ -206,10 +206,14 @@ public class Pathfinding {
     }
 
     private static boolean dfsCycle(CityMap map, Vehicle current, Set<Vehicle> visited, Set<Vehicle> recursionStack) {
-        if (current == null || !current.isMoving()) return false;
-        
+        if (current == null) {
+            
+            return false;
+        }
+
         if (recursionStack.contains(current)) {
-            return true; // cycle détecté
+            
+            return true;
         }
 
         if (visited.contains(current)) {
@@ -219,9 +223,10 @@ public class Pathfinding {
         visited.add(current);
         recursionStack.add(current);
 
-        // Trouver la voiture devant celle-ci
         Position frontPos = current.getPosition().getNextPosition(current.getDirection());
         Vehicle frontVehicle = map.getVehicleAt(frontPos);
+
+        
 
         if (dfsCycle(map, frontVehicle, visited, recursionStack)) {
             return true;
@@ -230,6 +235,7 @@ public class Pathfinding {
         recursionStack.remove(current);
         return false;
     }
+
 
 
 }
