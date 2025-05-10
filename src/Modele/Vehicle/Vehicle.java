@@ -239,7 +239,7 @@ public abstract class Vehicle {
             if (temp != null && !temp.isEmpty()) {
                 this.path = temp; 
             } else {
-                System.out.println("Aucun chemin trouvé depuis " + position + " vers " + destination);
+                //System.out.println("Aucun chemin trouvé depuis " + position + " vers " + destination);
             }
             return false;
         }
@@ -291,8 +291,8 @@ public abstract class Vehicle {
     
     public void followAllPath(Statistique stats) {
         checkPath();
-        path.pop();
         if (!path.isEmpty()) {
+            path.pop();
             followPath(path, stats); 
         }
     }
