@@ -23,9 +23,16 @@ public class SetVoiture implements Update {
     @Override
     public void update(CityMap map, Stack2 c, Statistique stats) {
         Case target = CityMap.getCase(map.getGrid(), c.getA());
-
+        Case targetB = CityMap.getCase(map.getGrid(), c.getB());
         if (target.getVehicle() == null && target.getRoad() != null) {
-            spawnCarIfPossible(map, c, stats, target);
+            if (targetB.getVehicle() == null && target.getRoad() != null){
+                Car car = new Car("Car" + Vehicle.nbCar, 0, c.getB(), map, c.getA(), stats, ctrl);
+                car.checkPath();
+                ctrl.addCar(c.getB());
+
+            }else{
+                spawnCarIfPossible(map, c, stats, target);
+            }
         }
     }
 
@@ -38,9 +45,7 @@ public class SetVoiture implements Update {
 
         car.checkPath();
 
-        ctrl.addUpdateCar(c.getA());
-        ctrl.addUpdate();
-        gui.setUpdate(true);
+        ctrl.addCar(c.getA());
     }
 
     @Override
