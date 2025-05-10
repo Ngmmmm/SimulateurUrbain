@@ -159,6 +159,12 @@ public class Controle {
         }
     }
 
+    public void addCar(Position p){
+        addUpdateCar(p);
+        addUpdate();
+        gui.setUpdate(true);
+    }
+
     // --- Getters / Setters ---
     public boolean getUpdate() { return needUpdate; }
 

@@ -339,7 +339,9 @@ public class TrafficSimulatorGUI extends JFrame {
 
         JMenu simulationMenu = new JMenu("Simulation");
         JMenuItem startItem = new JMenuItem("Démarrer");
+        startItem.addActionListener(e -> {if(!uiTimer.isRunning()) {uiTimer.start(); selectedCells.clear(); mapPanel.repaint();updateStatusLabel();}});
         JMenuItem stopItem = new JMenuItem("Arrêter");
+        stopItem.addActionListener(e -> {if(uiTimer.isRunning()) {uiTimer.stop(); highlightedPath = null; updateStatusLabel();}});
         simulationMenu.add(startItem);
         simulationMenu.add(stopItem);
         menuBar.add(simulationMenu);
