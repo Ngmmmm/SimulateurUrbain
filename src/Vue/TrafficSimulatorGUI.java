@@ -406,7 +406,7 @@ public class TrafficSimulatorGUI extends JFrame {
         JButton feuButton = makeButton("Mettre un Feu/changer de groupe", "feu");
         JButton voitureButton = makeButton("Mettre une voiture", "voiture");
         JButton tabFreq = new JButton("Montrer la fréquence de passage des cases");
-        JButton spawn15Button = makeButton("Spawn plusieurs voitures", "spawn");
+        JButton spawn15Button = makeButton("Spawn 15 voitures", "spawn");
         tabFreq.addActionListener(e -> { cityMap.setMode(!cityMap.getMode()); mapPanel.requestFocus(); });
 
         box.add(maisonButton);
