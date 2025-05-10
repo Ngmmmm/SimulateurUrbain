@@ -220,33 +220,31 @@ public abstract class Vehicle {
     public boolean move(Statistique stats){
         Case act = getCase(position);
         Case actRight = getCase(rightPos());
-        if (nextCaseIsValid() && checkPrio()){
-            if((act.getSignalling() == null || signallingOk(act)) && (actRight == null ||actRight.getSignalling() == null || signallingOk(actRight))){
-                act.setVehicle(null);
-                //Controle.addUpdate();
-                startAnimation(position);
-                position = nextPosition();
-                map.getGrid()[position.getY()][position.getX()].setVehicle(this);
-                map.getGrid()[position.getY()][position.getX()].addPassage();
-                stats.updateMax(map.getGrid()[position.getY()][position.getX()]);
-                return true;
-            }
-        }
-        
-        if (getCase(nextPosition()) != null && getCase(nextPosition()).getVehicle() != null) {
+
+        boolean peutAvancer = nextCaseIsValid() && checkPrio() &&
+            (act.getSignalling() == null || signallingOk(act)) &&
+            (actRight == null || actRight.getSignalling() == null || signallingOk(actRight));
+
+        if (peutAvancer) {
+            act.setVehicle(null);
+            startAnimation(position);
+            position = nextPosition();
+            map.getGrid()[position.getY()][position.getX()].setVehicle(this);
+            map.getGrid()[position.getY()][position.getX()].addPassage();
+            stats.updateMax(map.getGrid()[position.getY()][position.getX()]);
+            return true;
+        } else {
+            // Recalcul du chemin si bloqué
             LinkedList<Position> temp = Pathfinding.findShortestPath(map, position, destination);
-            if (temp != null && !temp.isEmpty()) { // Vérification ajoutée
-                path = temp;
-
-                return true;
-
+            if (temp != null && !temp.isEmpty()) {
+                this.path = temp; 
             } else {
-                System.out.println("Erreur: Impossible de recalculer un chemin !");
+                System.out.println("Aucun chemin trouvé depuis " + position + " vers " + destination);
             }
+            return false;
         }
-        
-        return false;
     }
+
 
     public Position checkCaseForSignalling(){
         return position.checkPosForSignalling(direction);

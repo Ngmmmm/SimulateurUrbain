@@ -404,6 +404,7 @@ public class TrafficSimulatorGUI extends JFrame {
         JButton feuButton = makeButton("Mettre un Feu/changer de groupe", "feu");
         JButton voitureButton = makeButton("Mettre une voiture", "voiture");
         JButton tabFreq = new JButton("Montrer la fréquence de passage des cases");
+        JButton spawn15Button = makeButton("Spawn plusieurs voitures", "spawn");
         tabFreq.addActionListener(e -> { cityMap.setMode(!cityMap.getMode()); mapPanel.requestFocus(); });
 
         box.add(maisonButton);
@@ -411,6 +412,7 @@ public class TrafficSimulatorGUI extends JFrame {
         box.add(feuButton);
         box.add(voitureButton);
         box.add(tabFreq);
+        box.add(spawn15Button);
 
         JLabel speedLabel = new JLabel("Speed", JLabel.CENTER);
         box.add(speedLabel);
@@ -623,14 +625,28 @@ public class TrafficSimulatorGUI extends JFrame {
 
     private JButton makeButton(String s1, String s2) {
         JButton button = new JButton(s1);
-        button.addActionListener((ActionEvent e) -> {
-            if (!uiTimer.isRunning() && !ctrl.getCaseUpdate().isEmpty()) {
-                ctrl.setChange(s2);
-                selectedCells.clear();
+        if (s2 == "spawn"){
+            button.addActionListener((ActionEvent e) -> {
+            if (!uiTimer.isRunning()) {
+                ctrl.Spawn15Car();
+
                 mapPanel.repaint();
             }
             mapPanel.requestFocus();
         });
+        }else{
+
+
+
+            button.addActionListener((ActionEvent e) -> {
+                if (!uiTimer.isRunning() && !ctrl.getCaseUpdate().isEmpty()) {
+                    ctrl.setChange(s2);
+                    selectedCells.clear();
+                    mapPanel.repaint();
+                }
+                mapPanel.requestFocus();
+            });
+        }
         return button;
     }
 
