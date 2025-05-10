@@ -142,6 +142,10 @@ public class Controle {
         }
     }
 
+    public void Spawn15Car(){
+        Simulation.spawnRandomCars(15, stats, this);
+    }
+
     public void removeUpdateCar(Position p) {
         toUpdateCar.removeIf(p::equals);
     }
