@@ -7,6 +7,30 @@ Projet de L2 Programmation 2024–2025 — Université
 
 Ce projet a pour but de simuler le trafic urbain d'une ville fictive à l'aide d'une **application Java interactive**. Il comprend la modélisation d'intersections, routes, feux de signalisation, et véhicules se déplaçant selon des règles réalistes. Le simulateur permet à l'utilisateur d'interagir avec la carte, d'observer le trafic, de consulter des statistiques, et d'optimiser la circulation grâce à des algorithmes intelligents.
 
+## 🚀 Lancement du projet
+
+1. Cloner le projet :
+   ```bash
+   git clone <url_du_dépôt>
+   ```
+
+2. Compiler le projet :
+   ```bash
+   javac -d bin -cp src src\Controle\*.java src\Controle\SetObj\*.java src\Modele\*.java src\Modele\Enregistrer\*.java src\Modele\Signalling\*.java src\Modele\Vehicle\*.java src\Vue\*.java
+   ```
+
+3. Lancer l'application :
+
+   Sous Windows : 
+    ```bash
+    java -cp "bin;." Controle.Controle
+    ```
+   Sous Linux : 
+    ```bash
+    java -cp "bin:." Controle.Controle
+    ```
+
+
 ## 🎯 Objectifs pédagogiques
 
 - Utilisation de l'architecture **Modèle-Vue-Contrôleur (MVC)**.
@@ -77,28 +101,6 @@ C:.
 - **Timer** Swing pour l'animation
 - **OOP et MVC** pour la structuration du code
 
-## 🚀 Lancement du projet
-
-1. Cloner le projet :
-   ```bash
-   git clone <url_du_dépôt>
-   ```
-
-2. Compiler le projet :
-   ```bash
-   javac -d bin -cp src src\Controle\*.java src\Controle\SetObj\*.java src\Modele\*.java src\Modele\Enregistrer\*.java src\Modele\Signalling\*.java src\Modele\Vehicle\*.java src\Vue\*.java
-   ```
-
-3. Lancer l'application :
-
-   Sous Windows : 
-    ```bash
-    java -cp "bin;." Controle.Controle
-    ```
-   Sous Linux : 
-    ```bash
-    java -cp "bin:." Controle.Controle
-    ```
 
 
 
