@@ -174,13 +174,7 @@ Dans le menu `Fichier` :
 C:.
 ├── .vscode                 # Configuration de l’environnement de développement
 ├── bin                    # Fichiers compilés
-│   ├── Controle
-│   │   └── SetObj
-│   ├── Modele
-│   │   ├── Enregistrer
-│   │   ├── Signalling
-│   │   └── Vehicle
-│   └── Vue
+│
 ├── img                    # Images utilisées dans l’interface
 ├── Save                   # Fichiers de sauvegarde de simulation
 └── src                    # Code source du projet
