@@ -154,11 +154,6 @@ public class Simulation {
                 continue;
             }
 
-            Road road = cityMap.getRoad(spawn);
-            Direction dir = (road != null && road.getDirection().length > 0)
-                            ? road.getDirection()[0]
-                            : Direction.RIGHT;
-
             cityMap.findAccessiblePos(spawn);
             LinkedList<Position> accessible = cityMap.getAccessiblePosition();
             if (accessible.isEmpty()) {

@@ -55,7 +55,12 @@ public abstract class Vehicle {
         this.id = id;
         this.speed = speed;
         this.position = position;
-        this.direction = Direction.UP;
+
+        Road road = map.getRoad(position);
+        Direction dir = (road != null && road.getDirection().length > 0)
+                        ? road.getDirection()[0]
+                        : Direction.RIGHT;
+        this.direction = dir;
         this.isMoving = false;
         this.fuelConso = fuelConso;
         this.fuel = 100;

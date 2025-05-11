@@ -10,6 +10,7 @@ import java.util.Random;
 public class SetVoiture implements Update {
 
     private final Controle ctrl;
+    @SuppressWarnings("unused")
     private final TrafficSimulatorGUI gui;
     private final Random random = new Random();
 

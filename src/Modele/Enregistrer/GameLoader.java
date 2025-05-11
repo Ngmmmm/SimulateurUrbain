@@ -214,6 +214,7 @@ public class GameLoader {
         String id;
         int speed;
         Position debut;
+        @SuppressWarnings("unused")
         Direction direction;
         Position fin;
         CityMap cityMap;
@@ -236,6 +237,7 @@ public class GameLoader {
             return GameLoader.createVehicle(type, id, speed, debut, fin, cityMap, stats, ctrl);
         }
 
+        @SuppressWarnings("unused")
         public Position getPos(){
             return debut;
         }
