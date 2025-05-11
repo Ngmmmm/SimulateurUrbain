@@ -72,4 +72,14 @@ public class Statistique {
     public int getMaxPassage() {
         return (maxPassage > 0) ? maxPassage : 1; // Evite de renvoyer 0
     }
+
+    public void reset(){
+    nbVoiture = 0;
+    hasMoved = 0;
+    tempsMoyen = 0;
+    tempsEchantillon = 0;
+    tempsArret = 0;
+    nbArret = 0;
+    maxPassage = 0;
+    }
 }

@@ -33,29 +33,14 @@ public class Controle {
     private ArrayList<Position> toUpdateCar = new ArrayList<>();
     private Update nextChange;
     private final Stack2 caseUpdate = new Stack2();
+    private ArrayList<Position> iter;
 
     // --- Constructeur ---
     public Controle() {
         initSim();
         ctrlTimer = new Timer(50 * speed, createActionListener());
-        t2 = new Timer(50 * speed, e -> {
-            if (gui.isRunning() != ctrlTimer.isRunning()) {
-                if (gui.isRunning()) {
-                    nextChange = null;
-                    caseUpdate.clear();
-                    start();
-                } else {
-                    pause();
-                }
-            }
-            if (!gui.isRunning() && !caseUpdate.isEmpty() && nextChange != null) {
-                nextChange.update(cityMap, caseUpdate, stats);
-                caseUpdate.clear();
-                nextChange = null;
-            }
-        });
+        t2 = new Timer(50 * speed, createGlobalListener());
         gui = new TrafficSimulatorGUI(cityMap, stats, this);
-        timerIsRunning = true;
         initSet();
         start();
         t2.start();
@@ -109,19 +94,57 @@ public class Controle {
             g.reset();
     }
 
+    public void clearSim(){
+        lights.clear();
+        toUpdateCar.clear();
+        caseUpdate.clear();
+        needUpdate = false;
+        stats.reset();
+        iter.clear();
+    }
+
+    public void updateTimer(){
+        ctrlTimer.stop();
+        ctrlTimer = new Timer(50 * speed, createActionListener());
+        t2 = new Timer(50 * speed, createGlobalListener());
+        start();
+        t2.start();
+    }
+
     public ActionListener createActionListener() {
         return e -> {
-            ArrayList<Position> iter = new ArrayList<>(toUpdateCar);
+            iter = new ArrayList<>(toUpdateCar);
             toUpdateCar.clear();
 
             for (Position p : iter) {
-                Vehicle v = CityMap.getCase(cityMap.getGrid(), p).getVehicle();
-                if (v != null)
-                    needUpdate |= v.followPath(v.path, stats);
+                if (p != null){
+                    Vehicle v = CityMap.getCase(cityMap.getGrid(), p).getVehicle();
+                    if (v != null)
+                        needUpdate |= v.followPath(v.path, stats);
+                }
             }
 
             if (needUpdate)
                 gui.setUpdate(true);
+        };
+    }
+
+    public ActionListener createGlobalListener(){
+        return e -> {
+            if (gui.isRunning() != ctrlTimer.isRunning()) {
+                if (gui.isRunning()) {
+                    nextChange = null;
+                    caseUpdate.clear();
+                    start();
+                } else {
+                    pause();
+                }
+            }
+            if (!gui.isRunning() && !caseUpdate.isEmpty() && nextChange != null) {
+                nextChange.update(cityMap, caseUpdate, stats);
+                caseUpdate.clear();
+                nextChange = null;
+            }
         };
     }
 
@@ -183,7 +206,10 @@ public class Controle {
 
     public void setSpeed(int n) { speed = n; }
     public boolean getTimerIsRunning(){return timerIsRunning;}
-    public void setMap(CityMap map){this.cityMap = map;}
+    public void setMap(CityMap map){
+        this.cityMap = map;
+        Simulation.setCityMap(map);
+    }
 
     // --- Point d'entrée ---
     public static void main(String[] args) {

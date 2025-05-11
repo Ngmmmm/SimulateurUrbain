@@ -23,6 +23,9 @@ public class GameLoader {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
+            ctrl.clearSim();
+            ArrayList<Conteneur> carInfo = new ArrayList<Conteneur>();
+            GameLoader tmp = new GameLoader();
 
             // Lecture des dimensions de la carte
             while ((line = reader.readLine()) != null) {
@@ -81,13 +84,12 @@ public class GameLoader {
                     String[] destinationData = vehicleData[5].split(",");
                     int destX = Integer.parseInt(destinationData[0]);
                     int destY = Integer.parseInt(destinationData[1]);
+                    Position debut = new Position(x, y);
+                    Position fin = new Position(destX, destY);
 
-                    Vehicle vehicle = createVehicle(type, id, speed, new Position(x, y), direction, new Position(destX, destY), cityMap, stats, ctrl);
-                    cityMap.getGrid()[currentRow][currentCol].setVehicle(vehicle);
+                    carInfo.add(tmp.new Conteneur(type, id, speed, debut, direction, fin, cityMap, stats, ctrl));
+                    
 
-                    // Recalculer le chemin pour le véhicule
-                    vehicle.checkPath();
-                    System.out.println(vehicle.getPath());
                 } else if (line.startsWith("Signalisation: ")) {
                     // Lecture des données de la signalisation
                     String[] signallingData = line.substring(15).split(" ");
@@ -120,6 +122,12 @@ public class GameLoader {
 
             // Recréer les groupes de feux après lecture complète
             rebuildTrafficLightGroups(trafficLightGroups, ctrl);
+            
+            // Recréer les voitures
+            for(Conteneur c : carInfo){
+                Vehicle vehicle = c.createVehicle();
+                vehicle.followAllPath(stats);
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -186,18 +194,50 @@ public class GameLoader {
         }
     }
 
-    private static Vehicle createVehicle(String type, String id, int speed, Position position, Direction direction, Position destination, CityMap map, Statistique stats, Controle ctrl) {
+    private static Vehicle createVehicle(String type, String id, int speed, Position position, Position destination, CityMap map, Statistique stats, Controle ctrl) {
         switch (type) {
             case "Car" -> {
-                return new Car(id, speed, position, direction, map, destination, stats, ctrl);
+                return new Car(id, speed, position, map, destination, stats, ctrl);
             }
             case "Truck" -> {
-                return new Truck(id, speed, position, direction, map, destination, stats, ctrl);
+                return new Truck(id, speed, position, map, destination, stats, ctrl);
             }
             case "Bus" -> {
-                return new Bus(id, speed, position, direction, map, destination, stats, ctrl);
+                return new Bus(id, speed, position, map, destination, stats, ctrl);
             }
             default -> throw new IllegalArgumentException("Type de véhicule inconnu : " + type);
+        }
+    }
+
+    private class Conteneur{
+        String type;
+        String id;
+        int speed;
+        Position debut;
+        Direction direction;
+        Position fin;
+        CityMap cityMap;
+        Statistique stats;
+        Controle ctrl;
+        
+        Conteneur(String type, String id, int speed, Position position, Direction direction, Position destination, CityMap map, Statistique stats, Controle ctrl){
+            this.type = type;
+            this.id = id;
+            this.speed = speed;
+            this.debut = position;
+            this.direction = direction;
+            this.fin = destination; 
+            this.cityMap = map;
+            this.stats = stats;
+            this.ctrl = ctrl;
+        }
+
+        public Vehicle createVehicle(){
+            return GameLoader.createVehicle(type, id, speed, debut, fin, cityMap, stats, ctrl);
+        }
+
+        public Position getPos(){
+            return debut;
         }
     }
 }
