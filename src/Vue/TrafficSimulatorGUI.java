@@ -499,20 +499,32 @@ public class TrafficSimulatorGUI extends JFrame {
     private MouseListener createMouseListener() {
         return new MouseAdapter() {
             @Override
+            public void mousePressed(MouseEvent e) {
+                // Enregistrer le point de départ du glisser-déposer
+                lastDragPoint = e.getPoint();
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                // Réinitialiser le point de départ
+                lastDragPoint = null;
+            }
+
+            @Override
             public void mouseClicked(MouseEvent e) {
                 int row = e.getY() / cellSize, col = e.getX() / cellSize;
                 Position pos = new Position(col, row);
-    
+
                 if (!uiTimer.isRunning()) {
                     ctrl.getCaseUpdate().add(pos);
                     selectedCells.add(pos);
                 }
-    
+
                 Vehicle v = cityMap.getVehicleAt(pos);
                 highlightedPath = (v != null && v.path != null) ? new LinkedList<>(v.path) : null;
                 mapPanel.repaint();
             }
-    
+
             @Override
             public void mouseExited(MouseEvent e) {
                 highlightedCell = null;
@@ -523,17 +535,26 @@ public class TrafficSimulatorGUI extends JFrame {
     
     private MouseMotionListener createMouseMotionListener() {
         return new MouseMotionAdapter() {
+            private final double SMOOTHING_FACTOR = 0.9; // Facteur de lissage
+
             @Override
             public void mouseDragged(MouseEvent e) {
                 if (lastDragPoint != null) {
-                    scrollPane.getHorizontalScrollBar().setValue(
-                        scrollPane.getHorizontalScrollBar().getValue() + lastDragPoint.x - e.getX());
-                    scrollPane.getVerticalScrollBar().setValue(
-                        scrollPane.getVerticalScrollBar().getValue() + lastDragPoint.y - e.getY());
+                    // Calculer le déplacement avec un facteur de lissage
+                    int deltaX = (int) ((lastDragPoint.x - e.getX()) * SMOOTHING_FACTOR);
+                    int deltaY = (int) ((lastDragPoint.y - e.getY()) * SMOOTHING_FACTOR);
+
+                    // Mettre à jour les barres de défilement
+                    JScrollBar horizontal = scrollPane.getHorizontalScrollBar();
+                    JScrollBar vertical = scrollPane.getVerticalScrollBar();
+
+                    // Ajuster la position de défilement
+                    horizontal.setValue(horizontal.getValue() + deltaX);
+                    vertical.setValue(vertical.getValue() + deltaY);
                 }
                 lastDragPoint = e.getPoint();
             }
-    
+
             @Override
             public void mouseMoved(MouseEvent e) {
                 int x = e.getX(), y = e.getY();
@@ -547,7 +568,8 @@ public class TrafficSimulatorGUI extends JFrame {
             }
         };
     }
-    
+
+        
 
     private void saveMap() {
         String fileName = JOptionPane.showInputDialog(this, "Entrez le nom de la sauvegarde :", "Sauvegarder", JOptionPane.PLAIN_MESSAGE);

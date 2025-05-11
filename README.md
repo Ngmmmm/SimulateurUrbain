@@ -31,6 +31,106 @@ Ce projet a pour but de simuler le trafic urbain d'une ville fictive à l'aide d
     ```
 
 
+## 🧭 Mode d’emploi de l'application
+
+Cette section explique comment interagir avec la simulation de trafic urbain via l’interface utilisateur. Toutes les **modifications** nécessitent que la simulation soit **mise en pause**.
+
+### 🖼️ Aperçu de l’application
+
+![Aperçu de la simulation](img/simulation_apercu.png)
+
+
+### ⏸️ Pause & Lecture de la simulation
+
+* **Mettre en pause** : touche `P` ou menu `Simulation > Arrêter`
+* **Reprendre la simulation** : touche `P` ou menu `Simulation > Reprendre`
+* ⚠️ *Toute modification de la carte nécessite que la simulation soit en pause.*
+
+
+
+### 🏠 Ajouter une maison
+
+1. Mettre la simulation en pause.
+2. Cliquer sur une case vide de la carte.
+3. Cliquer sur le bouton `Ajouter une maison`.
+
+
+
+### 🛣️ Ajouter une route
+
+1. Mettre la simulation en pause.
+2. Cliquer sur la case que vous souhaitez modifier.
+3. Cliquer sur le bouton `Ajouter une route`.
+4. Sélectionner la **direction souhaitée** (haut, bas, gauche, droite).
+5. Pour ajouter plusieurs directions à une même case, répétez les étapes 3–4 avec d’autres directions.
+
+
+
+### 🚦 Ajouter un feu de signalisation
+
+> 📝 *Fonctionnalité à vérifier auprès de Augustin pour plus de détails.*
+
+
+### 🚗 Ajouter une voiture
+
+Deux options sont disponibles :
+
+* **Destination aléatoire** :
+
+  1. Cliquer sur une **seule case**.
+  2. Cliquer sur `Ajouter une voiture`.
+  3. Une voiture apparaît sur cette case, avec une destination choisie aléatoirement.
+
+* **Trajet défini** :
+
+  1. Cliquer sur **deux cases** : la première pour le départ, la seconde pour l’arrivée.
+  2. Cliquer sur `Ajouter une voiture`.
+  3. Une voiture apparaît sur la première case et se dirigera vers la seconde.
+
+> Si l’on clique sur une voiture pendant la simulation, **son chemin actuel s’affiche**.
+> Celui-ci peut **évoluer dynamiquement** en fonction du trafic.
+
+
+
+### 🚚 Ajouter plusieurs voitures
+
+* Le bouton `Ajouter 15 voitures` tente d’ajouter 15 véhicules.
+* Les voitures apparaissent **uniquement si des emplacements d’entrée** sont disponibles (bords de la carte).
+
+
+
+### 📈 Fréquence d’utilisation des cases
+
+* Le bouton `Montrer la fréquence des cases` affiche, pour chaque case, **combien de fois elle a été empruntée récemment**.
+* Utile pour visualiser les **zones les plus fréquentées**.
+
+
+
+### 💾 Sauvegarde et chargement
+
+Dans le menu `Fichier` :
+
+* `Sauvegarder la simulation` : enregistre tout l’état de la simulation dans un fichier `.txt`.
+* `Charger une simulation` : recharge une sauvegarde précédente.
+* `Quitter` : ferme l’application.
+
+
+
+### 🔍 Zoom et déplacement
+
+* **Zoom avant/arrière** :
+
+  * Avec la molette de la souris (en survolant la carte).
+  * Ou via le menu `Affichage > Zoom avant / Zoom arrière`.
+
+* **Déplacement de la carte** :
+
+  * Via les **barres de défilement** (scrollbars).
+  * Ou en **cliquer-glisser** sur la carte (drag and scroll fluide).
+
+
+
+
 ## 🎯 Objectifs pédagogiques
 
 - Utilisation de l'architecture **Modèle-Vue-Contrôleur (MVC)**.
@@ -74,13 +174,7 @@ Ce projet a pour but de simuler le trafic urbain d'une ville fictive à l'aide d
 C:.
 ├── .vscode                 # Configuration de l’environnement de développement
 ├── bin                    # Fichiers compilés
-│   ├── Controle
-│   │   └── SetObj
-│   ├── Modele
-│   │   ├── Enregistrer
-│   │   ├── Signalling
-│   │   └── Vehicle
-│   └── Vue
+│
 ├── img                    # Images utilisées dans l’interface
 ├── Save                   # Fichiers de sauvegarde de simulation
 └── src                    # Code source du projet
@@ -116,4 +210,5 @@ C:.
 ## 📂 Licence
 
 Projet académique — Utilisation libre à des fins pédagogiques uniquement.
+
 
