@@ -210,5 +210,5 @@ C:.
 ## 📂 Licence
 
 Projet académique — Utilisation libre à des fins pédagogiques uniquement.
-![alt text](img/image.png)
+
 
