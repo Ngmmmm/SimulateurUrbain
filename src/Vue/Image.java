@@ -72,6 +72,7 @@ public class Image {
     }
     
     public static BufferedImage getImgCar(Direction dir){
+        if (dir == null) return null;
         return switch (dir.toString()) {
             case "UP" -> imgCarUp;
             case "DOWN" -> imgCarDown;
@@ -82,6 +83,7 @@ public class Image {
     }
 
     public static BufferedImage getImgBus(Direction dir){
+        if (dir == null) return null;
         return switch (dir.toString()) {
             case "UP" -> imgBusUp;
             case "DOWN" -> imgBusDown;
@@ -92,6 +94,7 @@ public class Image {
     }
 
     public static BufferedImage getImgCamion(Direction dir){
+        if (dir == null) return null;
         return switch (dir.toString()) {
             case "UP" -> imgCamionUp;
             case "DOWN" -> imgCamionDown;

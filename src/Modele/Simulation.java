@@ -173,11 +173,11 @@ public class Simulation {
 
             Vehicle v;
             switch (RANDOM.nextInt(3)) {
-                case 0: v = new Car("Car" + Vehicle.nbCar, 0, spawn, dir, cityMap, dest, stats, ctrl); break;
-                case 1: v = new Truck("Truck" + Vehicle.nbCar, 2, spawn, dir, cityMap, dest, stats, ctrl); break;
-                default: v = new Bus("Bus" + Vehicle.nbCar, 3, spawn, dir, cityMap, dest, stats, ctrl);
+                case 0: v = new Car("Car" + Vehicle.nbCar, 0, spawn, cityMap, dest, stats, ctrl); break;
+                case 1: v = new Truck("Truck" + Vehicle.nbCar, 2, spawn, cityMap, dest, stats, ctrl); break;
+                default: v = new Bus("Bus" + Vehicle.nbCar, 3, spawn, cityMap, dest, stats, ctrl);
             }
-            cityMap.addVehicle(v);
+            v.followAllPath(stats);
             nbCars--;
         }
     }

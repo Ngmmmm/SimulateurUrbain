@@ -198,6 +198,7 @@ public class CityMap {
     }
 
     public static Case getCase(Case[][] grid, Position pos) {
+        if (pos == null) return null;
         if (pos.getX() >= 0 && pos.getY() >= 0 && pos.getX() < 50 && pos.getY() < 50) {
             return grid[pos.getY()][pos.getX()];
         }
@@ -215,6 +216,7 @@ public class CityMap {
     }
 
     public Vehicle getVehicleAt(Position pos) { 
+        if (pos == null) return null;
         if (pos.posIsInMap(rows, cols)){
             return grid[pos.getY()][pos.getX()].getVehicle(); 
         }

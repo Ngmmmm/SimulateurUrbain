@@ -580,6 +580,7 @@ public class TrafficSimulatorGUI extends JFrame {
 
         if (option == JOptionPane.OK_OPTION) {
             String selectedSave = (String) saveComboBox.getSelectedItem();
+            ctrl.pause();
             CityMap loadedMap = GameLoader.loadGame(selectedSave, stats, ctrl);
             if (loadedMap != null) {
                 this.cityMap = loadedMap;
@@ -590,6 +591,7 @@ public class TrafficSimulatorGUI extends JFrame {
                 JOptionPane.showMessageDialog(this, "Erreur lors du chargement de la carte.", "Erreur", JOptionPane.ERROR_MESSAGE);
             }
         }
+        ctrl.start();
     }
 
     private KeyListener createKeyListener() {

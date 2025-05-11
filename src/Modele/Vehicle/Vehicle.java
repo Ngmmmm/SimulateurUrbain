@@ -241,7 +241,7 @@ public abstract class Vehicle {
             return true;
         }
 
-        if ( next.getVehicle() != null){
+        if (next != null && next.getVehicle() != null){
             // Cas bloqué : prochaine case occupée ou conditions non remplies
             LinkedList<Position> temp = Pathfinding.findShortestPath(map, position, destination);
             if (temp != null && !temp.isEmpty() ){
@@ -301,7 +301,7 @@ public abstract class Vehicle {
     public void followAllPath(Statistique stats) {
         checkPath();
         if (!path.isEmpty()) {
-        path.pop(); // Supprimer le premier élément de la liste
+            path.pop(); // Supprimer le premier élément de la liste
         }
         if (!path.isEmpty()) {
             followPath(path, stats); 

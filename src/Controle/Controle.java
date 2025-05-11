@@ -33,6 +33,7 @@ public class Controle {
     private ArrayList<Position> toUpdateCar = new ArrayList<>();
     private Update nextChange;
     private final Stack2 caseUpdate = new Stack2();
+    private ArrayList<Position> iter;
 
     // --- Constructeur ---
     public Controle() {
@@ -109,15 +110,26 @@ public class Controle {
             g.reset();
     }
 
+    public void clearSim(){
+        lights.clear();
+        toUpdateCar.clear();
+        caseUpdate.clear();
+        needUpdate = false;
+        stats.reset();
+        iter.clear();
+    }
+
     public ActionListener createActionListener() {
         return e -> {
-            ArrayList<Position> iter = new ArrayList<>(toUpdateCar);
+            iter = new ArrayList<>(toUpdateCar);
             toUpdateCar.clear();
 
             for (Position p : iter) {
-                Vehicle v = CityMap.getCase(cityMap.getGrid(), p).getVehicle();
-                if (v != null)
-                    needUpdate |= v.followPath(v.path, stats);
+                if (p != null){
+                    Vehicle v = CityMap.getCase(cityMap.getGrid(), p).getVehicle();
+                    if (v != null)
+                        needUpdate |= v.followPath(v.path, stats);
+                }
             }
 
             if (needUpdate)
