@@ -185,4 +185,8 @@ public class Simulation {
     public CityMap getCityMap() {
         return cityMap;
     }
+
+    public static void setCityMap(CityMap cityMap){
+        Simulation.cityMap = cityMap;
+    }
 }

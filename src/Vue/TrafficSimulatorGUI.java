@@ -29,6 +29,7 @@ public class TrafficSimulatorGUI extends JFrame {
     private Point lastDragPoint;
     private boolean needUpdate;
     private final Timer uiTimer;
+    private Timer loadTimer;
     private final Statistique stats;
     private Point highlightedCell = null;
     private final Stack2 selectedCells = new Stack2();
@@ -65,18 +66,8 @@ public class TrafficSimulatorGUI extends JFrame {
         add(createChangePanel(), BorderLayout.WEST);
         addListener();
 
-        new Timer(16, e -> {
-            for (int i = 0; i < cityMap.getCols(); i++) {
-                for (int j = 0; j < cityMap.getRows(); j++) {
-                    Case c = cityMap.getGrid()[i][j];
-                    Vehicle v = c.getVehicle();
-                    if (v != null && v.isMovingTransition()) {
-                        v.updateAnimationProgress(0.05f );
-                    }
-                }
-            }
-            repaint();
-        }).start();
+        loadTimer = new Timer(16, createLoadListener());
+        loadTimer.start();
 
         setVisible(true);
         mapPanel.setFocusable(true);
@@ -606,6 +597,9 @@ public class TrafficSimulatorGUI extends JFrame {
             CityMap loadedMap = GameLoader.loadGame(selectedSave, stats, ctrl);
             if (loadedMap != null) {
                 this.cityMap = loadedMap;
+                loadTimer.stop();
+                loadTimer = new Timer(16, createLoadListener());
+                loadTimer.start();
                 ctrl.setMap(cityMap);
                 mapPanel.repaint();
                 JOptionPane.showMessageDialog(this, "Chargement réussi !", "Succès", JOptionPane.INFORMATION_MESSAGE);
@@ -640,6 +634,21 @@ public class TrafficSimulatorGUI extends JFrame {
                 mapPanel.repaint();
                 needUpdate = false;
             }
+        };
+    }
+
+    private ActionListener createLoadListener(){
+        return (ActionEvent e) ->{
+            for (int i = 0; i < cityMap.getCols(); i++) {
+                for (int j = 0; j < cityMap.getRows(); j++) {
+                    Case c = cityMap.getGrid()[i][j];
+                    Vehicle v = c.getVehicle();
+                    if (v != null && v.isMovingTransition()) {
+                        v.updateAnimationProgress(0.05f );
+                    }
+                }
+            }
+            repaint();
         };
     }
 
