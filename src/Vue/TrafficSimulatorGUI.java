@@ -11,10 +11,11 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.LinkedList;
+import java.util.List;
 import javax.swing.*;
+
 
 public class TrafficSimulatorGUI extends JFrame {
     private static final int ROWS = 50;
@@ -375,19 +376,33 @@ public class TrafficSimulatorGUI extends JFrame {
         confirmButton.setPreferredSize(new Dimension(100, 30));
         confirmButton.addActionListener(e -> {
             StringBuilder selectedDirs = new StringBuilder();
+            List<String> selectedList = new ArrayList<>();
+
             for (Component comp : panel.getComponents()) {
                 if (comp instanceof JCheckBox checkBox && checkBox.isSelected()) {
-                    if (!selectedDirs.isEmpty()) {
-                        selectedDirs.append(",");
-                    }
-                    selectedDirs.append(directions[Arrays.asList(panel.getComponents()).indexOf(checkBox)][1]);
+                    selectedList.add(checkBox.getText());
                 }
             }
-            
-            if (selectedDirs.length() > 0) {
-                ctrl.setChange("route:" + selectedDirs.toString());
+
+            if (!selectedList.isEmpty()) {
+                for (String dir : selectedList) {
+                    for (String[] d : directions) {
+                        if (d[0].equals(dir)) {
+                            if (!selectedDirs.isEmpty()) selectedDirs.append(",");
+                            selectedDirs.append(d[1]);
+                        }
+                    }
+                }
+
+                boolean isIntersection = false;
+                if (selectedList.size() >= 2) {
+                    int response = JOptionPane.showConfirmDialog(panel, "Est-ce une intersection ?", "Intersection", JOptionPane.YES_NO_OPTION);
+                    isIntersection = (response == JOptionPane.YES_OPTION);
+                }
+
+                ctrl.setChange("route:" + selectedDirs.toString() + (isIntersection ? ":intersection" : ""));
             }
-            
+
             Window window = SwingUtilities.getWindowAncestor(panel);
             if (window != null) window.dispose();
             selectedCells.clear();
