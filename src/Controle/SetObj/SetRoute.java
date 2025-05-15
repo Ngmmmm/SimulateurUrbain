@@ -10,15 +10,15 @@ public class SetRoute implements Update {
     private final TrafficSimulatorGUI gui;
 
     public static SetRoute set;
-    private static Direction selectedDirection = null;
+    private static Direction[] selectedDirections = null;
 
     public SetRoute(Controle ctrl, TrafficSimulatorGUI gui) {
         this.ctrl = ctrl;
         this.gui = gui;
     }
 
-    public static void setSelectedDirection(Direction direction) {
-        selectedDirection = direction;
+    public static void setSelectedDirections(Direction[] directions) {
+        selectedDirections = directions;
     }
 
     @Override
@@ -36,9 +36,9 @@ public class SetRoute implements Update {
     }
 
     private void updateExistingRoad(Case target) {
-        if (selectedDirection != null) {
-            target.getRoad().setDirection(new Direction[]{selectedDirection});
-            selectedDirection = null;
+        if (selectedDirections != null && selectedDirections.length > 0) {
+            target.getRoad().setDirection(selectedDirections);
+            selectedDirections = null;
         } else {
             Direction[] rotated = rotateDirections(target.getRoad().getDirection());
             target.getRoad().setDirection(rotated);
@@ -50,10 +50,12 @@ public class SetRoute implements Update {
             target.setBuilding(null);
         }
 
-        Direction[] dir = new Direction[]{selectedDirection != null ? selectedDirection : Direction.UP};
+        Direction[] dir = selectedDirections != null && selectedDirections.length > 0 
+            ? selectedDirections 
+            : new Direction[]{Direction.UP};
         target.setRoad(new Road(dir, "Continue"));
 
-        selectedDirection = null;
+        selectedDirections = null;
     }
 
     private Direction[] rotateDirections(Direction[] original) {
