@@ -5,11 +5,10 @@ import Modele.*;
 import Modele.Signalling.*;
 import Modele.Vehicle.*;
 import Vue.*;
-
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 import java.awt.event.*;
 import java.util.*;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 public class Controle {
 
@@ -150,20 +149,31 @@ public class Controle {
 
     // --- Gestion des modifications de case ---
     public void setChange(String s) {
-        if (s.startsWith("route:")) {
-            String direction = s.split(":")[1];
-            SetRoute.setSelectedDirection(Direction.valueOf(direction));
-            nextChange = SetRoute.set;
-        } else {
-            nextChange = switch (s) {
-                case "route" -> SetRoute.set;
-                case "feu" -> SetFeu.set;
-                case "maison" -> SetMaison.set;
-                case "voiture" -> SetVoiture.set;
-                default -> null;
-            };
+    if (s.startsWith("route:")) {
+        String[] parts = s.split(":");
+        String directionsStr = parts[1];
+        boolean isIntersection = parts.length > 2 && parts[2].equals("intersection");
+
+        String[] directionNames = directionsStr.split(",");
+        Direction[] directions = new Direction[directionNames.length];
+        for (int i = 0; i < directionNames.length; i++) {
+            directions[i] = Direction.valueOf(directionNames[i]);
         }
+
+        SetRoute.setSelectedDirections(directions);
+        SetRoute.setIntersectionFlag(isIntersection);
+
+        nextChange = SetRoute.set;
+    } else {
+        nextChange = switch (s) {
+            case "route" -> SetRoute.set;
+            case "feu" -> SetFeu.set;
+            case "maison" -> SetMaison.set;
+            case "voiture" -> SetVoiture.set;
+            default -> null;
+        };
     }
+}
 
     public void Spawn15Car(){
         Simulation.spawnRandomCars(15, stats, this);
