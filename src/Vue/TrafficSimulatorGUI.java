@@ -13,7 +13,9 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.LinkedList;
+import java.util.List;
 import javax.swing.*;
+
 
 public class TrafficSimulatorGUI extends JFrame {
     private static final int ROWS = 50;
@@ -365,22 +367,64 @@ public class TrafficSimulatorGUI extends JFrame {
     }
 
     private JPanel createDirectionSelectionPanel() {
-        JPanel panel = new JPanel(new GridLayout(2, 2));
+        JPanel panel = new JPanel(new GridLayout(2, 2, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         panel.setBorder(BorderFactory.createTitledBorder("Choisir la direction"));
         String[][] directions = {{"Haut", "UP"}, {"Bas", "DOWN"}, {"Gauche", "LEFT"}, {"Droite", "RIGHT"}};
-    
+        
+        JButton confirmButton = new JButton("Confirmer");
+        confirmButton.setPreferredSize(new Dimension(100, 30));
+        confirmButton.addActionListener(e -> {
+            StringBuilder selectedDirs = new StringBuilder();
+            List<String> selectedList = new ArrayList<>();
+
+            for (Component comp : panel.getComponents()) {
+                if (comp instanceof JCheckBox checkBox && checkBox.isSelected()) {
+                    selectedList.add(checkBox.getText());
+                }
+            }
+
+            if (!selectedList.isEmpty()) {
+                for (String dir : selectedList) {
+                    for (String[] d : directions) {
+                        if (d[0].equals(dir)) {
+                            if (!selectedDirs.isEmpty()) selectedDirs.append(",");
+                            selectedDirs.append(d[1]);
+                        }
+                    }
+                }
+
+                boolean isIntersection = false;
+                if (selectedList.size() >= 2) {
+                    int response = JOptionPane.showConfirmDialog(panel, "Est-ce une intersection ?", "Intersection", JOptionPane.YES_NO_OPTION);
+                    isIntersection = (response == JOptionPane.YES_OPTION);
+                }
+
+                ctrl.setChange("route:" + selectedDirs.toString() + (isIntersection ? ":intersection" : ""));
+            }
+
+            Window window = SwingUtilities.getWindowAncestor(panel);
+            if (window != null) window.dispose();
+            selectedCells.clear();
+            mapPanel.repaint();
+        });
+
         for (String[] dir : directions) {
-            JButton button = new JButton(dir[0]);
-            button.addActionListener(e -> {
-                ctrl.setChange("route:" + dir[1]);
-                Window window = SwingUtilities.getWindowAncestor(panel);
-                if (window != null) window.dispose();
-                selectedCells.clear();
-                mapPanel.repaint();
-            });
-            panel.add(button);
+            JCheckBox checkBox = new JCheckBox(dir[0]);
+            checkBox.setPreferredSize(new Dimension(100, 30));
+            panel.add(checkBox);
         }
-        return panel;
+        
+        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        mainPanel.add(panel, BorderLayout.CENTER);
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.add(confirmButton);
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+        
+        mainPanel.setPreferredSize(new Dimension(250, 200));
+        
+        return mainPanel;
     }
     
     private JPanel createChangePanel() {
@@ -392,10 +436,10 @@ public class TrafficSimulatorGUI extends JFrame {
         panel.add(statusLabel);
 
         Box box = Box.createVerticalBox();
-        JButton maisonButton = makeButton("Mettre une maison", "maison");
-        JButton routeButton = new JButton("Mettre une route/changer rotation");
-        JButton feuButton = makeButton("Mettre un Feu/changer de groupe", "feu");
-        JButton voitureButton = makeButton("Mettre une voiture", "voiture");
+        JButton maisonButton = makeButton("Ajouter une maison", "maison");
+        JButton routeButton = new JButton("Ajouter une route");
+        JButton feuButton = makeButton("Ajouter un Feu / Changer de groupe", "feu");
+        JButton voitureButton = makeButton("Ajouter une voiture", "voiture");
         JButton tabFreq = new JButton("Montrer la fréquence de passage des cases");
         JButton spawn15Button = makeButton("Spawn 15 voitures", "spawn");
         tabFreq.addActionListener(e -> { cityMap.setMode(!cityMap.getMode()); mapPanel.requestFocus(); });

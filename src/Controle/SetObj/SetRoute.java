@@ -10,15 +10,16 @@ public class SetRoute implements Update {
     private final TrafficSimulatorGUI gui;
 
     public static SetRoute set;
-    private static Direction selectedDirection = null;
+    private static Direction[] selectedDirections = null;
+    private static boolean intersectionFlag = false;
 
     public SetRoute(Controle ctrl, TrafficSimulatorGUI gui) {
         this.ctrl = ctrl;
         this.gui = gui;
     }
 
-    public static void setSelectedDirection(Direction direction) {
-        selectedDirection = direction;
+    public static void setSelectedDirections(Direction[] directions) {
+        selectedDirections = directions;
     }
 
     @Override
@@ -60,19 +61,8 @@ public class SetRoute implements Update {
         selectedDirections = null;
     }
 
-    private Direction[] rotateDirections(Direction[] original) {
-        Direction[] rotated = new Direction[original.length];
-        for (int i = 0; i < original.length; i++) {
-            rotated[i] = switch (original[i]) {
-                case UP -> Direction.RIGHT;
-                case RIGHT -> Direction.DOWN;
-                case DOWN -> Direction.LEFT;
-                case LEFT -> Direction.UP;
-                default -> Direction.UP;
-            };
-        }
-        return rotated;
-    }
+    public static void setIntersectionFlag(boolean flag) {intersectionFlag = flag;}
+    public static boolean isIntersection() {return intersectionFlag;}
 
     @Override
     public String toString() {
