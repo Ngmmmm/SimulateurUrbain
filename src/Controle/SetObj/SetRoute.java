@@ -39,11 +39,10 @@ public class SetRoute implements Update {
     private void updateExistingRoad(Case target) {
         if (selectedDirections != null && selectedDirections.length > 0) {
             target.getRoad().setDirection(selectedDirections);
+            target.getRoad().setIntersection(SetRoute.isIntersection());
             selectedDirections = null;
-        } else {
-            Direction[] rotated = rotateDirections(target.getRoad().getDirection());
-            target.getRoad().setDirection(rotated);
         }
+        
     }
 
     private void createNewRoad(Case target) {
@@ -51,11 +50,11 @@ public class SetRoute implements Update {
             target.setBuilding(null);
         }
 
-        Direction[] dir = selectedDirections != null && selectedDirections.length > 0 
-            ? selectedDirections 
-            : new Direction[]{Direction.UP};
+        if (selectedDirections == null || selectedDirections.length == 0) {
+            return;
+        }
 
-        Road road = new Road(dir, "Continue");
+        Road road = new Road(selectedDirections, "Continue");
         road.setIntersection(SetRoute.isIntersection());
         target.setRoad(road);
 
