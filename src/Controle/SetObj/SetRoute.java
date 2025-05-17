@@ -36,13 +36,12 @@ public class SetRoute implements Update {
     }
 
     private void updateExistingRoad(Case target) {
-        if (selectedDirection != null) {
-            target.getRoad().setDirection(new Direction[]{selectedDirection});
-            selectedDirection = null;
-        } else {
-            Direction[] rotated = rotateDirections(target.getRoad().getDirection());
-            target.getRoad().setDirection(rotated);
+        if (selectedDirections != null && selectedDirections.length > 0) {
+            target.getRoad().setDirection(selectedDirections);
+            target.getRoad().setIntersection(SetRoute.isIntersection());
+            selectedDirections = null;
         }
+        
     }
 
     private void createNewRoad(Case target) {
@@ -50,10 +49,15 @@ public class SetRoute implements Update {
             target.setBuilding(null);
         }
 
-        Direction[] dir = new Direction[]{selectedDirection != null ? selectedDirection : Direction.UP};
-        target.setRoad(new Road(dir, "Continue"));
+        if (selectedDirections == null || selectedDirections.length == 0) {
+            return;
+        }
 
-        selectedDirection = null;
+        Road road = new Road(selectedDirections, "Continue");
+        road.setIntersection(SetRoute.isIntersection());
+        target.setRoad(road);
+
+        selectedDirections = null;
     }
 
     private Direction[] rotateDirections(Direction[] original) {

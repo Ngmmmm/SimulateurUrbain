@@ -151,8 +151,19 @@ public class Controle {
     // --- Gestion des modifications de case ---
     public void setChange(String s) {
         if (s.startsWith("route:")) {
-            String direction = s.split(":")[1];
-            SetRoute.setSelectedDirection(Direction.valueOf(direction));
+            String[] parts = s.split(":");
+            String directionsStr = parts[1];
+            boolean isIntersection = parts.length > 2 && parts[2].equals("intersection");
+
+            String[] directionNames = directionsStr.split(",");
+            Direction[] directions = new Direction[directionNames.length];
+            for (int i = 0; i < directionNames.length; i++) {
+                directions[i] = Direction.valueOf(directionNames[i]);
+            }
+
+            SetRoute.setSelectedDirections(directions);
+            SetRoute.setIntersectionFlag(isIntersection);
+
             nextChange = SetRoute.set;
         } else {
             nextChange = switch (s) {
