@@ -10,16 +10,15 @@ public class SetRoute implements Update {
     private final TrafficSimulatorGUI gui;
 
     public static SetRoute set;
-    private static Direction[] selectedDirections = null;
-    private static boolean intersectionFlag = false;
+    private static Direction selectedDirection = null;
 
     public SetRoute(Controle ctrl, TrafficSimulatorGUI gui) {
         this.ctrl = ctrl;
         this.gui = gui;
     }
 
-    public static void setSelectedDirections(Direction[] directions) {
-        selectedDirections = directions;
+    public static void setSelectedDirection(Direction direction) {
+        selectedDirection = direction;
     }
 
     @Override
@@ -37,9 +36,9 @@ public class SetRoute implements Update {
     }
 
     private void updateExistingRoad(Case target) {
-        if (selectedDirections != null && selectedDirections.length > 0) {
-            target.getRoad().setDirection(selectedDirections);
-            selectedDirections = null;
+        if (selectedDirection != null) {
+            target.getRoad().setDirection(new Direction[]{selectedDirection});
+            selectedDirection = null;
         } else {
             Direction[] rotated = rotateDirections(target.getRoad().getDirection());
             target.getRoad().setDirection(rotated);
@@ -51,15 +50,10 @@ public class SetRoute implements Update {
             target.setBuilding(null);
         }
 
-        Direction[] dir = selectedDirections != null && selectedDirections.length > 0 
-            ? selectedDirections 
-            : new Direction[]{Direction.UP};
+        Direction[] dir = new Direction[]{selectedDirection != null ? selectedDirection : Direction.UP};
+        target.setRoad(new Road(dir, "Continue"));
 
-        Road road = new Road(dir, "Continue");
-        road.setIntersection(SetRoute.isIntersection());
-        target.setRoad(road);
-
-        selectedDirections = null;
+        selectedDirection = null;
     }
 
     private Direction[] rotateDirections(Direction[] original) {
@@ -75,9 +69,6 @@ public class SetRoute implements Update {
         }
         return rotated;
     }
-
-    public static void setIntersectionFlag(boolean flag) {intersectionFlag = flag;}
-    public static boolean isIntersection() {return intersectionFlag;}
 
     @Override
     public String toString() {
