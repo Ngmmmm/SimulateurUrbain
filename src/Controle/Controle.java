@@ -5,10 +5,11 @@ import Modele.*;
 import Modele.Signalling.*;
 import Modele.Vehicle.*;
 import Vue.*;
-import java.awt.event.*;
-import java.util.*;
+
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import java.awt.event.*;
+import java.util.*;
 
 public class Controle {
 
