@@ -229,11 +229,14 @@ public abstract class Vehicle {
         Case act = getCase(position);
         Case actRight = getCase(rightPos());
         Case next = getCase(nextPosition());
+        
+        boolean canMoveToNext = canMoveToNextCase(act, next);
 
         boolean peutAvancer = nextCaseIsValid()
             && checkPrio()
             && (act.getSignalling() == null || signallingOk(act))
-            && (actRight == null || actRight.getSignalling() == null || signallingOk(actRight));
+            && (actRight == null || actRight.getSignalling() == null || signallingOk(actRight))
+            && canMoveToNext;
 
         if (peutAvancer && (next == null || next.getVehicle() == null)) {
             act.setVehicle(null);
@@ -246,7 +249,7 @@ public abstract class Vehicle {
             return true;
         }
 
-        if (next != null && next.getVehicle() != null){
+        if ((next != null && next.getVehicle() != null) || !canMoveToNext){
             // Cas bloqué : prochaine case occupée ou conditions non remplies
             LinkedList<Position> temp = Pathfinding.findShortestPath(map, position, destination);
             if (temp != null && !temp.isEmpty() ){
@@ -255,6 +258,29 @@ public abstract class Vehicle {
                 return true;
             }
         }
+        return false;
+    }
+
+    private boolean canMoveToNextCase(Case currentCase, Case nextCase) {
+        if (currentCase == null || nextCase == null) {
+            return false;
+        }
+
+        // Vérifier si la case actuelle a une route qui permet de se déplacer vers la prochaine case
+        Road currentRoad = currentCase.getRoad();
+        Road nextRoad = nextCase.getRoad();
+        if (currentRoad == null || nextRoad == null) {
+            return false;
+        }
+
+        // Vérifier si la direction de la route actuelle permet de se déplacer vers la prochaine case
+        for (Direction dir : currentRoad.getDirection()) {
+            Position nextPos = dir.move(currentCase.getPos());
+            if (nextPos.equals(nextCase.getPos())) {
+                return true;
+            }
+        }
+
         return false;
     }
 
