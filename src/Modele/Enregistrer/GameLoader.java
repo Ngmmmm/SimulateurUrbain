@@ -54,10 +54,12 @@ public class GameLoader {
                     currentCol = Integer.parseInt(coords[1]);
                 } else if (line.startsWith("Route: ")) {
                     // Lecture des données de la route
-                    String[] roadData = line.substring(7).split(" ", 2);
+                    String[] roadData = line.substring(7).split(" ", 3); // Diviser en 3 parties : type de ligne, directions, et intersection
                     String lineType = roadData[0];
-                    Direction[] directions = parseDirections(roadData[1]);
+                    Direction[] directions = parseDirections(roadData[2]);
+                    boolean isIntersection = Boolean.parseBoolean(roadData[1]);
                     Road road = new Road(directions, lineType);
+                    road.setIntersection(isIntersection);
                     cityMap.getGrid()[currentRow][currentCol].setRoad(road);
                 } else if (line.startsWith("Batiment")) {
                     // Lecture des données du bâtiment
@@ -72,7 +74,7 @@ public class GameLoader {
                     int x = Integer.parseInt(positionData[0]);
                     int y = Integer.parseInt(positionData[1]);
                     Direction direction = Direction.fromString(vehicleData[3]);
-
+                    
                     // Conversion sécurisée de la vitesse
                     int speed;
                     try {
@@ -87,9 +89,13 @@ public class GameLoader {
                     Position debut = new Position(x, y);
                     Position fin = new Position(destX, destY);
 
-                    carInfo.add(tmp.new Conteneur(type, id, speed, debut, direction, fin, cityMap, stats, ctrl));
-                    
+                    if (id.equals("Bus363")){
+                        System.out.println(debut+ " " + fin);
 
+                    }
+                    if (!debut.equals(fin)){
+                        carInfo.add(tmp.new Conteneur(type, id, speed, debut, direction, fin, cityMap, stats, ctrl));
+                    }
                 } else if (line.startsWith("Signalisation: ")) {
                     // Lecture des données de la signalisation
                     String[] signallingData = line.substring(15).split(" ");

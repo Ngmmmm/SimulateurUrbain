@@ -2,7 +2,7 @@ package Modele;
 
 public class Statistique {
     private int nbVoiture = 0;
-    private int hasMoved = 0;
+    private int nbStillCar = 0;
     private int tempsMoyen = 0;
     private int tempsEchantillon = 0;
     private int tempsArret = 0;
@@ -24,13 +24,17 @@ public class Statistique {
     }
 
     // Compte le nombre de véhicules en mouvement
-    public void isMoving() {
-        hasMoved++;
+    public void isStill() {
+        nbStillCar++;
+    }
+
+    public void isMoving(){
+        nbStillCar--;
     }
 
     // Réinitialise le nombre de véhicules en mouvement
     public void resetMoved() {
-        hasMoved = 0;
+        nbStillCar = 0;
     }
 
     // Retourne le nombre actuel de véhicules
@@ -52,13 +56,13 @@ public class Statistique {
     }
 
     // Retourne le pourcentage d'embouteillage en fonction des véhicules arrêtés
-    public String getEmbouteillage() {
-        return (nbVoiture > 0) ? String.valueOf((nbVoiture - hasMoved) * 100 / nbVoiture) : "0";
+    public double getEmbouteillage() {
+        return (nbVoiture > 0) ? ((double)(nbStillCar) * 100) / nbVoiture : 0;
     }
 
     // Retourne le temps moyen d'arrêt
-    public String getArret() {
-        return (nbArret > 0) ? String.valueOf(tempsArret / nbArret) : "0";
+    public double getArret() {
+        return (nbArret > 0) ? ((double)tempsArret) / nbArret : 0;
     }
 
     // Met à jour le passage maximal sur une case
@@ -75,7 +79,7 @@ public class Statistique {
 
     public void reset(){
     nbVoiture = 0;
-    hasMoved = 0;
+    nbStillCar = 0;
     tempsMoyen = 0;
     tempsEchantillon = 0;
     tempsArret = 0;

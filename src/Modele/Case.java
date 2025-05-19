@@ -75,8 +75,8 @@ public class Case{
 
 
     public void setVehicle(Vehicle vehicle) {this.vehicle = vehicle;}
-    public void setBuilding(Building building) {this.building = building;}
-    public void setRoad(Road road) {this.road = road;}
+    public void setBuilding(Building building) {this.building = building; this.road = null;}
+    public void setRoad(Road road) {this.road = road;this.building = null;}
     public void setSignalling(Signalling signalling) {this.signalling = signalling;}
     public void setPos(Position pos) {this.pos = pos;}
 
