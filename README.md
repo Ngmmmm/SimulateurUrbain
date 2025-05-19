@@ -16,18 +16,18 @@ Ce projet a pour but de simuler le trafic urbain d'une ville fictive à l'aide d
 
 2. Compiler le projet :
    ```bash
-   javac -d bin -cp src src\Controle\*.java src\Controle\SetObj\*.java src\Modele\*.java src\Modele\Enregistrer\*.java src\Modele\Signalling\*.java src\Modele\Vehicle\*.java src\Vue\*.java
+   javac -d bin -cp src src\Controle\*.java src\Controle\SetObj\*.java src\Modele\*.java src\Modele\Enregistrer\*.java src\Modele\Signalling\*.java src\Modele\Vehicle\*.java src\Vue\*.java src\*.java
    ```
 
 3. Lancer l'application :
 
    Sous Windows : 
     ```bash
-    java -cp "bin;." Controle.Controle
+    java -cp "bin;." Main
     ```
    Sous Linux : 
     ```bash
-    java -cp "bin:." Controle.Controle
+    java -cp "bin:." Main
     ```
 
 
