@@ -6,7 +6,6 @@ import Modele.Signalling.*;
 import Modele.Vehicle.*;
 import Vue.*;
 
-import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import java.awt.event.*;
 import java.util.*;
@@ -263,8 +262,5 @@ public class Controle {
         Simulation.setCityMap(map);
     }
 
-    // --- Point d'entrée ---
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(Controle::new);
-    }
+
 }
