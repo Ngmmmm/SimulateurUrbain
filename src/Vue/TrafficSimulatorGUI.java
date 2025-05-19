@@ -65,7 +65,7 @@ public class TrafficSimulatorGUI extends JFrame {
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         add(scrollPane, BorderLayout.CENTER);
 
-        controlPanel = createControlPanel();
+        controlPanel = createStatsPanel();
         add(controlPanel, BorderLayout.SOUTH);
         add(createChangePanel(), BorderLayout.WEST);
         addListener();
@@ -353,7 +353,7 @@ public class TrafficSimulatorGUI extends JFrame {
         return menuBar;
     }
 
-    private JPanel createControlPanel() {
+    private JPanel createStatsPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(1, 3));
         JLabel avgTimeLabel = new JLabel("Temps de trajet moyen: 0u");
@@ -675,7 +675,6 @@ public class TrafficSimulatorGUI extends JFrame {
                 if (controlPanel != null) {
                     UpdateStats.update(controlPanel.getComponents(), stats);
                     controlPanel.repaint();
-                    stats.resetMoved();
                 }
                 mapPanel.repaint();
                 needUpdate = false;
