@@ -54,10 +54,12 @@ public class GameLoader {
                     currentCol = Integer.parseInt(coords[1]);
                 } else if (line.startsWith("Route: ")) {
                     // Lecture des données de la route
-                    String[] roadData = line.substring(7).split(" ", 2);
+                    String[] roadData = line.substring(7).split(" ", 3); // Diviser en 3 parties : type de ligne, directions, et intersection
                     String lineType = roadData[0];
-                    Direction[] directions = parseDirections(roadData[1]);
+                    Direction[] directions = parseDirections(roadData[2]);
+                    boolean isIntersection = Boolean.parseBoolean(roadData[1]);
                     Road road = new Road(directions, lineType);
+                    road.setIntersection(isIntersection);
                     cityMap.getGrid()[currentRow][currentCol].setRoad(road);
                 } else if (line.startsWith("Batiment")) {
                     // Lecture des données du bâtiment

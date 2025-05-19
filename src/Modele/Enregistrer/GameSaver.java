@@ -31,7 +31,7 @@ public class GameSaver {
                         // Sauvegarder la route
                         if (currentCase.getRoad() != null) {
                             Road road = currentCase.getRoad();
-                            writer.write("Route: " + road.getLineType() + " " + arrayToString(road.getDirection()));
+                            writer.write("Route: " + road.getLineType() + " " + road.isIntersection() + " " + arrayToString(road.getDirection()));
                             writer.newLine();
                         }
 
