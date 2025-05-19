@@ -46,6 +46,7 @@ public abstract class Vehicle {
             map.addVehicle(this);
         }
         stats.addVoiture();
+        start();
         followAllPath(stats);
         
     }
@@ -71,6 +72,7 @@ public abstract class Vehicle {
             map.addVehicle(this);
         }
         stats.addVoiture();
+        start();
     }
 
     public void start() {
@@ -236,6 +238,10 @@ public abstract class Vehicle {
             && (actRight == null || actRight.getSignalling() == null || signallingOk(actRight));
 
         if (peutAvancer && (next == null || next.getVehicle() == null)) {
+            if (!isMoving){
+                isMoving = true;
+                stats.isMoving();
+            }
             act.setVehicle(null);
             startAnimation(position);
             position = nextPosition();
@@ -251,9 +257,11 @@ public abstract class Vehicle {
             LinkedList<Position> temp = Pathfinding.findShortestPath(map, position, destination);
             if (temp != null && !temp.isEmpty() ){
                 this.path = temp;
-                //System.out.println("Recalcul de chemin pour " + position + " vers " + destination);
-                return true;
             }
+        }
+        if (isMoving){
+            isMoving = false;
+            stats.isStill();
         }
         return false;
     }
@@ -289,7 +297,6 @@ public abstract class Vehicle {
                 path.push(prochainePos);
                 timeStanding++;
             }else{
-                stats.isMoving();
                 stats.addArret(timeStanding);
                 timeStanding = 0;
             }
