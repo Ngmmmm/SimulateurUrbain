@@ -51,7 +51,7 @@ public class TrafficSimulatorGUI extends JFrame {
         setSize(1200, 800);
         setLayout(new BorderLayout());
         setJMenuBar(createMenuBar());
-        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
 
 
 
