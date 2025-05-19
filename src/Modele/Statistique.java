@@ -23,11 +23,12 @@ public class Statistique {
         }
     }
 
-    // Compte le nombre de véhicules en mouvement
+    // Ajoute le compte de véhicules en arret
     public void isStill() {
         nbStillCar++;
     }
 
+    // Décrémente le compte de véhicules en arret
     public void isMoving(){
         nbStillCar--;
     }

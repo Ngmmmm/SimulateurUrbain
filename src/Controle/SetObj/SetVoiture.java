@@ -7,6 +7,21 @@ import Vue.TrafficSimulatorGUI;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * La SetVoiture implémente l'interface Update et contient les fonctions d'ajout de voiture
+ * 
+ * 
+ * <p> 
+ * Cette classe contient des méthodes pour :
+ * </p>
+ * 
+ * <ul>
+ * <li> Ajouter une voiture en fonction des Case cliquées {@link #update(CityMap, Stack2, Statistique)}. </li>
+ * <li> Créer une nouvelle voiture à une position donnée {@link #spawnCarIfPossible(CityMap, Position, Statistique)}. </li>
+ * </ul>
+ */
+
+
 public class SetVoiture implements Update {
 
     private final Controle ctrl;
@@ -21,6 +36,13 @@ public class SetVoiture implements Update {
         this.gui = gui;
     }
 
+    
+    /** 
+     * Fonction placant une nouvelle voiture en fonction des Case cliquées
+     * @param map Carte sur laquel ajouter la voiture
+     * @param p Position sur laquel ajouter la voiture
+     * @param stats Statistique captant les informations de la voiture
+     */
     @Override
     public void update(CityMap map, Stack2 c, Statistique stats) {
         Case target = CityMap.getCase(map.getGrid(), c.getA());
@@ -40,6 +62,12 @@ public class SetVoiture implements Update {
         }
     }
 
+    
+    /** 
+     * @param map Carte sur laquel ajouter la voiture
+     * @param p Position sur laquel ajouter la voiture
+     * @param stats Statistique captant les informations de la voiture
+     */
     private void spawnCarIfPossible(CityMap map, Position p, Statistique stats) {
         List<Position> accessible = map.getAccessiblePosition();
         if (accessible.isEmpty()) return;

@@ -9,6 +9,13 @@ public class Pathfinding {
         // Empêcher l'instanciation de la classe statique
     }
 
+    /**
+     * Applique l'algorithme de dijkstra pour trouver le chemin le plus court pour aller de start à goal
+     * @param cityMap Carte sur laquel se déplacer
+     * @param start Position de départ du trajet
+     * @param goal Position d'arrivée du trajet
+     * @return LinkedList<Position> contenant les positions successivent que la voiture doit prendre
+     */
     public static LinkedList<Position> findShortestPath(CityMap cityMap, Position start, Position goal) {
         int rows = cityMap.getGrid().length;
         int cols = cityMap.getGrid()[0].length;
@@ -97,6 +104,9 @@ public class Pathfinding {
         return new LinkedList<>(); // Aucun chemin trouvé
     }
 
+    /**
+     * étape final de l'algorithme de Dijkstra pour reconstituer le chemin pris une fois que goal à été atteint
+    */
     private static LinkedList<Position> reconstructPath(Position[][] previous, Position goal) {
         LinkedList<Position> path = new LinkedList<>();
         Position current = goal;
@@ -108,6 +118,12 @@ public class Pathfinding {
         return path;
     }
 
+    /**
+     * Trouve toutes les cases accessibles à partir d'une position initiale
+     * @param cityMap Carte sur laquel se déplacer
+     * @param start Position initiale
+     * @return LinkedList<Position> des positions accessibles
+     */
     public static LinkedList<Position> findAllAccessiblePositions(CityMap cityMap, Position start) {
         int rows = cityMap.getGrid().length;
         int cols = cityMap.getGrid()[0].length;
@@ -166,6 +182,11 @@ public class Pathfinding {
         return accessiblePositions;
     }
 
+    /**
+     * Créer la liste des Position de spawn valide (sur les bords de la CityMap)
+     * @param map Carte sur laquel se déplacer
+     * @return LinkedList<Position> liste des Positions valide
+     */
     public static LinkedList<Position> FindSpawnPosition(CityMap map) {
         LinkedList<Position> result = new LinkedList<>();
         int rows = map.getRows();

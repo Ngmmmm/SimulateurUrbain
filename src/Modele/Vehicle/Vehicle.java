@@ -197,6 +197,11 @@ public abstract class Vehicle {
         return next != null && next.isEmpty();
     }
 
+    /**
+     * Renvoie si une voiture peut passer ou non sur cette case
+     * @param act Case à varifier
+     * @return boolean qui indique si une voiture peut passer en fonction des signalisations
+     */
     public boolean signallingOk(Case act){
         Signalling signal = act.getSignalling();
         if(signal != null){
@@ -227,6 +232,11 @@ public abstract class Vehicle {
         return true;
     }
 
+    /**
+     * Essaye de déplacer la voiture à la case suivante de son trajet et renvoie un boolean sur le succès du déplacement
+     * @param stats statistiques à mettre à jour selon les issues de la fonction
+     * @return boolean représentant le succès de la fonction
+     */
     public boolean move(Statistique stats) {
         Case act = getCase(position);
         Case actRight = getCase(rightPos());
@@ -299,7 +309,12 @@ public abstract class Vehicle {
     }
 
 
-
+    /**
+     * Essaye d'avancer la voiture à la prochaine case et répète le déplacement jusqu'à la fin du trajet
+     * @param path
+     * @param stats
+     * @return boolean selon si la voiture a bougé ou non
+     */
     public boolean followPath(LinkedList<Position> path, Statistique stats) {
         temps++;
         move = false;
