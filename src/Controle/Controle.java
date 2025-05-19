@@ -33,27 +33,13 @@ public class Controle {
     private ArrayList<Position> toUpdateCar = new ArrayList<>();
     private Update nextChange;
     private final Stack2 caseUpdate = new Stack2();
+    private ArrayList<Position> iter;
 
     // --- Constructeur ---
     public Controle() {
         initSim();
         ctrlTimer = new Timer(50 * speed, createActionListener());
-        t2 = new Timer(50 * speed, e -> {
-            if (gui.isRunning() != ctrlTimer.isRunning()) {
-                if (gui.isRunning()) {
-                    nextChange = null;
-                    caseUpdate.clear();
-                    start();
-                } else {
-                    pause();
-                }
-            }
-            if (!gui.isRunning() && !caseUpdate.isEmpty() && nextChange != null) {
-                nextChange.update(cityMap, caseUpdate, stats);
-                caseUpdate.clear();
-                nextChange = null;
-            }
-        });
+        t2 = new Timer(50 * speed, createGlobalListener());
         gui = new TrafficSimulatorGUI(cityMap, stats, this);
         initSet();
         start();
@@ -77,14 +63,18 @@ public class Controle {
     // --- Timer / Simulation ---
     public void start() {
         ctrlTimer.start();
-        for (TrafficLightGroup g : lights)
+        timerIsRunning = true;
+        for (TrafficLightGroup g : lights){
             if (g.isDown()) g.startCycle();
+        }
     }
 
     public void pause() {
         ctrlTimer.stop();
-        for (TrafficLightGroup g : lights)
-            if (!g.isDown()) g.stop();
+        timerIsRunning = false;
+        for (TrafficLightGroup g : lights){
+            if (!g.isDown()) {g.stop();}
+        }
     }
 
     public void modifySpeed() {
@@ -104,15 +94,34 @@ public class Controle {
             g.reset();
     }
 
+    public void clearSim(){
+        lights.clear();
+        toUpdateCar.clear();
+        caseUpdate.clear();
+        needUpdate = false;
+        stats.reset();
+        iter.clear();
+    }
+
+    public void updateTimer(){
+        ctrlTimer.stop();
+        ctrlTimer = new Timer(50 * speed, createActionListener());
+        t2 = new Timer(50 * speed, createGlobalListener());
+        start();
+        t2.start();
+    }
+
     public ActionListener createActionListener() {
         return e -> {
-            ArrayList<Position> iter = new ArrayList<>(toUpdateCar);
+            iter = new ArrayList<>(toUpdateCar);
             toUpdateCar.clear();
 
             for (Position p : iter) {
-                Vehicle v = CityMap.getCase(cityMap.getGrid(), p).getVehicle();
-                if (v != null)
-                    needUpdate |= v.followPath(v.path, stats);
+                if (p != null){
+                    Vehicle v = CityMap.getCase(cityMap.getGrid(), p).getVehicle();
+                    if (v != null)
+                        needUpdate |= v.followPath(v.path, stats);
+                }
             }
 
             if (needUpdate)
@@ -120,11 +129,41 @@ public class Controle {
         };
     }
 
+    public ActionListener createGlobalListener(){
+        return e -> {
+            if (gui.isRunning() != ctrlTimer.isRunning()) {
+                if (gui.isRunning()) {
+                    nextChange = null;
+                    caseUpdate.clear();
+                    start();
+                } else {
+                    pause();
+                }
+            }
+            if (!gui.isRunning() && !caseUpdate.isEmpty() && nextChange != null) {
+                nextChange.update(cityMap, caseUpdate, stats);
+                caseUpdate.clear();
+                nextChange = null;
+            }
+        };
+    }
+
     // --- Gestion des modifications de case ---
     public void setChange(String s) {
         if (s.startsWith("route:")) {
-            String direction = s.split(":")[1];
-            SetRoute.setSelectedDirection(Direction.valueOf(direction));
+            String[] parts = s.split(":");
+            String directionsStr = parts[1];
+            boolean isIntersection = parts.length > 2 && parts[2].equals("intersection");
+
+            String[] directionNames = directionsStr.split(",");
+            Direction[] directions = new Direction[directionNames.length];
+            for (int i = 0; i < directionNames.length; i++) {
+                directions[i] = Direction.valueOf(directionNames[i]);
+            }
+
+            SetRoute.setSelectedDirections(directions);
+            SetRoute.setIntersectionFlag(isIntersection);
+
             nextChange = SetRoute.set;
         } else {
             nextChange = switch (s) {
@@ -137,6 +176,10 @@ public class Controle {
         }
     }
 
+    public void Spawn15Car(){
+        Simulation.spawnRandomCars(15, stats, this);
+    }
+
     public void removeUpdateCar(Position p) {
         toUpdateCar.removeIf(p::equals);
     }
@@ -144,10 +187,16 @@ public class Controle {
     public void removeLight(TrafficLight light) {
         for (TrafficLightGroup g : lights) {
             if (g.getId() == light.getIDGroupe()) {
-                g.remove(light);
+                lights.remove(g);
                 break;
             }
         }
+    }
+
+    public void addCar(Position p){
+        addUpdateCar(p);
+        addUpdate();
+        gui.setUpdate(true);
     }
 
     // --- Getters / Setters ---
@@ -167,7 +216,11 @@ public class Controle {
     public int getSpeed() { return speed; }
 
     public void setSpeed(int n) { speed = n; }
-    public boolean timerIsRunning(){return timerIsRunning;}
+    public boolean getTimerIsRunning(){return timerIsRunning;}
+    public void setMap(CityMap map){
+        this.cityMap = map;
+        Simulation.setCityMap(map);
+    }
 
     // --- Point d'entrée ---
     public static void main(String[] args) {

@@ -57,13 +57,13 @@ public class Image {
             imgMaison3 = ImageIO.read(new File("img/maison3.png"));
             intersection = ImageIO.read(new File("img/intersection.png"));
             imgBusUp = ImageIO.read(new File("img/busUp.png"));
-            imgCamionUp = ImageIO.read(new File("img/camionUp.PNG"));
-            imgBusDown = ImageIO.read(new File("img/busDown.PNG"));
-            imgBusLeft = ImageIO.read(new File("img/busLeft.PNG"));
-            imgBusRight = ImageIO.read(new File("img/busRight.PNG"));
-            imgCamionDown = ImageIO.read(new File("img/camionDown.PNG"));
-            imgCamionLeft = ImageIO.read(new File("img/camionLeft.PNG"));
-            imgCamionRight = ImageIO.read(new File("img/camionRight.PNG"));
+            imgCamionUp = ImageIO.read(new File("img/camionUp.png"));
+            imgBusDown = ImageIO.read(new File("img/busDown.png"));
+            imgBusLeft = ImageIO.read(new File("img/busLeft.png"));
+            imgBusRight = ImageIO.read(new File("img/busRight.png"));
+            imgCamionDown = ImageIO.read(new File("img/camionDown.png"));
+            imgCamionLeft = ImageIO.read(new File("img/camionLeft.png"));
+            imgCamionRight = ImageIO.read(new File("img/camionRight.png"));
 
             
         } catch (IOException e) {
@@ -72,6 +72,7 @@ public class Image {
     }
     
     public static BufferedImage getImgCar(Direction dir){
+        if (dir == null) return null;
         return switch (dir.toString()) {
             case "UP" -> imgCarUp;
             case "DOWN" -> imgCarDown;
@@ -82,6 +83,7 @@ public class Image {
     }
 
     public static BufferedImage getImgBus(Direction dir){
+        if (dir == null) return null;
         return switch (dir.toString()) {
             case "UP" -> imgBusUp;
             case "DOWN" -> imgBusDown;
@@ -92,6 +94,7 @@ public class Image {
     }
 
     public static BufferedImage getImgCamion(Direction dir){
+        if (dir == null) return null;
         return switch (dir.toString()) {
             case "UP" -> imgCamionUp;
             case "DOWN" -> imgCamionDown;

@@ -140,7 +140,7 @@ public class Simulation {
 
     // 4) Spawn optimisé : un seul Random et boucle claire
     public static void spawnRandomCars(int nbCars, Statistique stats, Controle ctrl) {
-        LinkedList<Position> spawnPositions = Pathfinding.FindSpawnPosition(cityMap);
+        LinkedList<Position> spawnPositions = Pathfinding.FindSpawnPosition(cityMap); 
         if (spawnPositions.isEmpty()) {
             System.out.println("Pas de spawn disponible.");
             return;
@@ -153,11 +153,6 @@ public class Simulation {
                 attempts++;
                 continue;
             }
-
-            Road road = cityMap.getRoad(spawn);
-            Direction dir = (road != null && road.getDirection().length > 0)
-                            ? road.getDirection()[0]
-                            : Direction.RIGHT;
 
             cityMap.findAccessiblePos(spawn);
             LinkedList<Position> accessible = cityMap.getAccessiblePosition();
@@ -173,16 +168,20 @@ public class Simulation {
 
             Vehicle v;
             switch (RANDOM.nextInt(3)) {
-                case 0: v = new Car("Car" + Vehicle.nbCar, 0, spawn, dir, cityMap, dest, stats, ctrl); break;
-                case 1: v = new Truck("Truck" + Vehicle.nbCar, 2, spawn, dir, cityMap, dest, stats, ctrl); break;
-                default: v = new Bus("Bus" + Vehicle.nbCar, 3, spawn, dir, cityMap, dest, stats, ctrl);
+                case 0: v = new Car("Car" + Vehicle.nbCar, 0, spawn, cityMap, dest, stats, ctrl); break;
+                case 1: v = new Truck("Truck" + Vehicle.nbCar, 2, spawn, cityMap, dest, stats, ctrl); break;
+                default: v = new Bus("Bus" + Vehicle.nbCar, 3, spawn, cityMap, dest, stats, ctrl);
             }
-            cityMap.addVehicle(v);
+            v.followAllPath(stats);
             nbCars--;
         }
     }
 
     public CityMap getCityMap() {
         return cityMap;
+    }
+
+    public static void setCityMap(CityMap cityMap){
+        Simulation.cityMap = cityMap;
     }
 }

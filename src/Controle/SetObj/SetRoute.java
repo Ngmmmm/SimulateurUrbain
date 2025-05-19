@@ -10,15 +10,16 @@ public class SetRoute implements Update {
     private final TrafficSimulatorGUI gui;
 
     public static SetRoute set;
-    private static Direction selectedDirection = null;
+    private static Direction[] selectedDirections = null;
+    private static boolean intersectionFlag = false;
 
     public SetRoute(Controle ctrl, TrafficSimulatorGUI gui) {
         this.ctrl = ctrl;
         this.gui = gui;
     }
 
-    public static void setSelectedDirection(Direction direction) {
-        selectedDirection = direction;
+    public static void setSelectedDirections(Direction[] directions) {
+        selectedDirections = directions;
     }
 
     @Override
@@ -36,13 +37,12 @@ public class SetRoute implements Update {
     }
 
     private void updateExistingRoad(Case target) {
-        if (selectedDirection != null) {
-            target.getRoad().setDirection(new Direction[]{selectedDirection});
-            selectedDirection = null;
-        } else {
-            Direction[] rotated = rotateDirections(target.getRoad().getDirection());
-            target.getRoad().setDirection(rotated);
+        if (selectedDirections != null && selectedDirections.length > 0) {
+            target.getRoad().setDirection(selectedDirections);
+            target.getRoad().setIntersection(SetRoute.isIntersection());
+            selectedDirections = null;
         }
+        
     }
 
     private void createNewRoad(Case target) {
@@ -50,25 +50,19 @@ public class SetRoute implements Update {
             target.setBuilding(null);
         }
 
-        Direction[] dir = new Direction[]{selectedDirection != null ? selectedDirection : Direction.UP};
-        target.setRoad(new Road(dir, "Continue"));
-
-        selectedDirection = null;
-    }
-
-    private Direction[] rotateDirections(Direction[] original) {
-        Direction[] rotated = new Direction[original.length];
-        for (int i = 0; i < original.length; i++) {
-            rotated[i] = switch (original[i]) {
-                case UP -> Direction.RIGHT;
-                case RIGHT -> Direction.DOWN;
-                case DOWN -> Direction.LEFT;
-                case LEFT -> Direction.UP;
-                default -> Direction.UP;
-            };
+        if (selectedDirections == null || selectedDirections.length == 0) {
+            return;
         }
-        return rotated;
+
+        Road road = new Road(selectedDirections, "Continue");
+        road.setIntersection(SetRoute.isIntersection());
+        target.setRoad(road);
+
+        selectedDirections = null;
     }
+
+    public static void setIntersectionFlag(boolean flag) {intersectionFlag = flag;}
+    public static boolean isIntersection() {return intersectionFlag;}
 
     @Override
     public String toString() {

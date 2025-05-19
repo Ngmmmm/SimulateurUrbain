@@ -29,15 +29,20 @@ public class SetFeu implements Update {
 
         if (!(signallingA instanceof TrafficLight trafficLightA)) {
             createNewTrafficLight(caseA, c, map);
-        } else {
-            Case caseB = CityMap.getCase(map.getGrid(), c.getB());
-            Signalling signallingB = caseB.getSignalling();
+        } else{
+            if (c.getB() == null) {
+                toggleTrafficLightColor(trafficLightA.getTrafficLightGroup(ctrl));
+            }else {
+                Case caseB = CityMap.getCase(map.getGrid(), c.getB());
+                Signalling signallingB = caseB.getSignalling();
 
-            if (signallingB instanceof TrafficLight trafficLightB) {
-                if (trafficLightA.getIDGroupe() == trafficLightB.getIDGroupe()) return;
-                mergeTrafficLightGroups(trafficLightA, trafficLightB);
-            } else {
-                toggleTrafficLightColor(trafficLightA);
+                if (signallingB instanceof TrafficLight trafficLightB) {
+                    if (trafficLightA.getIDGroupe() == trafficLightB.getIDGroupe()) return;
+                    mergeTrafficLightGroups(trafficLightA, trafficLightB);
+
+                } else {
+                    toggleTrafficLightColor(trafficLightA.getTrafficLightGroup(ctrl));
+                }
             }
         }
 
@@ -58,29 +63,32 @@ public class SetFeu implements Update {
     private void mergeTrafficLightGroups(TrafficLight a, TrafficLight b) {
         TrafficLightGroup groupA = null;
         TrafficLightGroup groupB = null;
-
         for (TrafficLightGroup g : ctrl.getLights()) {
             if (g.getId() == a.getIDGroupe()) groupA = g;
-            else if (g.getId() == b.getIDGroupe()) groupB = g;
+            if (g.getId() == b.getIDGroupe()) groupB = g;
             if (groupA != null && groupB != null) break;
         }
 
-        if (groupA != null && groupB != null) {
+        if (groupA != null && groupB != null && groupA != groupB) {
             ctrl.removeLight(b);
             groupA.merge(groupB);
+            groupA.stop();
         }
     }
 
-    private void toggleTrafficLightColor(TrafficLight light) {
-        light.setColor(
-            switch (light.getColor()) {
-                case "GREEN" -> LightColor.RED;
-                case "RED" -> LightColor.GREEN;
-                case "ORANGE" -> LightColor.ORANGE;
-                default -> LightColor.RED;
-            },
-            ctrl
-        );
+    private void toggleTrafficLightColor(TrafficLightGroup groupe) {
+        for(TrafficLight light : groupe.getLights()){
+            light.setColor(
+                switch (light.getColor()) {
+                    case "GREEN" -> LightColor.RED;
+                    case "RED" -> LightColor.GREEN;
+                    case "ORANGE" -> LightColor.ORANGE;
+                    default -> LightColor.RED;
+                },
+                ctrl
+            );
+        }
+        
     }
 
     @Override

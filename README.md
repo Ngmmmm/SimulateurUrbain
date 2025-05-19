@@ -1,93 +1,236 @@
-# 2024-CB1-A-SimulateurUrbain
+
+# 🚦 Simulateur de Gestion de Trafic Urbain
+
+Projet de L2 Programmation 2024–2025 — Université
+
+## 📌 Description
+
+Ce projet a pour but de simuler le trafic urbain d'une ville fictive à l'aide d'une **application Java interactive**. Il comprend la modélisation d'intersections, routes, feux de signalisation, et véhicules se déplaçant selon des règles réalistes. Le simulateur permet à l'utilisateur d'interagir avec la carte, d'observer le trafic, de consulter des statistiques, et d'optimiser la circulation grâce à des algorithmes intelligents.
+
+## 🚀 Lancement du projet
+
+1. Cloner le projet :
+   ```bash
+   git clone <url_du_dépôt>
+   ```
+
+2. Compiler le projet :
+   ```bash
+   javac -d bin -cp src src\Controle\*.java src\Controle\SetObj\*.java src\Modele\*.java src\Modele\Enregistrer\*.java src\Modele\Signalling\*.java src\Modele\Vehicle\*.java src\Vue\*.java
+   ```
+
+3. Lancer l'application :
+
+   Sous Windows : 
+    ```bash
+    java -cp "bin;." Controle.Controle
+    ```
+   Sous Linux : 
+    ```bash
+    java -cp "bin:." Controle.Controle
+    ```
+
+
+## 🧭 Mode d’emploi de l'application
+
+Cette section explique comment interagir avec la simulation de trafic urbain via l’interface utilisateur. Toutes les **modifications** nécessitent que la simulation soit **mise en pause**.
+
+### 🖼️ Aperçu de l’application
+
+![Aperçu de la simulation](img/simulation_apercu.png)
+
+
+### ⏸️ Pause & Lecture de la simulation
+
+* **Mettre en pause** : Appuyer sur la touche `P` ou menu `Simulation > Arrêter`
+* **Reprendre la simulation** : Appuyer sur la touche `P` ou menu `Simulation > Reprendre`
+* ⚠️ *Toute modification de la carte nécessite que la simulation soit en pause.*
 
 
 
-## Getting started
+### 🏠 Ajouter une maison
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+1. Mettre la simulation en pause.
+2. Cliquer sur une case vide de la carte.
+3. Cliquer sur le bouton `Ajouter une maison`.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
 
-## Add your files
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+### 🛣️ Ajouter une route
+
+1. Mettre la simulation en pause.
+2. Cliquer sur la case que vous souhaitez modifier.
+3. Cliquer sur le bouton `Ajouter une route`.
+4. Sélectionner la **direction souhaitée** (haut, bas, gauche, droite).
+5. Pour ajouter plusieurs directions à une même case, répétez les étapes 3–4 avec d’autres directions.
+
+
+
+### 🚦 Modifier les feux de signalisation
+
+Trois options sont disponibles :
+
+* **Ajouter un feu de signalisation** :
+
+  1. Cliquer sur **une route SANS feu de signalisation** (si plusieurs selectionnées, la dernière cliqué est prise en compte).
+  2. Cliquer sur `Ajouter un feu / Changer de groupe`.
+  
+  > Le feu va apparaître placé selon la direction de la route.
+
+* **changer la couleur des feux** :
+  
+  1. Cliquer sur **une route AVEC feu de signalisation**.
+  2. Cliquer sur `Ajouter un feu / Changer de groupe`.
+
+> Tout les feux appartenant au groupe de feu (généralement les feux d'une intersection) vont passer à leur couleur opposé.
+> Ne marche pas si 2 feux du même groupe sont cliqué (car inclue dans le cas suivant).
+
+* **Regrouper 2 groupes de feux** :
+
+  1. Cliquer sur **deux route AVEC feu de signalisation** successivement.
+  2. Cliquer sur `Ajouter un feu / Changer de groupe`.
+
+> Va ajouter les feux de la première case cliquée dans le groupe de la seconde
+
+
+### 🚗 Ajouter une voiture
+
+Deux options sont disponibles :
+
+* **Destination aléatoire** :
+
+  1. Cliquer sur une **seule case**.
+  2. Cliquer sur `Ajouter une voiture`.
+  3. Une voiture va apparaître sur cette case, avec une destination choisie aléatoirement.
+
+* **Trajet défini** :
+
+  1. Cliquer sur **deux cases** : la première pour le départ, la seconde pour l’arrivée.
+  2. Cliquer sur `Ajouter une voiture`.
+  3. Une voiture va apparaît sur la première case et se dirigera vers la seconde.
+
+> Si l’on clique sur une voiture pendant la simulation, **son chemin actuel s’affiche**.
+> Celui-ci peut **évoluer dynamiquement** en fonction du trafic.
+
+
+
+### 🚚 Ajouter plusieurs voitures
+
+* Le bouton `Ajouter 15 voitures` tente d’ajouter 15 véhicules.
+* Les voitures vont apparaître **uniquement si des emplacements d’entrée** sont disponibles (bords de la carte).
+
+
+
+### 📈 Fréquence d’utilisation des cases
+
+* Le bouton `Montrer la fréquence des cases` affiche, pour chaque case, **combien de fois elle a été empruntée récemment**.
+* Utile pour visualiser les **zones les plus fréquentées**.
+
+
+
+### 💾 Sauvegarde et chargement
+
+Dans le menu `Fichier` :
+
+* `Sauvegarder la simulation` : enregistre tout l’état de la simulation dans un fichier `.txt`.
+* `Charger une simulation` : recharge une sauvegarde précédente.
+* `Quitter` : ferme l’application.
+
+
+
+### 🔍 Zoom et déplacement
+
+* **Zoom avant/arrière** :
+
+  * Avec la molette de la souris (en survolant la carte).
+  * Ou via le menu `Affichage > Zoom avant / Zoom arrière`.
+
+* **Déplacement de la carte** :
+
+  * Via les **barres de défilement** (scrollbars).
+  * Ou en **cliquer-glisser** sur la carte (drag and scroll fluide).
+
+
+
+
+## 🎯 Objectifs pédagogiques
+
+- Utilisation de l'architecture **Modèle-Vue-Contrôleur (MVC)**.
+- Conception d’une **interface graphique avec Swing**.
+- Implémentation de **règles de trafic réalistes**.
+- Collecte et affichage de **statistiques en temps réel**.
+- Introduction aux **algorithmes d’optimisation heuristiques**.
+- Travail collaboratif avec **Git/GitLab**.
+
+## 🛠️ Fonctionnalités principales
+
+### 🗺️ Carte Interactive
+- Affichage de routes, intersections, feux de signalisation.
+- Zoom/dézoom possible.
+- Routes de tailles variées.
+
+### 🚗 Simulation de trafic
+- Véhicules variés : voitures, bus, camions.
+- Différences de vitesse et de taille.
+- Gestion de la priorité et des feux aux intersections.
+
+### 🚦 Gestion des feux de signalisation
+- Ajout et contrôle manuel des cycles.
+- Interaction utilisateur via clics.
+
+### 📊 Statistiques en temps réel
+- Temps moyen de trajet.
+- Temps de parcours par route.
+- Embouteillages.
+- Estimation de la consommation de carburant.
+
+### 📌 Calcul de trajets
+- Utilisation de l’algorithme de Dijkstra pour déterminer les plus courts chemins entre intersections, selon les conditions de trafic.
+
+### 🧠 Extensions
+- Sauvegarde/chargement de la simulation.
+
+## 🧱 Architecture du projet
 
 ```
-cd existing_repo
-git remote add origin https://moule.informatique.univ-paris-diderot.fr/tp-1/2024-cb1-a-simulateururbain.git
-git branch -M main
-git push -uf origin main
+C:.
+├── .vscode                 # Configuration de l’environnement de développement
+├── bin                    # Fichiers compilés
+│
+├── img                    # Images utilisées dans l’interface
+├── Save                   # Fichiers de sauvegarde de simulation
+└── src                    # Code source du projet
+    ├── Controle           # Contrôleurs du projet
+    │   └── SetObj
+    ├── Modele             # Données et logique métier
+    │   ├── Enregistrer
+    │   ├── Signalling
+    │   └── Vehicle
+    └── Vue                # Interface graphique avec Swing
 ```
 
-## Integrate with your tools
+## 💻 Technologies utilisées
 
-- [ ] [Set up project integrations](https://moule.informatique.univ-paris-diderot.fr/tp-1/2024-cb1-a-simulateururbain/-/settings/integrations)
+- **Java 17+**
+- **Swing (javax.swing)** pour l’interface graphique
+- **Git / GitLab** pour la collaboration
+- **Timer** Swing pour l'animation
+- **OOP et MVC** pour la structuration du code
 
-## Collaborate with your team
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
 
-## Test and Deploy
 
-Use the built-in continuous integration in GitLab.
+## 👥 Équipe projet
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+- 👤 RAMANATHAN Jonas — 22308381
+- 👤 POTIER Nathan — 22305976 
+- 👤 GRÉGOIRE-MELLIER Noa — 22308594
+- 👤 NGUYEN Le-Augustin — 22301887
+- 🧑‍🏫 Superviseur : Costas Bouyioukos
 
-***
 
-# Editing this README
+## 📂 Licence
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+Projet académique — Utilisation libre à des fins pédagogiques uniquement.
 
-## Suggestions for a good README
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.

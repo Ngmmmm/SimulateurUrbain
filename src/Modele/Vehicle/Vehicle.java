@@ -46,6 +46,7 @@ public abstract class Vehicle {
             map.addVehicle(this);
         }
         stats.addVoiture();
+        start();
         followAllPath(stats);
         
     }
@@ -55,7 +56,12 @@ public abstract class Vehicle {
         this.id = id;
         this.speed = speed;
         this.position = position;
-        this.direction = Direction.UP;
+
+        Road road = map.getRoad(position);
+        Direction dir = (road != null && road.getDirection().length > 0)
+                        ? road.getDirection()[0]
+                        : Direction.RIGHT;
+        this.direction = dir;
         this.isMoving = false;
         this.fuelConso = fuelConso;
         this.fuel = 100;
@@ -66,6 +72,7 @@ public abstract class Vehicle {
             map.addVehicle(this);
         }
         stats.addVoiture();
+        start();
     }
 
     public void start() {
@@ -124,6 +131,7 @@ public abstract class Vehicle {
     public Direction getDirection() {return this.direction;}
     public boolean isMoving() {return this.isMoving;}
     public void setSpeed(int speed) {this.speed = speed;}
+    public LinkedList<Position> getPath(){return this.path;}
 
 
     @Override
@@ -142,10 +150,13 @@ public abstract class Vehicle {
 
 
     public Position nextPosition(){
+        if (direction == null) {
+            return null; // Retourner null si la direction est null
+        }
         return direction.move(position);
     }
     public Position rightPos(){
-        if(position.getX() > 0 && position.getY() > 0){
+        if(position.getX() > 0 && position.getY() > 0 && direction != null){
         switch (direction.toString()) {
             case "UP" -> {
                 return new Position(this.position.getX() +1, this.position.getY());
@@ -216,36 +227,72 @@ public abstract class Vehicle {
         return true;
     }
 
-    public boolean move(Statistique stats){
+    public boolean move(Statistique stats) {
         Case act = getCase(position);
         Case actRight = getCase(rightPos());
-        if (nextCaseIsValid() && checkPrio()){
-            if((act.getSignalling() == null || signallingOk(act)) && (actRight == null ||actRight.getSignalling() == null || signallingOk(actRight))){
-                act.setVehicle(null);
-                //Controle.addUpdate();
-                startAnimation(position);
-                position = nextPosition();
-                map.getGrid()[position.getY()][position.getX()].setVehicle(this);
-                map.getGrid()[position.getY()][position.getX()].addPassage();
-                stats.updateMax(map.getGrid()[position.getY()][position.getX()]);
-                return true;
-            }
-        }
+        Case next = getCase(nextPosition());
         
-        if (getCase(nextPosition()) != null && getCase(nextPosition()).getVehicle() != null) {
+        boolean canMoveToNext = canMoveToNextCase(act, next);
+
+        boolean peutAvancer = nextCaseIsValid()
+            && checkPrio()
+            && (act.getSignalling() == null || signallingOk(act))
+            && (actRight == null || actRight.getSignalling() == null || signallingOk(actRight))
+            && canMoveToNext;
+
+        if (peutAvancer && (next == null || next.getVehicle() == null)) {
+            if (!isMoving){
+                isMoving = true;
+                stats.isMoving();
+            }
+            act.setVehicle(null);
+            startAnimation(position);
+            position = nextPosition();
+            Case dest = map.getGrid()[position.getY()][position.getX()];
+            dest.setVehicle(this);
+            dest.addPassage();
+            stats.updateMax(dest);
+            return true;
+        }
+
+        if ((next != null && next.getVehicle() != null) || !canMoveToNext){
+            // Cas bloqué : prochaine case occupée ou conditions non remplies
             LinkedList<Position> temp = Pathfinding.findShortestPath(map, position, destination);
-            if (temp != null && !temp.isEmpty()) { // Vérification ajoutée
-                path = temp;
-
-                return true;
-
-            } else {
-                System.out.println("Erreur: Impossible de recalculer un chemin !");
+            if (temp != null && !temp.isEmpty() ){
+                this.path = temp;
             }
         }
-        
+        if (isMoving){
+            isMoving = false;
+            stats.isStill();
+        }
         return false;
     }
+
+    private boolean canMoveToNextCase(Case currentCase, Case nextCase) {
+        if (currentCase == null || nextCase == null) {
+            return false;
+        }
+
+        // Vérifier si la case actuelle a une route qui permet de se déplacer vers la prochaine case
+        Road currentRoad = currentCase.getRoad();
+        Road nextRoad = nextCase.getRoad();
+        if (currentRoad == null || nextRoad == null) {
+            return false;
+        }
+
+        // Vérifier si la direction de la route actuelle permet de se déplacer vers la prochaine case
+        for (Direction dir : currentRoad.getDirection()) {
+            Position nextPos = dir.move(currentCase.getPos());
+            if (nextPos.equals(nextCase.getPos())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
 
     public Position checkCaseForSignalling(){
         return position.checkPosForSignalling(direction);
@@ -276,7 +323,6 @@ public abstract class Vehicle {
                 path.push(prochainePos);
                 timeStanding++;
             }else{
-                stats.isMoving();
                 stats.addArret(timeStanding);
                 timeStanding = 0;
             }
@@ -292,7 +338,9 @@ public abstract class Vehicle {
     
     public void followAllPath(Statistique stats) {
         checkPath();
-        path.pop();
+        if (!path.isEmpty()) {
+            path.pop(); // Supprimer le premier élément de la liste
+        }
         if (!path.isEmpty()) {
             followPath(path, stats); 
         }
@@ -326,7 +374,7 @@ public abstract class Vehicle {
     }
     
     public void updateAnimationProgress(float delta) {
-        animationProgress = Math.min(1.0f, animationProgress + delta);
+        animationProgress = Math.min(1.0f, animationProgress + delta );
     }
     
     public boolean isMovingTransition() {

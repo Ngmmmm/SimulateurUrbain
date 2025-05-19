@@ -51,11 +51,13 @@ public class TrafficLightGroup {
     /**
      * Change la couleur des feux selon leur direction et l'état du groupe.
      */
-    private void switchLights(LightColor newState) {
-        for (TrafficLight light : lights) {
-            boolean isNS = light.isNorthSouth();
-            LightColor color = isNS == isNSGreen ? newState : getOppositeState(newState);
-            light.setColor(color, ctrl);
+    public void switchLights(LightColor newState) {
+        if (ctrl.getTimerIsRunning()){
+            for (TrafficLight light : lights) {
+                boolean isNS = light.isNorthSouth();
+                LightColor color = (isNS == isNSGreen)? newState : getOppositeState(newState);
+                light.setColor(color, ctrl);
+            }
         }
     }
 
@@ -104,7 +106,10 @@ public class TrafficLightGroup {
      * Fusionne un autre groupe de feux dans ce groupe.
      */
     public void merge(TrafficLightGroup g) {
-        for (TrafficLight light : g.lights) add(light);
+        for (TrafficLight light : g.lights){
+            add(light);
+
+        }
     }
 
     /**
@@ -138,5 +143,9 @@ public class TrafficLightGroup {
      */
     public int getId() {
         return id;
+    }
+
+    public List<TrafficLight> getLights(){
+        return lights;
     }
 }
