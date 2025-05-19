@@ -106,7 +106,10 @@ public class TrafficLightGroup {
      * Fusionne un autre groupe de feux dans ce groupe.
      */
     public void merge(TrafficLightGroup g) {
-        for (TrafficLight light : g.lights) add(light);
+        for (TrafficLight light : g.lights){
+            add(light);
+
+        }
     }
 
     /**

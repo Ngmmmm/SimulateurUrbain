@@ -187,7 +187,7 @@ public class Controle {
     public void removeLight(TrafficLight light) {
         for (TrafficLightGroup g : lights) {
             if (g.getId() == light.getIDGroupe()) {
-                g.remove(light);
+                lights.remove(g);
                 break;
             }
         }

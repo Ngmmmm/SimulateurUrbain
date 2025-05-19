@@ -42,8 +42,8 @@ Cette section explique comment interagir avec la simulation de trafic urbain via
 
 ### ⏸️ Pause & Lecture de la simulation
 
-* **Mettre en pause** : touche `P` ou menu `Simulation > Arrêter`
-* **Reprendre la simulation** : touche `P` ou menu `Simulation > Reprendre`
+* **Mettre en pause** : Appuyer sur la touche `P` ou menu `Simulation > Arrêter`
+* **Reprendre la simulation** : Appuyer sur la touche `P` ou menu `Simulation > Reprendre`
 * ⚠️ *Toute modification de la carte nécessite que la simulation soit en pause.*
 
 
@@ -66,9 +66,31 @@ Cette section explique comment interagir avec la simulation de trafic urbain via
 
 
 
-### 🚦 Ajouter un feu de signalisation
+### 🚦 Modifier les feux de signalisation
 
-> 📝 *Fonctionnalité à vérifier auprès de Augustin pour plus de détails.*
+Trois options sont disponibles :
+
+* **Ajouter un feu de signalisation** :
+
+  1. Cliquer sur **une route SANS feu de signalisation** (si plusieurs selectionnées, la dernière cliqué est prise en compte).
+  2. Cliquer sur `Ajouter un feu / Changer de groupe`.
+  
+  > Le feu va apparaître placé selon la direction de la route.
+
+* **changer la couleur des feux** :
+  
+  1. Cliquer sur **une route AVEC feu de signalisation**.
+  2. Cliquer sur `Ajouter un feu / Changer de groupe`.
+
+> Tout les feux appartenant au groupe de feu (généralement les feux d'une intersection) vont passer à leur couleur opposé.
+> Ne marche pas si 2 feux du même groupe sont cliqué (car inclue dans le cas suivant).
+
+* **Regrouper 2 groupes de feux** :
+
+  1. Cliquer sur **deux route AVEC feu de signalisation** successivement.
+  2. Cliquer sur `Ajouter un feu / Changer de groupe`.
+
+> Va ajouter les feux de la première case cliquée dans le groupe de la seconde
 
 
 ### 🚗 Ajouter une voiture
@@ -79,13 +101,13 @@ Deux options sont disponibles :
 
   1. Cliquer sur une **seule case**.
   2. Cliquer sur `Ajouter une voiture`.
-  3. Une voiture apparaît sur cette case, avec une destination choisie aléatoirement.
+  3. Une voiture va apparaître sur cette case, avec une destination choisie aléatoirement.
 
 * **Trajet défini** :
 
   1. Cliquer sur **deux cases** : la première pour le départ, la seconde pour l’arrivée.
   2. Cliquer sur `Ajouter une voiture`.
-  3. Une voiture apparaît sur la première case et se dirigera vers la seconde.
+  3. Une voiture va apparaît sur la première case et se dirigera vers la seconde.
 
 > Si l’on clique sur une voiture pendant la simulation, **son chemin actuel s’affiche**.
 > Celui-ci peut **évoluer dynamiquement** en fonction du trafic.
@@ -95,7 +117,7 @@ Deux options sont disponibles :
 ### 🚚 Ajouter plusieurs voitures
 
 * Le bouton `Ajouter 15 voitures` tente d’ajouter 15 véhicules.
-* Les voitures apparaissent **uniquement si des emplacements d’entrée** sont disponibles (bords de la carte).
+* Les voitures vont apparaître **uniquement si des emplacements d’entrée** sont disponibles (bords de la carte).
 
 
 
