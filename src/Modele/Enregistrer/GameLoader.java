@@ -74,7 +74,7 @@ public class GameLoader {
                     int x = Integer.parseInt(positionData[0]);
                     int y = Integer.parseInt(positionData[1]);
                     Direction direction = Direction.fromString(vehicleData[3]);
-
+                    
                     // Conversion sécurisée de la vitesse
                     int speed;
                     try {
@@ -89,9 +89,13 @@ public class GameLoader {
                     Position debut = new Position(x, y);
                     Position fin = new Position(destX, destY);
 
-                    carInfo.add(tmp.new Conteneur(type, id, speed, debut, direction, fin, cityMap, stats, ctrl));
-                    
+                    if (id.equals("Bus363")){
+                        System.out.println(debut+ " " + fin);
 
+                    }
+                    if (!debut.equals(fin)){
+                        carInfo.add(tmp.new Conteneur(type, id, speed, debut, direction, fin, cityMap, stats, ctrl));
+                    }
                 } else if (line.startsWith("Signalisation: ")) {
                     // Lecture des données de la signalisation
                     String[] signallingData = line.substring(15).split(" ");
