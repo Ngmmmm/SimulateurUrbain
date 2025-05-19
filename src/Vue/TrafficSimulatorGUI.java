@@ -440,7 +440,7 @@ public class TrafficSimulatorGUI extends JFrame {
         Box box = Box.createVerticalBox();
         JButton maisonButton = makeButton("Ajouter une maison", "maison");
         JButton routeButton = new JButton("Ajouter une route");
-        JButton feuButton = makeButton("Ajouter un Feu / Changer de groupe", "feu");
+        JButton feuButton = makeButton("Ajouter un feu / Changer de groupe", "feu");
         JButton voitureButton = makeButton("Ajouter une voiture", "voiture");
         JButton tabFreq = new JButton("Montrer la fréquence de passage des cases");
         JButton spawn15Button = makeButton("Spawn 15 véhicules", "spawn");
