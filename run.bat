@@ -10,6 +10,6 @@ if ERRORLEVEL 1 (
 )
 
 rem Execute the compiled program
-java -cp "bin;." Controle.Controle
+java -cp "bin;." Main
 
 pause

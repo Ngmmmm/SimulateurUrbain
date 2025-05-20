@@ -83,16 +83,6 @@ public abstract class Vehicle {
         isMoving = false;
     }
 
-    public void move1(Direction d) {
-        if (fuel > 0) {
-            changeDirection(d);
-            position = d.move(position);
-            consumeFuel();
-        } else {
-            stop();
-        }
-    }
-
     public void changeDirection(Direction newDirection) {
         this.direction = newDirection;
     }
@@ -110,19 +100,6 @@ public abstract class Vehicle {
             fuel = 100;
         }
     }
-
-    /*
-    public void accelerate(double amount) {
-        this.speed += amount;
-    }
-    
-    public void brake(double amount) {
-        this.speed -= amount;
-        if (this.speed < 0) {
-            this.speed = 0;
-        }
-    }
-    */
 
     public float getFuel() {return this.fuel;}
     public String getId() {return this.id;}
@@ -197,6 +174,11 @@ public abstract class Vehicle {
         return next != null && next.isEmpty();
     }
 
+    /**
+     * Renvoie si une voiture peut passer ou non sur cette case
+     * @param act Case à varifier
+     * @return boolean qui indique si une voiture peut passer en fonction des signalisations
+     */
     public boolean signallingOk(Case act){
         Signalling signal = act.getSignalling();
         if(signal != null){
@@ -227,6 +209,11 @@ public abstract class Vehicle {
         return true;
     }
 
+    /**
+     * Essaye de déplacer la voiture à la case suivante de son trajet et renvoie un boolean sur le succès du déplacement
+     * @param stats statistiques à mettre à jour selon les issues de la fonction
+     * @return boolean représentant le succès de la fonction
+     */
     public boolean move(Statistique stats) {
         Case act = getCase(position);
         Case actRight = getCase(rightPos());
@@ -292,14 +279,16 @@ public abstract class Vehicle {
         return false;
     }
 
-
-
     public Position checkCaseForSignalling(){
         return position.checkPosForSignalling(direction);
     }
 
-
-
+    /**
+     * Essaye d'avancer la voiture à la prochaine case et répète le déplacement jusqu'à la fin du trajet
+     * @param path
+     * @param stats
+     * @return boolean selon si la voiture a bougé ou non
+     */
     public boolean followPath(LinkedList<Position> path, Statistique stats) {
         temps++;
         move = false;
@@ -307,6 +296,9 @@ public abstract class Vehicle {
             this.getCase(position).setVehicle(null);
             Simulation.spawnRandomCars(1, stats, ctrl);
             stats.delVoiture(temps);
+            if (!isMoving){
+                stats.isMoving();
+            }
             return false; // Arrêt si on a atteint la destination
         }
     
@@ -349,14 +341,11 @@ public abstract class Vehicle {
     public void checkPath(){
         path = Pathfinding.findShortestPath(map, position, destination);
     }
-
-
     
     public Position getDestination() {
         return destination;
     }
-
-
+    
     public boolean checkPrio(){
         Case right = getCase(rightPos());
         if(right != null && right.haveBuilding()){
@@ -365,9 +354,8 @@ public abstract class Vehicle {
         }else{
             return true;
         }
-        
-
     }
+
     public void startAnimation(Position fromPosition) {
         this.oldPosition = fromPosition;
         this.animationProgress = 0.0f;
@@ -387,6 +375,15 @@ public abstract class Vehicle {
     
     public Position getOldPosition() {
         return oldPosition != null ? oldPosition : position;
+    }
+
+
+    public double calculateDistanceToGoal() {
+        if (path != null){
+            return path.size();
+        }
+        return 0;
+        
     }
 
 

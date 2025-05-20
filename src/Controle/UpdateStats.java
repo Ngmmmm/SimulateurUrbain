@@ -6,6 +6,11 @@ import java.awt.Component;
 
 public class UpdateStats {
 
+    /**
+     * Fonction mettant à jour les statistiques sur l'écran
+     * @param comps Liste des composant à mettre à jour
+     * @param stat Statistique utilisé pour mettre à jour les composants
+     */
     public static void update(Component[] comps, Statistique stat) {
         for (Component c : comps) {
             if (c instanceof JLabel label) {

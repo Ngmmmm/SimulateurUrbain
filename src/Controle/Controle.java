@@ -6,7 +6,6 @@ import Modele.Signalling.*;
 import Modele.Vehicle.*;
 import Vue.*;
 
-import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import java.awt.event.*;
 import java.util.*;
@@ -111,6 +110,11 @@ public class Controle {
         t2.start();
     }
 
+    
+    /** 
+     * Créer l'ActionListener du timer de mise à jour des voitures
+     * @return ActionListener
+     */
     public ActionListener createActionListener() {
         return e -> {
             iter = new ArrayList<>(toUpdateCar);
@@ -129,6 +133,11 @@ public class Controle {
         };
     }
 
+    
+    /** 
+     * Créer l'ActionListener du timer globale de la simulation
+     * @return ActionListener
+     */
     public ActionListener createGlobalListener(){
         return e -> {
             if (gui.isRunning() != ctrlTimer.isRunning()) {
@@ -148,6 +157,11 @@ public class Controle {
         };
     }
 
+    
+    /** 
+     * Fonction qui va interpreter un string en un changement à appliquer
+     * @param s String à interpreter
+     */
     // --- Gestion des modifications de case ---
     public void setChange(String s) {
         if (s.startsWith("route:")) {
@@ -180,11 +194,20 @@ public class Controle {
         Simulation.spawnRandomCars(15, stats, this);
     }
 
+    
+    /** 
+     * Retire la voiture à la position p de la liste à mettre à jour
+     * @param p
+     */
     public void removeUpdateCar(Position p) {
         toUpdateCar.removeIf(p::equals);
     }
 
-    public void removeLight(TrafficLight light) {
+    /**
+     * Retire le groupe de feux associé à light de la liste des groupes de feu à mettre à jour
+     * @param light feu duquel retirer le groupe
+     */
+    public void removeLights(TrafficLight light) {
         for (TrafficLightGroup g : lights) {
             if (g.getId() == light.getIDGroupe()) {
                 lights.remove(g);
@@ -193,6 +216,23 @@ public class Controle {
         }
     }
 
+    /**
+     * Retire le feu de son groupe de feu
+     * @param light feu duquel retirer de son groupe
+     */
+    public void removeLight(TrafficLight light) {
+        for (TrafficLightGroup g : lights) {
+            if (g.getId() == light.getIDGroupe()) {
+                g.remove(light);
+                break;
+            }
+        }
+    }
+
+    /**
+     * Ajoute une voiture à la liste des voitures à mettre à jour
+     * @param p
+     */
     public void addCar(Position p){
         addUpdateCar(p);
         addUpdate();
@@ -222,8 +262,5 @@ public class Controle {
         Simulation.setCityMap(map);
     }
 
-    // --- Point d'entrée ---
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(Controle::new);
-    }
+
 }

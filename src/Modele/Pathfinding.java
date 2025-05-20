@@ -9,6 +9,13 @@ public class Pathfinding {
         // Empêcher l'instanciation de la classe statique
     }
 
+    /**
+     * Applique l'algorithme de dijkstra pour trouver le chemin le plus court pour aller de start à goal
+     * @param cityMap Carte sur laquel se déplacer
+     * @param start Position de départ du trajet
+     * @param goal Position d'arrivée du trajet
+     * @return LinkedList<Position> contenant les positions successivent que la voiture doit prendre
+     */
     public static LinkedList<Position> findShortestPath(CityMap cityMap, Position start, Position goal) {
         int rows = cityMap.getGrid().length;
         int cols = cityMap.getGrid()[0].length;
@@ -97,6 +104,9 @@ public class Pathfinding {
         return new LinkedList<>(); // Aucun chemin trouvé
     }
 
+    /**
+     * étape final de l'algorithme de Dijkstra pour reconstituer le chemin pris une fois que goal à été atteint
+    */
     private static LinkedList<Position> reconstructPath(Position[][] previous, Position goal) {
         LinkedList<Position> path = new LinkedList<>();
         Position current = goal;
@@ -108,6 +118,12 @@ public class Pathfinding {
         return path;
     }
 
+    /**
+     * Trouve toutes les cases accessibles à partir d'une position initiale
+     * @param cityMap Carte sur laquel se déplacer
+     * @param start Position initiale
+     * @return LinkedList<Position> des positions accessibles
+     */
     public static LinkedList<Position> findAllAccessiblePositions(CityMap cityMap, Position start) {
         int rows = cityMap.getGrid().length;
         int cols = cityMap.getGrid()[0].length;
@@ -166,6 +182,11 @@ public class Pathfinding {
         return accessiblePositions;
     }
 
+    /**
+     * Créer la liste des Position de spawn valide (sur les bords de la CityMap)
+     * @param map Carte sur laquel se déplacer
+     * @return LinkedList<Position> liste des Positions valide
+     */
     public static LinkedList<Position> FindSpawnPosition(CityMap map) {
         LinkedList<Position> result = new LinkedList<>();
         int rows = map.getRows();
@@ -200,10 +221,45 @@ public class Pathfinding {
     }
 
 
+
     public static boolean detectDeadlock(CityMap map, Vehicle vehicle) {
         Set<Vehicle> visited = new HashSet<>();
-        return dfsCycle(map, vehicle, visited, new HashSet<>());
+        Set<Vehicle> cycle = new HashSet<>();
+        boolean hasDeadlock = dfsCycle(map, vehicle, visited, cycle);
+
+        if (hasDeadlock) {
+            // Vérifiez si le cycle contient un face-à-face
+            boolean hasFaceToFace = false;
+            Vehicle vehicleToRemove = null;
+            double minDistanceToGoal = Double.MAX_VALUE;
+
+            for (Vehicle v1 : cycle) {
+                for (Vehicle v2 : cycle) {
+                    if (v1 != v2 && isFaceToFace(v1, v2)) {
+                        hasFaceToFace = true;
+                        double distanceToGoal = v1.calculateDistanceToGoal();
+                        if (distanceToGoal < minDistanceToGoal) {
+                            minDistanceToGoal = distanceToGoal;
+                            vehicleToRemove = v1;
+                        }
+                        distanceToGoal = v2.calculateDistanceToGoal();
+                        if (distanceToGoal < minDistanceToGoal) {
+                            minDistanceToGoal = distanceToGoal;
+                            vehicleToRemove = v2;
+                        }
+                    }
+                }
+            }
+
+            if (hasFaceToFace && vehicleToRemove != null) {
+                vehicleToRemove.path = new LinkedList<Position>();
+            }
+        }
+
+        return hasDeadlock;
     }
+
+
 
     private static boolean dfsCycle(CityMap map, Vehicle current, Set<Vehicle> visited, Set<Vehicle> recursionStack) {
         if (current == null) {
@@ -234,6 +290,16 @@ public class Pathfinding {
 
         recursionStack.remove(current);
         return false;
+    }
+
+
+    private static boolean isFaceToFace(Vehicle vehicle1, Vehicle vehicle2) {
+        // Vérifiez si les véhicules sont directement l'un en face de l'autre
+        Direction dir1 = vehicle1.getDirection();
+        Direction dir2 = vehicle2.getDirection();
+
+        // Si la direction de l'un est l'opposé de l'autre, ils sont face-à-face
+        return dir1.getOpposite() == dir2;
     }
 
 
