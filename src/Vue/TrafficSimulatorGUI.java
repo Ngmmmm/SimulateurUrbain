@@ -117,6 +117,12 @@ public class TrafficSimulatorGUI extends JFrame {
         };
     }
 
+    /**
+     * Fonction donnant les instructions pour afficher une case
+     * @param g graphics sur lesquelles les afficher
+     * @param i Coordonnée x dans la CityMap
+     * @param j coordonnée y dans la CityMap
+     */
     public void drawCase(Graphics g, int i, int j) {
         int x = j * cellSize;
         int y = i * cellSize;
@@ -141,6 +147,13 @@ public class TrafficSimulatorGUI extends JFrame {
         }
     }
 
+    /**
+     * Fonction qui affiche une case en fonction de son nombre d'utilisation
+     * @param g graphics sur lesquelles les afficher
+     * @param currentCase case à afficher
+     * @param x coordonnée x du haut à gauche de la case
+     * @param y coordonnée y du haut à gauche de la case
+     */
     private void drawFreq(Graphics g, Case currentCase, int x, int y) {
         double ratio = ((double) currentCase.getNbPassage()) / ((double) stats.getMaxPassage());
         int grad = (int) Math.floor(255 * (1 - ratio));
@@ -148,6 +161,15 @@ public class TrafficSimulatorGUI extends JFrame {
         g.fillRect(x, y, cellSize, cellSize);
     }
     
+    /**
+     * Fonction qui affiche les routes
+     * @param g graphics sur lesquelles afficher les routes
+     * @param currentCase case à afficher
+     * @param x coordonnée x du haut à gauche de la case
+     * @param y coordonnée y du haut à gauche de la case
+     * @param i coordonnée x dans le Case[][] de la case
+     * @param j coordonnée y dans le Case[][] de la case
+     */
     private void drawRoad(Graphics g, Case currentCase, int x, int y, int i, int j) {
         Graphics2D g2d = (Graphics2D) g;
         Direction[] direction = currentCase.getRoad().getDirection();
@@ -238,6 +260,9 @@ public class TrafficSimulatorGUI extends JFrame {
         g2d.translate(-signalX - size / 2, -signalY - size / 2);
     }
     
+    /**
+     * Affiche les cases cliquées en surbrillance
+     */
     private void drawSelectionHighlights(Graphics g, int x, int y, int i, int j) {
         if (selectedCells.isEmpty()) return;
         Position posA = selectedCells.getA();
@@ -295,6 +320,9 @@ public class TrafficSimulatorGUI extends JFrame {
         return (incomingDirection != null && isTurn) ? new Direction[]{incomingDirection, currentDirection} : null;
     }
 
+    /**
+     * Fonction qui indique comment afficher la carte
+     */
     public void drawMap(Graphics g) {
         if (!imagesLoaded) { Image.loadImg(); imagesLoaded = true; }
         Rectangle visibleRect = mapPanel.getVisibleRect();
@@ -317,6 +345,9 @@ public class TrafficSimulatorGUI extends JFrame {
         }
     }
 
+    /**
+     * @return créer et renvoie la barre de menu
+     */
     private JMenuBar createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("Fichier");
@@ -353,6 +384,9 @@ public class TrafficSimulatorGUI extends JFrame {
         return menuBar;
     }
 
+    /**
+     * @return créer et renvoie le JPanel contenant les stats
+     */
     private JPanel createStatsPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(1, 3));
@@ -368,6 +402,9 @@ public class TrafficSimulatorGUI extends JFrame {
         return panel;
     }
 
+    /**
+     * @return Renvoie le JPanel des choix de direction d'une route
+     */
     private JPanel createDirectionSelectionPanel() {
         JPanel panel = new JPanel(new GridLayout(2, 2, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -429,6 +466,9 @@ public class TrafficSimulatorGUI extends JFrame {
         return mainPanel;
     }
     
+    /**
+     * @return créer et renvoie la barre de menu latéral gauche avec la liste des boutons
+     */
     private JPanel createChangePanel() {
         JPanel panel = new JPanel(new GridLayout(3, 1));
         panel.setBorder(BorderFactory.createTitledBorder("Action Utilisateur"));
@@ -504,6 +544,11 @@ public class TrafficSimulatorGUI extends JFrame {
         }
     }
 
+    /**
+     * Agrandit ou rétrécis la carte de la simulation
+     * @param zoomIn boolean vérifiant si le zoom a été utilisé
+     * @param cursorPosition donne la position sur laquelle zoomer
+     */
     private void zoom(boolean zoomIn, Point cursorPosition) {
         if (zoomIn) { if (zoomFactor < MAX_ZOOM) zoomFactor += 0.1; } 
         else { if (zoomFactor > 0.5) zoomFactor -= 0.1; }
@@ -656,6 +701,9 @@ public class TrafficSimulatorGUI extends JFrame {
         ctrl.start();
     }
 
+    /**
+     * @return Renvoie le Listener des appuyes de touche
+     */
     private KeyListener createKeyListener() {
         return new KeyAdapter() {
             @Override
@@ -669,6 +717,9 @@ public class TrafficSimulatorGUI extends JFrame {
         };
     }
 
+    /**
+     * @return Renvoie le Listener du timer de rafrechissement de la carte
+     */
     private ActionListener createTimerListener() {
         return (ActionEvent e) -> {
             if (needUpdate) {
@@ -682,6 +733,9 @@ public class TrafficSimulatorGUI extends JFrame {
         };
     }
 
+    /**
+     * @return Renvoie le Listener du timer des rafrechissement des animations des voitures
+     */
     private ActionListener createLoadListener(){
         return (ActionEvent e) ->{
             for (int i = 0; i < cityMap.getCols(); i++) {
@@ -704,6 +758,12 @@ public class TrafficSimulatorGUI extends JFrame {
         mapPanel.addKeyListener(createKeyListener());
     }
 
+    /**
+     * Créer des boutons avec le même Listener utilisé pour changer les élément de la carte
+     * @param s1 Message du bouton
+     * @param s2 Nom du Bouton
+     * @return JButton 
+     */
     private JButton makeButton(String s1, String s2) {
         JButton button = new JButton(s1);
         if (s2 == "spawn"){

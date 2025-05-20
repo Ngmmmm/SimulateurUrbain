@@ -11,6 +11,13 @@ public class GameSaver {
     private static final String SAVE_DIRECTORY = "Save";
     private static final String SAVE_LIST_FILE = SAVE_DIRECTORY + File.separator + "nom_save.txt";
 
+    
+    /** 
+     * Sauvegarde l'état de la simulation à l'instant donné et renvoie true en cas de succès
+     * @param fileName Nom à donner au fichier pour stocker la simulation
+     * @param cityMap Carte à sauvegarder
+     * @return boolean Réussite de la sauvegarde
+     */
     public static boolean saveGame(String fileName, CityMap cityMap) {
         try {
             // Créer le répertoire de sauvegarde s'il n'existe pas
@@ -80,6 +87,11 @@ public class GameSaver {
         return sb.toString().trim();
     }
 
+    /**
+     * Modifie le nom de sauvegarde donné si il existe déjà
+     * @param baseName nom de sauvegarde initial
+     * @return String Correspond au nouveau nom de la sauvegarde
+     */
     public static String generateUniqueSaveName(String baseName) {
         List<String> existingSaves = readExistingSaves();
         int maxNumber = 0;
@@ -99,6 +111,10 @@ public class GameSaver {
         return baseName + "_" + (maxNumber + 1);
     }
 
+    /**
+     * Renvoie la liste des sauvegarde existante
+     * @return List<String> des noms de sauvegarde
+     */
     private static List<String> readExistingSaves() {
         List<String> saves = new ArrayList<>();
         try {
@@ -112,6 +128,10 @@ public class GameSaver {
         return saves;
     }
 
+    /**
+     * Ajoute le nom de la nouvelle sauvegarde à la liste des noms de sauvegarde
+     * @param fileName Nom de la nouvelle sauvegarde
+     */
     private static void updateSaveList(String fileName) {
         try {
             File saveListFile = new File(SAVE_LIST_FILE);
