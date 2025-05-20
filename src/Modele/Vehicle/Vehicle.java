@@ -296,6 +296,9 @@ public abstract class Vehicle {
             this.getCase(position).setVehicle(null);
             Simulation.spawnRandomCars(1, stats, ctrl);
             stats.delVoiture(temps);
+            if (!isMoving){
+                stats.isMoving();
+            }
             return false; // Arrêt si on a atteint la destination
         }
     

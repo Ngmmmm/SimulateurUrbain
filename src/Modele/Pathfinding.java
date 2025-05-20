@@ -252,7 +252,7 @@ public class Pathfinding {
             }
 
             if (hasFaceToFace && vehicleToRemove != null) {
-                vehicle.path = new LinkedList<Position>();
+                vehicleToRemove.path = new LinkedList<Position>();
             }
         }
 
