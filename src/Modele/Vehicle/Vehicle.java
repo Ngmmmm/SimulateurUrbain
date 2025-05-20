@@ -379,7 +379,11 @@ public abstract class Vehicle {
 
 
     public double calculateDistanceToGoal() {
-        return path.size();
+        if (path != null){
+            return path.size();
+        }
+        return 0;
+        
     }
 
 
