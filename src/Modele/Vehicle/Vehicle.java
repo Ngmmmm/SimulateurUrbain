@@ -83,16 +83,6 @@ public abstract class Vehicle {
         isMoving = false;
     }
 
-    public void move1(Direction d) {
-        if (fuel > 0) {
-            changeDirection(d);
-            position = d.move(position);
-            consumeFuel();
-        } else {
-            stop();
-        }
-    }
-
     public void changeDirection(Direction newDirection) {
         this.direction = newDirection;
     }
@@ -110,19 +100,6 @@ public abstract class Vehicle {
             fuel = 100;
         }
     }
-
-    /*
-    public void accelerate(double amount) {
-        this.speed += amount;
-    }
-    
-    public void brake(double amount) {
-        this.speed -= amount;
-        if (this.speed < 0) {
-            this.speed = 0;
-        }
-    }
-    */
 
     public float getFuel() {return this.fuel;}
     public String getId() {return this.id;}
@@ -302,12 +279,9 @@ public abstract class Vehicle {
         return false;
     }
 
-
-
     public Position checkCaseForSignalling(){
         return position.checkPosForSignalling(direction);
     }
-
 
     /**
      * Essaye d'avancer la voiture à la prochaine case et répète le déplacement jusqu'à la fin du trajet
@@ -364,14 +338,11 @@ public abstract class Vehicle {
     public void checkPath(){
         path = Pathfinding.findShortestPath(map, position, destination);
     }
-
-
     
     public Position getDestination() {
         return destination;
     }
-
-
+    
     public boolean checkPrio(){
         Case right = getCase(rightPos());
         if(right != null && right.haveBuilding()){
@@ -380,9 +351,8 @@ public abstract class Vehicle {
         }else{
             return true;
         }
-        
-
     }
+
     public void startAnimation(Position fromPosition) {
         this.oldPosition = fromPosition;
         this.animationProgress = 0.0f;
