@@ -252,7 +252,7 @@ public class Pathfinding {
             }
 
             if (hasFaceToFace && vehicleToRemove != null) {
-                CityMap.getCase(map.getGrid(), vehicleToRemove.getPosition()).setVehicle(null);
+                vehicle.path = new LinkedList<Position>();
             }
         }
 
