@@ -167,7 +167,7 @@ public class CityMap {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 if (grid[i][j].getRoad() == null) {
-                    grid[i][j] = new Case("Building");
+                    grid[i][j] = new Case("Building", new Position(j, i));
                 }
             }
         }

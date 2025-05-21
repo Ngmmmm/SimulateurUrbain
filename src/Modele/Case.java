@@ -21,12 +21,13 @@ public class Case{
     }
 
     // Pas fonctionnelle pour l'instant
-    public Case(String type){
+    public Case(String type, Position pos){
         this();
         switch (type) {
             case "Building" -> {
                 this.building = new Building();
                 this.road = null;
+                this.pos = pos;
                 break;
             }
             case "Road" -> {
