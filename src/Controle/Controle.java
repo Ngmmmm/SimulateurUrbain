@@ -50,6 +50,7 @@ public class Controle {
         stats = new Statistique();
         s = new Simulation(stats, this);
         cityMap = s.getCityMap();
+        MatrixGenerator.main(cityMap);
     }
 
     private void initSet() {
